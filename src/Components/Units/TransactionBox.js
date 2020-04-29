@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function ConnectWallet() {
+export default function TransactionBox() {
   return (
     <div>
       

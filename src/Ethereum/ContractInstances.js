@@ -22,6 +22,7 @@ export const initializeWeb3 = () => {
   }
 }
 
-export const initalizeERC20 = (tokenAddress) => {
-  ERC20Contract = new web3.eth.Contract(ERC20Abi, tokenAddress);
+export const initalizeERC20 = async (tokenAddress) => {
+  ERC20Contract = await new web3.eth.Contract(ERC20Abi, tokenAddress);
+  return ERC20Contract;
 }
