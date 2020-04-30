@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function LoadChannels() {
+export default function Supply() {
   return (
     <div>
       

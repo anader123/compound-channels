@@ -56,9 +56,11 @@ export default function CardBox(props) {
   // ]
 
   const setToken = (symbol) => {
-    const index = assetData.map(token => {
-      return token.symbol;
-    }).indexOf(symbol);
+    const index = assetData.map((token, index) => {
+      if(token.symbol === symbol) {
+        return index
+      }
+    });
     const tokenDetails = assetData[index];
     const address = tokenDetails.tokenAddress;
     setERC20Details(tokenDetails);

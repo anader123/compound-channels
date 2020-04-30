@@ -42,10 +42,10 @@ export default function Dashboard(props) {
       return (
        <Borrow  setStep={setStep}/>   
       )
-    // case 2:
-    //   return (
-    //    <Supply setStep={setStep}/>
-    //   )
+    case 2:
+      return (
+       <Supply setStep={setStep}/>
+      )
     default:
       return step;
   }

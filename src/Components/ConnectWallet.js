@@ -3,6 +3,7 @@ import { Button, Heading } from 'rebass';
 
 // Ethereum 
 import { initializeWeb3 } from '../Ethereum/ContractInstances';
+import { addressShortener } from '../Ethereum/EthHelper';
 
 export default function ConnectWallet(props) {
   const { setWalletConnected, setUserAddress, setShortUserAddress } = props;
@@ -20,7 +21,7 @@ export default function ConnectWallet(props) {
         setUserAddress(address);
         
         // Format Display Address
-        const shortAddress = `${address.slice(0, 7)}...${address.slice(37, 42)}`;
+        const shortAddress = addressShortener(address);
         setShortUserAddress(shortAddress);
       }
       else{

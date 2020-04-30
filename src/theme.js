@@ -92,39 +92,6 @@ export default {
   }
 }
 
-export const tokenBoxUnselected = {
-  ':hover': {
-      backgroundColor: '#F4F4FA',
-      transition: '200ms',
-      transform: 'scale(1.08)',
-      width: 'auto'
-      },
-  p: 1,
-  transition: '300ms',
-  borderRadius: 2,
-  boxShadow: '0 0 16px rgba(0, 0, 0, .25)',
-  height: '175px',
-  display: 'flex',
-  justifyContent: 'center',
-  flexDirection: 'column',
-  cursor: 'pointer'
-}
-
-export const tokenBoxSelected = {
-  backgroundColor: '#ddd9f9',
-  transform: 'scale(1.08)',
-  width: 'auto',
-  p: 1,
-  transition: '300ms',
-  borderRadius: 2,
-  boxShadow: '0 0 16px rgba(0, 0, 0, .25)',
-  height: '175px',
-  display: 'flex',
-  justifyContent: 'center',
-  flexDirection: 'column',
-  cursor: 'pointer'
-}
-
 export const cardBoxFormatting = {
   ':hover': {
     backgroundColor: '#F4F4FA',

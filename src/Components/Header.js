@@ -12,6 +12,7 @@ import {
 
 // Ethereum 
 import { initializeWeb3 } from '../Ethereum/ContractInstances';
+import { addressShortener } from '../Ethereum/EthHelper';
 
 export default function Header(props) {
   const { 
@@ -32,7 +33,7 @@ export default function Header(props) {
           setWalletConnected(true);
           initializeWeb3();
           // Format Display Address
-          const shortAddress = `${address.slice(0, 7)}...${address.slice(37, 42)}`;
+          const shortAddress = addressShortener(address);
           setShortUserAddress(shortAddress);
         }
       }
