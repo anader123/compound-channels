@@ -1,5 +1,4 @@
-import React, {useState} from 'react';
-import styled from 'styled-components';
+import React, { useState, useEffect } from 'react';
 import piggyBank from '../Images/piggy-bank.svg'
 
 import {
@@ -11,11 +10,36 @@ import {
   Heading
 } from 'rebass';
 
-export default function Header(props) {
-  const [ walletConnected, setWalletConnected ] = useState(false);
-  const [ userAddress, setUserAddress ] = useState('');
-  const [ shortUserAddress, setShortUserAddress ] = useState('');
+// Ethereum 
+import { initializeWeb3 } from '../Ethereum/ContractInstances';
 
+export default function Header(props) {
+  const { 
+    walletConnected, 
+    userAddress, 
+    shortUserAddress, 
+    setShortUserAddress, 
+    setUserAddress, 
+    setWalletConnected 
+  } = props;
+
+  useEffect(() => {
+    if(window.ethereum !== undefined) {
+        if(window.ethereum.selectedAddress !== null 
+          && window.ethereum.selectedAddress !== undefined) {
+          const address = window.ethereum.selectedAddress;
+          setUserAddress(window.ethereum.selectedAddress);
+          setWalletConnected(true);
+          initializeWeb3();
+          // Format Display Address
+          const shortAddress = `${address.slice(0, 7)}...${address.slice(37, 42)}`;
+          setShortUserAddress(shortAddress);
+        }
+      }
+    }, [setUserAddress, 
+      setShortUserAddress, 
+      setWalletConnected, 
+      userAddress]);
   return (
     <Flex
       px={2}

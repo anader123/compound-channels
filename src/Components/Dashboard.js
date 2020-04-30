@@ -10,29 +10,22 @@ import Repay from './Repay';
 import Sign from './Sign';
 
 import {
-  Flex,
-  Text,
-  Box,
-  Card,
-  Image,
-  Link,
-  Heading
+  Flex
 } from 'rebass';
 
 // Images
 import iAdd from '../Images/add.svg';
-import iBorrow from '../Images/borrow.svg';
 import iClose from '../Images/close.svg';
 import iCreate from '../Images/create.svg';
 import iRepay from '../Images/repay.svg';
 import iSign from '../Images/sign.svg';
 
 const optionArray = [
-  {name: "Create", step: 1, image: iCreate},
-  {name: "Sign", step: 2, image: iSign},
-  {name: "Close", step: 3, image: iClose},
-  {name: "Add", step: 4, image: iAdd},
-  {name: "Repay", step: 5, image: iRepay},
+  {name: "Create Channel", step: 1, image: iCreate},
+  {name: "Sign Transaction", step: 2, image: iSign},
+  {name: "Close Channel", step: 3, image: iClose},
+  {name: "Add Assets", step: 4, image: iAdd},
+  {name: "Repay Loan", step: 5, image: iRepay},
 ];
 
 export default function Dashboard() {

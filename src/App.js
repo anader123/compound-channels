@@ -12,14 +12,27 @@ import Dashboard from './Components/Dashboard';
 import Header from './Components/Header';
 
 function App() {
-  const [ walletConnected, setWalletConnected ] = useState(true);
+  const [ walletConnected, setWalletConnected ] = useState(false);
+  const [ userAddress, setUserAddress ] = useState('');
+  const [ shortUserAddress, setShortUserAddress ] = useState('');
   return (
     <div className="App">
       <ThemeProvider theme={theme}>
-        <Header />
+        <Header
+        setWalletConnected={setWalletConnected} 
+        setUserAddress={setUserAddress} 
+        shortUserAddress={shortUserAddress} 
+        userAddress={userAddress} 
+        walletConnected={walletConnected} 
+        setShortUserAddress={setShortUserAddress}
+        />
         {!walletConnected
         ?
-        <ConnectWallet />
+        <ConnectWallet 
+        setShortUserAddress={setShortUserAddress} 
+        setUserAddress={setUserAddress} 
+        setWalletConnected={setWalletConnected} 
+        />
         :
         <Dashboard />
         }

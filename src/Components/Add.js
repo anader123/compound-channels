@@ -12,8 +12,8 @@ import {
 import iBorrow from '../Images/borrow.svg';
 
 const optionArray = [
-  {name: "Borrow", step: 1, image: iBorrow},
-  {name: "Supply", step: 1}
+  {name: "Borrow Assets", step: 1, image: iBorrow},
+  {name: "Supply Assets", step: 1}
 ];
 
 export default function Dashboard(props) {
