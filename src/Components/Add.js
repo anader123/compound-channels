@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 // Components
 import Borrow from './Borrow';
 import CardBox from './Units/CardBox';
+
 import {
   Flex,
   Button
@@ -10,10 +11,11 @@ import {
 
 // Images
 import iBorrow from '../Images/borrow.svg';
+import iSupply from '../Images/supply.svg';
 
 const optionArray = [
   {name: "Borrow Assets", step: 1, image: iBorrow},
-  {name: "Supply Assets", step: 1}
+  {name: "Supply Assets", step: 1, image: iSupply}
 ];
 
 export default function Dashboard(props) {
