@@ -3,19 +3,36 @@ import React, { useState } from 'react';
 // Components
 import Add from './Add';
 import Borrow from './Borrow';
+import CardBox from './Units/CardBox';
 import Close from './Close';
 import Create from './Create';
 import Repay from './Repay';
 import Sign from './Sign';
-import CardBox from './Units/CardBox';
+
+import {
+  Flex,
+  Text,
+  Box,
+  Card,
+  Image,
+  Link,
+  Heading
+} from 'rebass';
+
+// Images
+import iAdd from '../Images/add.svg';
+import iBorrow from '../Images/borrow.svg';
+import iClose from '../Images/close.svg';
+import iCreate from '../Images/create.svg';
+import iRepay from '../Images/repay.svg';
+import iSign from '../Images/sign.svg';
 
 const optionArray = [
-  {name: "Create", case: 1},
-  {name: "Sign", case: 2},
-  {name: "Close", case: 3},
-  {name: "Add", case: 4},
-  {name: "Borrow", case: 5},
-  {name: "Repay", case: 6},
+  {name: "Create", step: 1, image: iCreate},
+  {name: "Sign", step: 2, image: iSign},
+  {name: "Close", step: 3, image: iClose},
+  {name: "Add", step: 4, image: iAdd},
+  {name: "Repay", step: 5, image: iRepay},
 ];
 
 export default function Dashboard() {
@@ -24,35 +41,37 @@ export default function Dashboard() {
   switch(step) {
     case 0:
       return (
-        <div>
-          {optionArray.map(option => {
-            return <CardBox name={option.name} onClick={() => setStep(option.set)} />
-          })}
-        </div>
+        <Flex sx={{justifyContent:'center'}}>
+          <Flex width={'75%'} m={4} sx={{ flexWrap: 'wrap',justifyContent:'center'}}>
+            {optionArray.map(option => {
+              return <CardBox name={option.name} 
+                        image={option.image}
+                        key={option.step+'key'} 
+                        setStep={setStep} 
+                        step={option.step}/>
+            })}
+          </Flex>
+        </Flex >
       )
     case 1: 
       return (
-       <Create />   
+       <Create  setStepDash={setStep}/>   
       )
     case 2:
       return (
-       <Sign />
+       <Sign setStepDash={setStep}/>
       )
     case 3:
       return (
-       <Close />
+       <Close setStepDash={setStep}/>
       )
     case 4:
       return (
-       <Add />
+       <Add setStepDash={setStep}/>
       )
     case 5:
       return (
-       <Borrow />
-      )
-    case 6:
-      return (
-      <Repay />
+      <Repay setStepDash={setStep}/>
       )
     default:
       return step;

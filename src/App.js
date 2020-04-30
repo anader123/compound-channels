@@ -4,6 +4,7 @@ import './App.css';
 // Rebass
 import { ThemeProvider } from 'emotion-theming';
 import theme from './theme';
+// import preset from '@rebass/preset'
 
 // Components
 import ConnectWallet from './Components/ConnectWallet';
@@ -11,7 +12,7 @@ import Dashboard from './Components/Dashboard';
 import Header from './Components/Header';
 
 function App() {
-  const [ walletConnected, setWalletConnected ] = useState(false);
+  const [ walletConnected, setWalletConnected ] = useState(true);
   return (
     <div className="App">
       <ThemeProvider theme={theme}>

@@ -1,13 +1,30 @@
-/* body {
+body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Apercu', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-} */
+@font-face {
+  font-family: 'Apercu';
+  font-weight: 900;
+  src: local('Apercu'), url(./Fonts/Apercu-Bold.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: 'Apercu';
+  font-weight: 500;
+  src: local('Apercu'), url(./Fonts/Apercu-Medium.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: 'Apercu';
+  font-weight: 400;
+  src: local('Apercu'), url(./Fonts/Apercu-Regular.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: 'Apercu';
+  font-weight: 200;
+  src: local('Apercu'), url(./Fonts/Apercu-Light.woff2) format('woff2');
+}

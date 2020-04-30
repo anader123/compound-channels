@@ -4,8 +4,8 @@ export default {
     12, 14, 16, 20, 24, 32, 48, 72
   ],
   colors: {
-    primary: '#583aff',
-    secondary: '#1c144f',
+    primary: '#50bf8d',
+    secondary: '#black',
     lightgray: '#9FA4AE'
   },
   space: [
@@ -14,7 +14,7 @@ export default {
   fonts: {
       body: '"Apercu", sans-serif',
       heading: '"Apercu", sans-serif',
-      text: 'sans-serif'
+      text: '"Apercu", sans-serif'
   },
   fontWeights: {
       body: 400,
@@ -62,7 +62,7 @@ export default {
       cursor: 'pointer',
       transitionDuration: '0.4s',
       ':hover': {
-        bg: '#735ef9'
+        bg: '#35dd91'
       }
     },
   },
@@ -126,13 +126,19 @@ export const tokenBoxSelected = {
 }
 
 export const cardBoxFormatting = {
-  m: [3, 0, 0, 4],
+  ':hover': {
+    backgroundColor: '#F4F4FA',
+    transition: '200ms',
+    transform: 'scale(1.08)',
+    // width: 'auto'
+  },
+  m: [3, 4],
   p: 1,
   transition: '300ms',
   borderRadius: 2,
   boxShadow: '0 0 16px rgba(0, 0, 0, .25)',
-  height: '450px',
-  width: '350px',
+  height: '200px',
+  width: '250px',
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',

@@ -7,7 +7,8 @@ import {
   Text,
   Box,
   Image,
-  Link
+  Link,
+  Heading
 } from 'rebass';
 
 export default function Header(props) {
@@ -19,10 +20,11 @@ export default function Header(props) {
     <Flex
       px={2}
       alignItems='center'>
-        <Text p={4} pl={0} fontSize={[ 2, 4 ]}>
+        <Heading p={3} fontSize={[ 2, 4 ]}>
         Compound Channels
-        </Text>
+        </Heading >
         <Image 
+          mr={[1, 4]}
           src={piggyBank}
           height='40px'
         />
@@ -30,7 +32,7 @@ export default function Header(props) {
       <div>
       {!walletConnected 
       ?
-      <Text mr={[1, 4]}>No Wallet Connected</Text>
+      <Text fontFamily={'Apercu'} mr={[1, 4]}>No Wallet Connected</Text>
       :
       <Link 
         target="_blank" 
