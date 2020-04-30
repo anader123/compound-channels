@@ -80,7 +80,7 @@ export default {
           }
       },
       select: {
-        borderRadius: 9999,
+        outline: 'none'
       }
     },
   heading: {
@@ -139,6 +139,20 @@ export const cardBoxFormatting = {
   boxShadow: '0 0 16px rgba(0, 0, 0, .25)',
   height: '200px',
   width: '250px',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  flexDirection: 'column'
+}
+
+export const tallCardBoxFormatting = {
+  m: [3, 0, 0, 4],
+  p: 1,
+  transition: '300ms',
+  borderRadius: 2,
+  boxShadow: '0 0 16px rgba(0, 0, 0, .25)',
+  height: '450px',
+  width: '350px',
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
