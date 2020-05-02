@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 // Components
 import Borrow from './Borrow';
 import CardBox from './Units/CardBox';
+import Supply from './Supply';
 
 import {
   Flex,

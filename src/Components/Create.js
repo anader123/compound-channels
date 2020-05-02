@@ -25,7 +25,7 @@ import TokenDropdown from './Units/TokenDropdown';
 
 export default function CardBox(props) {
   const { setStepDash } = props;
-  const [ step, setStep ] = useState(1);
+  const [ step, setStep ] = useState(4);
   const [ depositAmount, setDepositAmount ] = useState(0);
   const [ endTime, setEndTime ] = useState(0);
   const [ recipientAddress, setRecipientAddress ] = useState('');
