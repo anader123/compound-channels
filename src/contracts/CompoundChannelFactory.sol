@@ -2,6 +2,7 @@ pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/cryptography/ECDSA.sol";
 
 interface CompoundContractInterface {
   function mint(uint mintAmount) external returns (uint);
@@ -42,12 +43,10 @@ contract CompoundChannel {
     uint256 tokenAllowance = token.allowance(msg.sender, address(this));
     require(tokenAllowance > 0, 'not enough allowance');
     token.transferFrom(msg.sender, address(this), tokenAllowance);
-    uint256 tokenBalance = token.balanceOf(address(this));
-    require(tokenBalance > 0, 'not enough allowance');
 
     require(token.approve(address(cToken), tokenBalance), 'approval error');
     require(cToken.mint(tokenBalance) == 0, 'minting error');
-    emit FundsDeposited(msg.sender, _depositAmount, address(token));
+    emit FundsDeposited(msg.sender, tokenBalance, address(token));
     return true;
   }
 
@@ -61,9 +60,7 @@ contract CompoundChannel {
   }
 
   function close(
-    Payment memory payment,
-    address _sender,
-    address _channelAddress,
+    uint256 _amount,
     uint8 sigV,
     bytes32 sigR,
     bytes32 sigS
@@ -71,10 +68,9 @@ contract CompoundChannel {
     require(msg.sender == recipient, 'nonrecipient address');
 
     require(compFactory.checkSignature(
-      _sender,
-      _channelAddress,
-      recipient,
-      payment,
+      sender,
+      address(this),
+      _amount,
       sigV,
       sigR,
       sigS
@@ -85,7 +81,7 @@ contract CompoundChannel {
     require(cToken.redeem(cTokenBalance) == 0, "redeem error");
 
     uint256 balance = token.balanceOf(address(this));
-    uint256 toRecipient = balance < _value ? balance : _value;
+    uint256 toRecipient = balance < payment.amount ? balance : payment.amount;
     require(token.transfer(recipient, toRecipient), "transfer error");
 
     if (toRecipient < balance) token.transfer(sender, balance - toRecipient);
@@ -93,27 +89,31 @@ contract CompoundChannel {
 }
 
 contract CompoundChannelFactory {
+  using ECDSA for bytes32;
   // State Variables
   mapping(address => address[]) public senderRegistery;
   mapping(address => address[]) public recipientRegistery;
 
   // Signature Information
   uint256 constant chainId = 42;
+  bytes32 constant salt = 0xf2e421f4a3edcb9b1111d503bfe733db1e3f6cdc2b7971ee739626c97e86a558;
+
+  string private constant PAYMENT_TYPE = "Payment(uint256 amount)";
+  string private constant EIP712_DOMAIN_TYPE = "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract,bytes32 salt)";
+
+  bytes32 private constant EIP712_DOMAIN_TYPEHASH = keccak256(abi.encodePacked(EIP712_DOMAIN));
+  bytes32 private constant PAYMENT_TYPEHASH = keccak256(abi.encodePacked(PAYMENT_TYPE));
+
   struct Payment {
     uint256 amount;
   }
-  string private constant PAYMENT_TYPEHASH = "Payment(uin256 amount)";
-  bytes32 constant salt = 0xf2e421f4a3edcb9b1111d503bfe733db1e3f6cdc2b7971ee739626c97e86a558;
-  string private constant EIP712_DOMAIN_TYPEHASH =
-  "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract,bytes32 salt)";
-
+  
   // Events
   event ChannelCreated(address channelAddress, address sender, address recipient);
 
   function createChannel(
     address payable _recipient,
     uint256 _endTime,
-    uint256 _depositAmount,
     address _tokenAddress,
     address _cTokenAddress
     ) public returns(bool) {
@@ -143,7 +143,7 @@ contract CompoundChannelFactory {
     bytes32 DOMAIN_SEPARATOR = keccak256(abi.encode(
     EIP712_DOMAIN_TYPEHASH,
     keccak256("Compound Channels"),
-    keccak256("42"),
+    keccak256("1"),
     chainId,
     _channelAddress,
     salt
@@ -162,12 +162,14 @@ contract CompoundChannelFactory {
   function checkSignature(
     address _sender,
     address _channelAddress,
-    address _recipient,
-    Payment memory payment,
-    uint8 sigV,
-    bytes32 sigR,
-    bytes32 sigS
+    uint256 _amount,
+    bytes memory signature
     ) public pure returns (bool) {
-      return _sender == ecrecover(hashPayment(payment, _channelAddress), sigV, sigR, sigS);
+      Payment memory payment = Payment({
+        amount: _amount
+      });
+
+      bytes32 hash = hashPayment(payment, _channelAddress);
+      return _sender == hash.recover(_signature);
   }
 }

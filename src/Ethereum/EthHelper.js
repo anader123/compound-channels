@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js';
 import { facotryContract, initalizeChannelContract } from './ContractInstances';
 import { assetData } from './AssetData';
+const sigUtil = require('eth-sig-util');
 
 
 export const addressShortener = (address) => {
@@ -53,7 +54,8 @@ export const loadChannels = async (userAddress) => {
 };
 
 // TODO: make sure to take the 0x off the front of the sig from the user and then parse for v, s, r
-export const signData = (web3, channelAddress) => {
+export const signData = async (web3) => {
+  const channelAddress = '0xa771B67bF544ACe95431A52BA89Fbf55b861bA83';
   const signer = '0xBBfFb22245b7813b0897902725624e49402EF24D';
 
   const domain = [
@@ -61,53 +63,50 @@ export const signData = (web3, channelAddress) => {
     { name: "version", type: "string" },
     { name: "chainId", type: "uint256" },
     { name: "verifyingContract", type: "address" },
-    { name: "salt", type: "bytes32" },
+    { name: "salt", type: "bytes32" }
   ];
   
   const Payment = [
-    { name: "amount", type: "uint256"},
-  ]
+    {name: "amount", type: "uint256"}
+  ];
   
   const domainData = {
     name: "Compound Channels",
     version: "1",
-    // Kovan
     chainId: "42",
     verifyingContract: channelAddress,
     salt: "0xf2e421f4a3edcb9b1111d503bfe733db1e3f6cdc2b7971ee739626c97e86a558"
   };
   
   const message = {
-    amount: "10000"
+    amount: '1'
   };
   
   const data = JSON.stringify({
     types: {
       EIP712Domain: domain,
-      Payment
+      Payment: Payment
     },
     domain: domainData,
     primaryType: "Payment",
     message: message
   });
 
+  const formattedSigner = web3.utils.toChecksumAddress(signer);
   web3.currentProvider.sendAsync(
     {
       method: "eth_signTypedData_v3",
-      params: [signer, data],
-      from: signer
+      params: [formattedSigner, data],
+      from: formattedSigner
     },
     function(err, result) {
       if (err) {
         return console.error(err);
       }
-      const sig = result.result.substring(2);
-      const r = "0x" + sig.substring(0, 64);
-      const s = "0x" + sig.substring(64, 128);
-      const v = parseInt(sig.substring(128, 130), 16);
-      // The signature is now comprised of r, s, and v.
-      const signature = "0x" + sig;
-      console.log(signature);
+      const sig = result.result;
+      const recovered = sigUtil.recoverTypedSignature({ data:JSON.parse(data), sig: sig })
+      console.log(sig);
+      console.log('recovered:', recovered);
     }
   );
 }
