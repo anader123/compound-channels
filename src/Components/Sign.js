@@ -23,7 +23,7 @@ export default function Sign(props) {
   const { setStepDash } = props;
   const [ step, setStep ] = useState(1);
   const [ signAmount, setSignAmount ] = useState(0); // not converted amount
-  const [ channelDetails, setChannelDetails ] = useState({channelAddress: '0x0000000000000000000000000000000000000000'});
+  const [ channelDetails, setChannelDetails ] = useState({channelAddress: '0x0000000000000000000000000000000000000000', recipient: '0x0000000000000000000000000000000000000000'});
   const [ signature, setSignature ] = useState('');
 
   const inputs = [
@@ -32,8 +32,16 @@ export default function Sign(props) {
       value: signAmount,
       type: "number",
       fx: setSignAmount,
+      text: `Balance: ${channelDetails.formattedBalance} ${channelDetails.symbol}`
     }
   ];
+
+  const confirmDetails = [
+    `Channel Address: ${addressShortener(channelDetails.channelAddress)}`,
+    `Recipient Address: ${addressShortener(channelDetails.recipient)}`,
+    `Amount: ${signAmount} ${channelDetails.symbol}`,
+    `Signature: ${signature}`,
+  ]
 
   const nextStep = () => {
     const newStep = step + 1;
@@ -44,15 +52,16 @@ export default function Sign(props) {
     setStep(newStep)
   }
 
-  // FIXME: issue with getting the sig to return from the helper file.
   const createSig = async () => {
     const userAddress = window.ethereum.selectedAddress;
     const { tokenAddress, channelAddress } = channelDetails;
     const amount = await formatBeforeSend(signAmount, tokenAddress);
-    const sig = await signData(userAddress, amount, channelAddress);
-    await setSignature(sig);
-    // nextStep();
-    console.log(sig);
+    if(+amount <= +channelDetails.balance) {
+      await signData(userAddress, amount, channelAddress, setSignature, nextStep);
+    }
+    else {
+      window.alert('Please enter a smaller amount')
+    }
   }
 
   const updateChannel = (channel) => {
@@ -70,7 +79,7 @@ export default function Sign(props) {
     case 2:
       return (
         <Flex flexDirection={'column'} alignItems={'center'} justifyContent={'center'}>
-          <InputBox dropDown={false} label={inputLabel} inputs={inputs} />
+          <InputBox text={true} dropDown={false} label={inputLabel} inputs={inputs} />
           <Flex>
             <Button onClick={previousStep}>Back</Button>
             <Button onClick={createSig}>Sign</Button>
@@ -81,8 +90,10 @@ export default function Sign(props) {
       return (
         <ConfirmationBox 
           image={{bool: false}}
+          confirmButton={false}
           previousStep={previousStep} 
-          nextStep={nextStep} 
+          confirmDetails={confirmDetails}
+          confirmHeading={"Message Signed"}
         />
       )
     default:

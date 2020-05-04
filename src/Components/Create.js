@@ -24,7 +24,7 @@ import LoadingScreen from './Units/LoadingScreen';
 
 export default function CardBox(props) {
   const { setStepDash } = props; // Dashboard Step Setter
-  const [ step, setStep ] = useState(4);
+  const [ step, setStep ] = useState(1);
   // Info needed for creating a channel
   const [ endTime, setEndTime ] = useState(0);
   const [ recipientAddress, setRecipientAddress ] = useState('');
@@ -43,7 +43,7 @@ export default function CardBox(props) {
       window.alert('Please enter in a valid address.')
     }
   }
-  const confirmFunction = async () => {
+  const createNewChannel = async () => {
     const userAddress = window.ethereum.selectedAddress;
     console.log(factoryContract.methods)
     await factoryContract.methods.createChannel(recipientAddress, endTime, ERC20Details.tokenAddress, ERC20Details.cTokenAddress).send({ from:userAddress, gas:'100000' })
@@ -111,13 +111,14 @@ export default function CardBox(props) {
       )
     case 2:
       return (
-       <ConfirmationBox 
-       image={image}
-       confirmHeading={confirmHeading} 
-       confirmDetails={confirmDetails} 
-       previousStep={previousStep} 
-       confirmFunction={confirmFunction} 
-       ERC20Details={ERC20Details}/>
+        <ConfirmationBox 
+        image={image}
+        confirmButton={true}
+        confirmHeading={confirmHeading} 
+        confirmDetails={confirmDetails} 
+        previousStep={previousStep} 
+        confirmFunction={createNewChannel} 
+        ERC20Details={ERC20Details}/>
       )
     case 3:
       return (

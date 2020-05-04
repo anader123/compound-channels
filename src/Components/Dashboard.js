@@ -31,7 +31,7 @@ const optionArray = [
 ];
 
 export default function Dashboard() {
-  const [ step, setStep ] = useState(2); 
+  const [ step, setStep ] = useState(0); 
 
   switch(step) {
     case 0:

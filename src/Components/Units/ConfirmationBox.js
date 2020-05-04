@@ -13,27 +13,27 @@ import {
 
 export default function LoadingScreen(props) {
   const { 
-    ERC20Details, 
     confirmFunction, 
     previousStep,
     confirmHeading,
     confirmDetails,
-    image 
+    image,
+    confirmButton
   } = props;
   return (
     <Flex flexDirection={'column'} alignItems={'center'} justifyContent={'center'}>
-      <Card sx={tallCardBoxFormatting}>
-        <Flex flexDirection={'column'} alignItems={'center'}>
+      <Card sx={tallCardBoxFormatting} height={'400px'}>
+        <Flex flexDirection={'column'} alignItems={'center'} height={'300px'}>
           <Heading mb={4}>{confirmHeading}</Heading>
           {image.bool ? <Image width={70} height={70} src={image.src} /> : <div/>}
-          {confirmDetails.map(text => {
-            return <Text>{text}</Text>
+          {confirmDetails.map((text, index) => {
+            return <Text key={index}>{text}</Text>
           })}
         </Flex>
       </Card>
       <Flex>
           <Button onClick={previousStep}>Back</Button>
-          <Button onClick={confirmFunction}>Confirm</Button>
+          {confirmButton?<Button onClick={confirmFunction}>Confirm</Button>:<div/>}
       </Flex>
     </Flex>
   )

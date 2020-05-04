@@ -109,7 +109,8 @@ export const cardBoxFormatting = {
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-  flexDirection: 'column'
+  flexDirection: 'column',
+  cursor: 'pointer',
 }
 
 export const tallCardBoxFormatting = {
