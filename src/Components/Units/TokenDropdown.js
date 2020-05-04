@@ -8,10 +8,10 @@ import {
 import { assetData } from '../../Ethereum/AssetData';
 
 export default function TokenDropdown(props) {
-  const { label, setToken } = props
+  const { setToken } = props
   return (
     <div>
-      <Label>{label}</Label>
+      <Label>Select an Asset</Label>
       <Select
         onChange={(e) => setToken(e.target.value)}
         id='token'

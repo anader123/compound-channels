@@ -1,16 +1,17 @@
 import BigNumber from 'bignumber.js';
-import { facotryContract, initalizeChannelContract } from './ContractInstances';
+import { factoryContract, initalizeChannelContract, initalizeERC20, web3 } from './ContractInstances';
 import { assetData } from './AssetData';
 const sigUtil = require('eth-sig-util');
 
 
 export const addressShortener = (address) => {
-  const shortAddress = `${address.slice(0, 7)}...${address.slice(37, 42)}`;
+  const shortAddress = `${address.slice(0, 5)}...${address.slice(38, 42)}`;
   return shortAddress;
 }
 
 // Formats data from the blockchain
-export const formatDisplayAmount = async (value, ERC20Contract) => {
+export const formatDisplayAmount = async (value, tokenAddress) => {
+  const ERC20Contract = await initalizeERC20(tokenAddress);
   const decimals = await ERC20Contract.methods.decimals().call()
   const bn = new BigNumber(value);
   
@@ -18,8 +19,10 @@ export const formatDisplayAmount = async (value, ERC20Contract) => {
 };
 
 // Formats data for transactions that are about to be sent
-export const formatBeforeSend = async (value, ERC20Contract) => {
-  const decimals = await ERC20Contract.methods.decimals().call()
+export const formatBeforeSend = async (value, tokenAddress) => {
+  const ERC20Contract = await initalizeERC20(tokenAddress);
+  // const decimals = await ERC20Contract.methods.decimals().call()
+  const decimals = 18;
   const bn = new BigNumber(value);
   
   return bn.shiftedBy(decimals).toString(10);
@@ -29,7 +32,7 @@ export const loadChannels = async (userAddress) => {
   let channels = [];
 
   for(let i = 0; i < 5; i++) {
-  const channelAddress = facotryContract.methods.channelRegistery(userAddress, i).call();
+  const channelAddress = factoryContract.methods.channelRegistery(userAddress, i).call();
   
   // Makes sure that there is a channel registered
   if(channelAddress !== '0x0000000000000000000000000000000000000000') {
@@ -53,10 +56,9 @@ export const loadChannels = async (userAddress) => {
   }
 };
 
-// TODO: make sure to take the 0x off the front of the sig from the user and then parse for v, s, r
-export const signData = async (web3) => {
-  const channelAddress = '0xa771B67bF544ACe95431A52BA89Fbf55b861bA83';
-  const signer = '0xBBfFb22245b7813b0897902725624e49402EF24D';
+export const signData = async (userAddress, amount, channelAddress) => {
+  // const channelAddress = '0xa771B67bF544ACe95431A52BA89Fbf55b861bA83';
+  // const signer = '0xe90b5c01BCD67Ebd0d44372CdA0FD69AfB8c0243';
 
   const domain = [
     { name: "name", type: "string" },
@@ -73,13 +75,14 @@ export const signData = async (web3) => {
   const domainData = {
     name: "Compound Channels",
     version: "1",
-    chainId: "42",
+    chainId: 42,
     verifyingContract: channelAddress,
     salt: "0xf2e421f4a3edcb9b1111d503bfe733db1e3f6cdc2b7971ee739626c97e86a558"
   };
   
   const message = {
-    amount: '1'
+    // amount: '100000000000000000'
+    amount: amount
   };
   
   const data = JSON.stringify({
@@ -92,7 +95,7 @@ export const signData = async (web3) => {
     message: message
   });
 
-  const formattedSigner = web3.utils.toChecksumAddress(signer);
+  const formattedSigner = web3.utils.toChecksumAddress(userAddress);
   web3.currentProvider.sendAsync(
     {
       method: "eth_signTypedData_v3",
@@ -104,9 +107,9 @@ export const signData = async (web3) => {
         return console.error(err);
       }
       const sig = result.result;
-      const recovered = sigUtil.recoverTypedSignature({ data:JSON.parse(data), sig: sig })
-      console.log(sig);
-      console.log('recovered:', recovered);
+      console.log(sig)
+      // const recovered = sigUtil.recoverTypedSignature({ data:JSON.parse(data), sig: sig });
+      return sig;
     }
   );
 }

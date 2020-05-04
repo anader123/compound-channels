@@ -1,5 +1,4 @@
 pragma solidity ^0.6.0;
-pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/cryptography/ECDSA.sol";
@@ -39,14 +38,12 @@ contract CompoundChannel {
     compFactory = CompoundChannelFactory(_factoryAddress);
   }
 
-  function depositFunds() public returns(bool) {
-    uint256 tokenAllowance = token.allowance(msg.sender, address(this));
-    require(tokenAllowance > 0, 'not enough allowance');
-    token.transferFrom(msg.sender, address(this), tokenAllowance);
+  function depositFunds(uint256 _amount) public returns(bool) {
+    token.transferFrom(msg.sender, address(this), _amount);
 
-    require(token.approve(address(cToken), tokenBalance), 'approval error');
-    require(cToken.mint(tokenBalance) == 0, 'minting error');
-    emit FundsDeposited(msg.sender, tokenBalance, address(token));
+    require(token.approve(address(cToken), _amount), 'approval error');
+    require(cToken.mint(_amount) == 0, 'minting error');
+    emit FundsDeposited(msg.sender, _amount, address(token));
     return true;
   }
 
@@ -61,9 +58,7 @@ contract CompoundChannel {
 
   function close(
     uint256 _amount,
-    uint8 sigV,
-    bytes32 sigR,
-    bytes32 sigS
+    bytes memory _signature
   ) public {
     require(msg.sender == recipient, 'nonrecipient address');
 
@@ -71,9 +66,7 @@ contract CompoundChannel {
       sender,
       address(this),
       _amount,
-      sigV,
-      sigR,
-      sigS
+      _signature
     ), 'invalid signature');
 
     // Redeem Tokens
@@ -81,7 +74,7 @@ contract CompoundChannel {
     require(cToken.redeem(cTokenBalance) == 0, "redeem error");
 
     uint256 balance = token.balanceOf(address(this));
-    uint256 toRecipient = balance < payment.amount ? balance : payment.amount;
+    uint256 toRecipient = balance < _amount ? balance : _amount;
     require(token.transfer(recipient, toRecipient), "transfer error");
 
     if (toRecipient < balance) token.transfer(sender, balance - toRecipient);
@@ -95,11 +88,11 @@ contract CompoundChannelFactory {
   mapping(address => address[]) public recipientRegistery;
 
   // Signature Information
-  uint256 constant chainId = 42;
+  uint256 constant chainId = 42; //Kovan
   bytes32 constant salt = 0xf2e421f4a3edcb9b1111d503bfe733db1e3f6cdc2b7971ee739626c97e86a558;
 
+  string private constant EIP712_DOMAIN = "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract,bytes32 salt)";
   string private constant PAYMENT_TYPE = "Payment(uint256 amount)";
-  string private constant EIP712_DOMAIN_TYPE = "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract,bytes32 salt)";
 
   bytes32 private constant EIP712_DOMAIN_TYPEHASH = keccak256(abi.encodePacked(EIP712_DOMAIN));
   bytes32 private constant PAYMENT_TYPEHASH = keccak256(abi.encodePacked(PAYMENT_TYPE));
@@ -107,7 +100,7 @@ contract CompoundChannelFactory {
   struct Payment {
     uint256 amount;
   }
-  
+
   // Events
   event ChannelCreated(address channelAddress, address sender, address recipient);
 
@@ -145,12 +138,12 @@ contract CompoundChannelFactory {
     keccak256("Compound Channels"),
     keccak256("1"),
     chainId,
-    _channelAddress,
+    _channelAddress, // address of the channel that the message is for
     salt
     ));
 
     return keccak256(abi.encodePacked(
-      "\\x19\\x01",
+      "\x19\x01",
       DOMAIN_SEPARATOR,
       keccak256(abi.encode(
         PAYMENT_TYPEHASH,
@@ -163,7 +156,7 @@ contract CompoundChannelFactory {
     address _sender,
     address _channelAddress,
     uint256 _amount,
-    bytes memory signature
+    bytes memory _signature
     ) public pure returns (bool) {
       Payment memory payment = Payment({
         amount: _amount

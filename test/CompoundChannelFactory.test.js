@@ -20,11 +20,9 @@ constract('CompoundChannelFactory', (accounts) => {
       compoundChannelFactory.createChannel(
         recipient,
         endTime,
-        depositAmount,
         tokenAddress,
         cTokenAddress
       );
-
     })
   })
 })

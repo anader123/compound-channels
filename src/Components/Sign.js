@@ -3,10 +3,10 @@ import React, { useState } from 'react';
 // Components
 import LoadingChannels from './Units/LoadChannels';
 import ConfirmationBox from './Units/ConfirmationBox';
-import TransactionBox from './Units/TransactionBox';
+import InputBox from './Units/InputBox';
 
 // Ethereum
-import { formatBeforeSend } from '../Ethereum/EthHelper';
+import { formatBeforeSend, addressShortener, signData } from '../Ethereum/EthHelper';
 import { tallCardBoxFormatting } from '../theme';
 
 import {
@@ -22,11 +22,18 @@ import {
 export default function Sign(props) {
   const { setStepDash } = props;
   const [ step, setStep ] = useState(1);
-  const [ signAmount, setSignAmount ] = useState('0');
-  const [ decimalsSignAmount, setDecimalsSignAmount ] = useState('0')
-  const [ endTime, setEndTime ] = useState(0);
-  const [ recipientAddress, setRecipientAddress ] = useState('');
-  const [ ERC20Details, setERC20Details ] = useState({});
+  const [ signAmount, setSignAmount ] = useState(0); // not converted amount
+  const [ channelDetails, setChannelDetails ] = useState({channelAddress: '0x0000000000000000000000000000000000000000'});
+  const [ signature, setSignature ] = useState('');
+
+  const inputs = [
+    {
+      label: "Amount",
+      value: signAmount,
+      type: "number",
+      fx: setSignAmount,
+    }
+  ];
 
   const nextStep = () => {
     const newStep = step + 1;
@@ -37,26 +44,46 @@ export default function Sign(props) {
     setStep(newStep)
   }
 
+  // FIXME: issue with getting the sig to return from the helper file.
+  const createSig = async () => {
+    const userAddress = window.ethereum.selectedAddress;
+    const { tokenAddress, channelAddress } = channelDetails;
+    const amount = await formatBeforeSend(signAmount, tokenAddress);
+    const sig = await signData(userAddress, amount, channelAddress);
+    await setSignature(sig);
+    // nextStep();
+    console.log(sig);
+  }
+
+  const updateChannel = (channel) => {
+    setChannelDetails(channel);
+    nextStep();
+  }
+
+  const inputLabel = `Channel: ${addressShortener(channelDetails.channelAddress)}`
+
   switch(step) {
     case 1: 
       return (
-        <LoadingChannels previousStep={previousStep} nextStep={nextStep} />
+        <LoadingChannels updateChannel={updateChannel} previousStep={previousStep} nextStep={nextStep} />
       )
     case 2:
       return (
-       <input />
+        <Flex flexDirection={'column'} alignItems={'center'} justifyContent={'center'}>
+          <InputBox dropDown={false} label={inputLabel} inputs={inputs} />
+          <Flex>
+            <Button onClick={previousStep}>Back</Button>
+            <Button onClick={createSig}>Sign</Button>
+          </Flex>
+        </Flex>
       )
     case 3:
       return (
         <ConfirmationBox 
+          image={{bool: false}}
           previousStep={previousStep} 
           nextStep={nextStep} 
-          ERC20Details={ERC20Details}
         />
-      )
-    case 4:
-      return (
-       <TransactionBox ERC20Details={ERC20Details}/>
       )
     default:
       return step;

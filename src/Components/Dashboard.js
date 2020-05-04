@@ -10,8 +10,7 @@ import Repay from './Repay';
 import Sign from './Sign';
 
 import {
-  Flex,
-  Button
+  Flex
 } from 'rebass';
 
 // Images
@@ -21,10 +20,6 @@ import iCreate from '../Images/create.svg';
 import iInspect from '../Images/inspect.svg';
 import iRepay from '../Images/repay.svg';
 import iSign from '../Images/sign.svg';
-
-// Ethereum
-import { signData } from '../Ethereum/EthHelper';
-import { web3 } from '../Ethereum/ContractInstances';
 
 const optionArray = [
   {name: "Create Channel", step: 1, image: iCreate},
@@ -36,7 +31,7 @@ const optionArray = [
 ];
 
 export default function Dashboard() {
-  const [ step, setStep ] = useState(0); 
+  const [ step, setStep ] = useState(2); 
 
   switch(step) {
     case 0:
@@ -50,7 +45,6 @@ export default function Dashboard() {
                         setStep={setStep} 
                         step={option.step}/>
             })}
-          <Button onClick={() => signData(web3)}>Sign</Button>
           </Flex>
         </Flex >
       )

@@ -7,11 +7,9 @@ import compoundChannel from '../abis/CompoundChannel.json';
 
 // Contract Instances
 export let web3;
-export let facotryContract;
+export let factoryContract;
 export let channelContract;
 export let borrowContract;
-export let ERC20Contract;
-export let factoryContract;
 
 const factoryAddress = compoundChannelFactory.networks[999].address;
 
@@ -28,7 +26,7 @@ export const initializeWeb3 = () => {
 }
 
 export const initalizeERC20 = async (tokenAddress) => {
-  ERC20Contract = await new web3.eth.Contract(ERC20Abi, tokenAddress);
+  let ERC20Contract = await new web3.eth.Contract(ERC20Abi, tokenAddress);
   return ERC20Contract;
 }
 

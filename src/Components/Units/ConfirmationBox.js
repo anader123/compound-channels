@@ -12,20 +12,28 @@ import {
 } from 'rebass';
 
 export default function LoadingScreen(props) {
-  const { ERC20Details, nextStep, previousStep } = props;
+  const { 
+    ERC20Details, 
+    confirmFunction, 
+    previousStep,
+    confirmHeading,
+    confirmDetails,
+    image 
+  } = props;
   return (
     <Flex flexDirection={'column'} alignItems={'center'} justifyContent={'center'}>
       <Card sx={tallCardBoxFormatting}>
         <Flex flexDirection={'column'} alignItems={'center'}>
-          <Heading mb={4}>Confirm your Transaction</Heading>
-          <Image width={70} height={70} src={ERC20Details.image} />
-          <Text>Asset: {ERC20Details.symbol}</Text>
-          
+          <Heading mb={4}>{confirmHeading}</Heading>
+          {image.bool ? <Image width={70} height={70} src={image.src} /> : <div/>}
+          {confirmDetails.map(text => {
+            return <Text>{text}</Text>
+          })}
         </Flex>
       </Card>
       <Flex>
           <Button onClick={previousStep}>Back</Button>
-          <Button>Confirm</Button>
+          <Button onClick={confirmFunction}>Confirm</Button>
       </Flex>
     </Flex>
   )
