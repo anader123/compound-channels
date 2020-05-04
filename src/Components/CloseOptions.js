@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 
 // Components
-import Borrow from './Borrow';
+import Close from './Close';
+import ForceClose from './ForceClose';
 import CardBox from './Units/CardBox';
-import Supply from './Supply';
 
 import {
   Flex,
@@ -11,12 +11,12 @@ import {
 } from 'rebass';
 
 // Images
-import iBorrow from '../Images/borrow.svg';
-import iSupply from '../Images/supply.svg';
+import iClose from '../Images/close-money.svg';
+import iForceClose from '../Images/forceClose.svg';
 
 const optionArray = [
-  {name: "Borrow Assets", step: 1, image: iBorrow},
-  {name: "Supply Assets", step: 1, image: iSupply}
+  {name: "Close", step: 1, image: iClose},
+  {name: "Force Close", step: 1, image: iForceClose}
 ];
 
 export default function Dashboard(props) {
@@ -41,13 +41,14 @@ export default function Dashboard(props) {
       )
     case 1: 
       return (
-       <Borrow setStepDash={setStep} setStep={setStep}/>   
+       <Close  setStep={setStep}/>   
       )
     case 2:
       return (
-       <Supply setStepDash={setStep} setStep={setStep}/>
+       <ForceClose setStep={setStep}/>
       )
     default:
       return step;
   }
 }
+

@@ -12,7 +12,8 @@ import {
   Image,
   Heading,
   Text,
-  Flex
+  Flex,
+  Button
 } from 'rebass';
 
 // Ethereum 
@@ -21,7 +22,7 @@ import { addressShortener } from '../../Ethereum/EthHelper';
 // Channels Array be created when the user logins. Checks for assoicated channels and stores to redux.
 
 export default function LoadChannels(props) {
-  const { nextStep, previousStep, updateChannel } = props;
+  const { setStepDash, updateChannel } = props;
   // Dummy Data
   const channels = [
     {
@@ -37,7 +38,7 @@ export default function LoadChannels(props) {
   ];
 
   return (
-    <Flex sx={{justifyContent:'center'}}>
+    <Flex sx={{alignItems:'center', justifyContent:'center', flexDirection:'column'}}>
       <Flex width={'75%'} mt={5} m={4} sx={{flexDirection:'column', flexWrap:'wrap', alignItems:'center'}}>
       <Heading mb={3}>Choose a Channel Contract</Heading>
       {channels.map((channel, index) => {
@@ -50,6 +51,7 @@ export default function LoadChannels(props) {
         )
       })}
       </Flex>
+      <Button onClick={()=>setStepDash(0)}>Home</Button>
     </Flex>
   )
 }

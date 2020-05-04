@@ -24,7 +24,7 @@ export default function InputBox(props) {
   return (
     <Flex flexDirection={'column'} alignItems={'center'} justifyContent={'center'}>
       <Card sx={tallCardBoxFormatting}>
-        <Flex flexDirection={'column'} height={'300px'}>
+        <Flex flexDirection={'column'} justifyContent={'center'} height={'300px'}>
           <Heading mb={2}>{label}</Heading>
           {dropDown?<TokenDropdown setToken={setToken} />:<div/>}
           {inputs.map((input, index) => {

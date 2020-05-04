@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 // Components
 import Add from './Add';
 import CardBox from './Units/CardBox';
-import Close from './Close';
+import Close from './CloseOptions';
 import Create from './Create';
 import Inspect from './Inspect';
 import Repay from './Repay';

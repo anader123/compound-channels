@@ -74,7 +74,7 @@ export default function Sign(props) {
   switch(step) {
     case 1: 
       return (
-        <LoadingChannels updateChannel={updateChannel} previousStep={previousStep} nextStep={nextStep} />
+        <LoadingChannels setStepDash={setStepDash} updateChannel={updateChannel} previousStep={previousStep} nextStep={nextStep} />
       )
     case 2:
       return (

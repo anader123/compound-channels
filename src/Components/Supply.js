@@ -1,9 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react';
 
-export default function Supply() {
+import LoadChannels from './Units/LoadChannels';
+
+export default function Supply(props) {
+  const { setStep, setStepDash } = props;
+  const [ channelDetails, setChannelDetails ] = useState({});
   return (
-    <div>
-      
-    </div>
+    <LoadChannels setStepDash={setStepDash} />
   )
 }

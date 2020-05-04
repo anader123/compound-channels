@@ -7,15 +7,10 @@ import InputBox from './Units/InputBox';
 
 // Ethereum
 import { formatBeforeSend, addressShortener, verifySignature } from '../Ethereum/EthHelper';
-import { tallCardBoxFormatting } from '../theme';
 
 // Images
 import CheckMark from '../Images/checkmark.svg';
 import Xmark from '../Images/xmark.svg';
-
-import {
-  Input
-} from '@rebass/forms';
 
 import {
   Flex,
@@ -79,7 +74,7 @@ export default function Inspect(props) {
   switch(step) {
     case 1: 
       return (
-        <LoadingChannels updateChannel={updateChannel} previousStep={previousStep} nextStep={nextStep} />
+        <LoadingChannels updateChannel={updateChannel} previousStep={previousStep} nextStep={nextStep} setStepDash={setStepDash}/>
       )
     case 2:
       return (
