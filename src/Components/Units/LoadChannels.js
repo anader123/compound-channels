@@ -22,34 +22,38 @@ import { addressShortener } from '../../Ethereum/EthHelper';
 // Channels Array be created when the user logins. Checks for assoicated channels and stores to redux.
 
 export default function LoadChannels(props) {
-  const { setStepDash, updateChannel } = props;
+  const { setStepDash, updateChannel, channels } = props;
   // Dummy Data
-  const channels = [
-    {
-      channelAddress: '0x10241B0171Ce7a60827010E3374eC6cABCeA0d4C',
-      recipient: '0x10231B2271Ce7a60827010E3374eC6cABCeA0d4C',
-      sender: '0x265c004613279E52746eeE86f6321B5a365Cc88c',
-      symbol: 'DAI',
-      tokenAddress: '0x265c004613279E52746eeE86f6321B5a365Cc88c',
-      image: Dai,
-      balance: '10000000000000000000000000',
-      formattedBalance: '100'
-    }
-  ];
+  // const userAddress = window.ethereum.selectedAddress;
+  // const channels = [
+  //   {
+  //     channelAddress: '0xa771B67bF544ACe95431A52BA89Fbf55b861bA83',
+  //     recipient: '0xe90b5c01BCD67Ebd0d44372CdA0FD69AfB8c0243',
+  //     sender: userAddress,
+  //     symbol: 'DAI',
+  //     tokenAddress: '0x265c004613279E52746eeE86f6321B5a365Cc88c',
+  //     image: Dai,
+  //     balance: '10000000000000000000',
+  //     formattedBalance: '10'
+  //   }
+  // ];
 
   return (
     <Flex sx={{alignItems:'center', justifyContent:'center', flexDirection:'column'}}>
       <Flex width={'75%'} mt={5} m={4} sx={{flexDirection:'column', flexWrap:'wrap', alignItems:'center'}}>
       <Heading mb={3}>Choose a Channel Contract</Heading>
-      {channels.map((channel, index) => {
+      {channels.length !== 0 ?
+      channels.map((channel, index) => {
         return (
           <ChannelBox 
           updateChannel={updateChannel}
             channel={channel}
             key={index}
           />
-        )
-      })}
+        )})
+      :
+      <div>Nothing to show</div>
+      }
       </Flex>
       <Button onClick={()=>setStepDash(0)}>Home</Button>
     </Flex>

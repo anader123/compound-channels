@@ -31,11 +31,16 @@ export const formatBeforeSend = async (value) => {
   return bn.shiftedBy(decimals).toString(10);
 };
 
-export const loadChannels = async (userAddress) => {
+export const loadChannels = async (userAddress, registeryName) => {
   let channels = [];
-
-  for(let i = 0; i < 5; i++) {
-  const channelAddress = factoryContract.methods.channelRegistery(userAddress, i).call();
+  let channelAddress;
+  for(let i = 0; i < 3; i++) {
+    if(registeryName === 'sender') {
+      channelAddress = factoryContract.methods.senderRegistery(userAddress, i).call();
+    }
+    else {
+      channelAddress = factoryContract.methods.recipientRegistery(userAddress, i).call();
+    }
   
   // Makes sure that there is a channel registered
   if(channelAddress !== '0x0000000000000000000000000000000000000000') {
@@ -44,19 +49,18 @@ export const loadChannels = async (userAddress) => {
     const channelContract = await initalizeChannelContract(channelAddress);
     const recipient = await channelContract.methods.recipient().call();
     const assetAddresss = await channelContract.methods.token().call();
+    const sender = await channelContract.methods.sender().call();
+    const balance = await channelContract.methods.underlyingBalance().call();
+    channelDetails = assetData.find(token => token.tokenAddress === assetAddresss);
 
-    const index = assetData.map((token, index) => {
-      if(token.tokenAddress === assetAddresss) {
-        return index
-      }
-    });
-
-    channelDetails = assetData[index];
     channelDetails.recipient = recipient;
-
+    channelDetails.sender = sender;
+    channelDetails.balance = balance;
+    channelDetails.formattedBalance = await formatDisplayAmount(balance);
     channels.push(channelDetails);
     }
   }
+  return channels;
 };
 
 // Signature Info

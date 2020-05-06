@@ -2,6 +2,7 @@ pragma solidity ^0.6.0;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
 
 interface CompoundContractInterface {
   function mint(uint mintAmount) external returns (uint);
@@ -10,12 +11,14 @@ interface CompoundContractInterface {
 }
 
 contract CompoundChannel {
+  using SafeMath for uint256;
 //  State Variables
+  uint256 public underlyingBalance; // underlying asset balance
   address payable public sender;
   address payable public recipient;
   uint256 public endTime;
   IERC20 public token;
-  CompoundContractInterface cToken;
+  CompoundContractInterface public cToken;
   CompoundChannelFactory public compFactory;
 
 //   Events
@@ -40,7 +43,7 @@ contract CompoundChannel {
 
   function depositFunds(uint256 _amount) public returns(bool) {
     token.transferFrom(msg.sender, address(this), _amount);
-
+    underlyingBalance += _amount; // update underlying asset balance
     require(token.approve(address(cToken), _amount), 'approval error');
     require(cToken.mint(_amount) == 0, 'minting error');
     emit FundsDeposited(msg.sender, _amount, address(token));
@@ -53,6 +56,7 @@ contract CompoundChannel {
     uint256 cTokenBalance = cToken.balanceOf(address(this));
     require(cToken.redeem(cTokenBalance) == 0, "redeem error");
     uint256 balance = token.balanceOf(address(this));
+    underlyingBalance = underlyingBalance.add(0);
     token.transfer(sender, balance);
   }
 
@@ -76,7 +80,7 @@ contract CompoundChannel {
     uint256 balance = token.balanceOf(address(this));
     uint256 toRecipient = balance < _amount ? balance : _amount;
     require(token.transfer(recipient, toRecipient), "transfer error");
-
+    underlyingBalance = 0;
     if (toRecipient < balance) token.transfer(sender, balance - toRecipient);
   }
 }

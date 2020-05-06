@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 // Components
 import LoadingChannels from './Units/LoadChannels';
@@ -6,7 +6,7 @@ import ConfirmationBox from './Units/ConfirmationBox';
 import InputBox from './Units/InputBox';
 
 // Ethereum
-import { formatBeforeSend, addressShortener, verifySignature } from '../Ethereum/EthHelper';
+import { formatBeforeSend, addressShortener, verifySignature, loadChannels } from '../Ethereum/EthHelper';
 
 // Images
 import CheckMark from '../Images/checkmark.svg';
@@ -24,6 +24,7 @@ export default function Inspect(props) {
   const [ channelDetails, setChannelDetails ] = useState({channelAddress: '0x0000000000000000000000000000000000000000', sender: '0x0000000000000000000000000000000000000000'});
   const [ signature, setSignature ] = useState('');
   const [ sigStatus, setSigStatus ] = useState(false);
+  const [ channels, setChannels ] = useState([]);
 
   const inputs = [
     {
@@ -47,6 +48,17 @@ export default function Inspect(props) {
     `Signature: ${signature}`,
   ]
 
+  // TODO: need to test once contract is running
+  // useEffect(() => {
+  //   getChannels();
+  // })
+
+  const getChannels = async () => {
+    const userAddress = window.ethereum.selectedAddress;
+    channels = await loadChannels(userAddress, 'recipient');
+    setChannels(channels);
+  }
+  
   const nextStep = () => {
     const newStep = step + 1;
     setStep(newStep)
@@ -69,7 +81,7 @@ export default function Inspect(props) {
     nextStep();
   }
 
-  const inputLabel = `Channel: ${addressShortener(channelDetails.channelAddress)}`
+  const inputLabel = `Channel: ${addressShortener(channelDetails.channelAddress)}`;
 
   switch(step) {
     case 1: 
