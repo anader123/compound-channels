@@ -22,6 +22,7 @@ export default function Sign(props) {
   const [ channelDetails, setChannelDetails ] = useState({channelAddress: '0x0000000000000000000000000000000000000000', recipient: '0x0000000000000000000000000000000000000000'});
   const [ signature, setSignature ] = useState('');
   const [ channels, setChannels ] = useState([]);
+  const [ channelLoaded, setChannelLoaded ] = useState(false);
 
   const inputs = [
     {
@@ -44,6 +45,7 @@ export default function Sign(props) {
     const userAddress = window.ethereum.selectedAddress;
     const returnChannels = await loadChannels(userAddress, 'sender');
     setChannels(returnChannels);
+    setChannelLoaded(true);
   }
 
   useEffect(() => {
@@ -89,6 +91,8 @@ export default function Sign(props) {
         updateChannel={updateChannel} 
         previousStep={previousStep} 
         nextStep={nextStep} 
+        channelLoaded={channelLoaded}
+        addressType={'sender address'}
         />
       )
     case 2:

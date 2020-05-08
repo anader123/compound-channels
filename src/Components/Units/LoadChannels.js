@@ -14,25 +14,41 @@ import {
 import { addressShortener } from '../../Ethereum/EthHelper';
 
 export default function LoadChannels(props) {
-  const { setStepDash, updateChannel, channels } = props;
+  const { 
+    setStepDash, 
+    updateChannel, 
+    channels, 
+    addressType,
+    channelLoaded 
+  } = props;
   return (
     <Flex sx={{alignItems:'center', justifyContent:'center', flexDirection:'column'}}>
       <Heading mb={3}>Choose a Channel Contract</Heading>
-      <Flex width={'75%'} mt={5} m={4} sx={{ flexWrap:'wrap', justifyContent:'center'}}>
-      {channels.length !== 0 ?
-      channels.map((channel, index) => {
-        return (
-          <ChannelBox 
-          updateChannel={updateChannel}
-            channel={channel}
-            key={index}
-          />
-        )})
-      :
-      <Heading>Loading...</Heading>
+      {channelLoaded && channels.length === 0 ? 
+        <Text>This address isn't a {addressType} for any channel.</Text>:
+        <LoadingBox updateChannel={updateChannel} channels={channels}/>
       }
-      </Flex>
-      <Button onClick={()=>setStepDash(0)}>Home</Button>
+      <Button onClick={()=>setStepDash(0)}>Back</Button>
+    </Flex>
+  )
+}
+
+function LoadingBox(props) {
+  const { channels, updateChannel } = props;
+  return(
+    <Flex width={'75%'} mt={5} m={4} sx={{ flexWrap:'wrap', justifyContent:'center'}}>
+      {channels.length !== 0 ?
+        channels.map((channel, index) => {
+          return (
+            <ChannelBox 
+            updateChannel={updateChannel}
+              channel={channel}
+              key={index}
+            />
+          )})
+        :
+        <Heading>Loading...</Heading>
+      }
     </Flex>
   )
 }

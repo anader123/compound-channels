@@ -104,7 +104,7 @@ export default function CardBox(props) {
           setToken={setToken} 
           dropDown={true} />
           <Flex>
-            <Button onClick={()=>setStepDash(0)}>Home</Button>
+            <Button onClick={()=>setStepDash(0)}>Back</Button>
             <Button onClick={nextStep}>Next</Button>
           </Flex>
       </Flex>

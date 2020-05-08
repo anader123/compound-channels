@@ -16,7 +16,7 @@ import iSupply from '../Images/supply.svg';
 
 const optionArray = [
   {name: "Supply Assets", step: 1, image: iSupply},
-  {name: "Borrow Assets", step: 1, image: iBorrow}
+  {name: "Borrow Assets", step: 2, image: iBorrow}
 ];
 
 export default function Dashboard(props) {
@@ -39,13 +39,13 @@ export default function Dashboard(props) {
           <Button width={'5em'} onClick={() => setStepDash(0)}>Back</Button>
         </Flex >
       )
-    case 1: 
-      // return (
-      //  <Borrow setStepDash={setStep} />   
-      // )
-    case 2:
+    case 1:
       return (
-       <Supply setStepDash={setStep} />
+        <Supply setStepDash={setStep} />
+      )
+    case 2: 
+      return (
+       <Borrow setStepDash={setStep} />   
       )
     default:
       return step;

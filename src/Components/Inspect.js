@@ -25,6 +25,7 @@ export default function Inspect(props) {
   const [ signature, setSignature ] = useState('');
   const [ sigStatus, setSigStatus ] = useState(false);
   const [ channels, setChannels ] = useState([]);
+  const [ channelLoaded, setChannelLoaded ] = useState(false);
 
   const inputs = [
     {
@@ -52,6 +53,7 @@ export default function Inspect(props) {
     const userAddress = window.ethereum.selectedAddress;
     const returnChannels = await loadChannels(userAddress, 'recipient');
     setChannels(returnChannels);
+    setChannelLoaded(true);
   }
 
   useEffect(() => {
@@ -87,7 +89,15 @@ export default function Inspect(props) {
   switch(step) {
     case 1: 
       return (
-        <LoadingChannels channels={channels} updateChannel={updateChannel} previousStep={previousStep} nextStep={nextStep} setStepDash={setStepDash}/>
+        <LoadingChannels 
+        addressType={'recipient address'}
+        channelLoaded={channelLoaded} 
+        channels={channels} 
+        updateChannel={updateChannel} 
+        previousStep={previousStep} 
+        nextStep={nextStep} 
+        setStepDash={setStepDash}
+        />
       )
     case 2:
       return (

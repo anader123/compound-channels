@@ -27,6 +27,7 @@ export default function Close(props) {
   const [ channels, setChannels ] = useState([]);
   const [ txHash, setTxHash ] = useState('');
   const [ channelAddress, setChannelAddress ] = useState('');
+  const [ channelLoaded, setChannelLoaded ] = useState(false);
 
   const inputs = [
     {
@@ -54,6 +55,7 @@ export default function Close(props) {
     const userAddress = window.ethereum.selectedAddress;
     const returnChannels = await loadChannels(userAddress, 'recipient');
     setChannels(returnChannels);
+    setChannelLoaded(true);
   }
 
   useEffect(() => {
@@ -110,7 +112,15 @@ export default function Close(props) {
   switch(step) {
     case 0: 
       return (
-        <LoadingChannels channels={channels} setStepDash={setStepDash} updateChannel={updateChannel} previousStep={previousStep} nextStep={nextStep} />
+        <LoadingChannels 
+        channelLoaded={channelLoaded}
+        addressType={'recipient address'}
+        channels={channels} 
+        setStepDash={setStepDash} 
+        updateChannel={updateChannel} 
+        previousStep={previousStep} 
+        nextStep={nextStep} 
+        />
       )
     case 1:
       return (

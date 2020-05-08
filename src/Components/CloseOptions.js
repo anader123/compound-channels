@@ -16,7 +16,7 @@ import iForceClose from '../Images/forceClose.svg';
 
 const optionArray = [
   {name: "Close", step: 1, image: iClose},
-  {name: "Force Close", step: 1, image: iForceClose}
+  {name: "Force Close", step: 2, image: iForceClose}
 ];
 
 export default function Dashboard(props) {
@@ -36,7 +36,7 @@ export default function Dashboard(props) {
                         step={option.step}/>
             })}
           </Flex>
-          <Button width={'5em'} onClick={() => setStepDash(0)}>Home</Button>
+          <Button width={'5em'} onClick={() => setStepDash(0)}>Back</Button>
         </Flex >
       )
     case 1: 
