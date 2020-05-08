@@ -53,7 +53,7 @@ export default function CardBox(props) {
     .once('receipt', (receipt) => {
       console.log(receipt)
       setStep(step + 2);
-      setChannelAddress(receipt.events.rChannelCreated.eturnValues.channelAddress);
+      setChannelAddress(receipt.events.ChannelCreated.returnValues.channelAddress);
     })
     .on('error', console.error); 
   }

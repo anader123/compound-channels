@@ -28,10 +28,10 @@ export default function Dashboard(props) {
       return (
         <Flex mt={'3%'}  sx={{ flexDirection:'column', alignItems:'center'}}>
           <Flex width={'75%'} m={4} sx={{ flexWrap: 'wrap',justifyContent:'center'}}>
-            {optionArray.map(option => {
+            {optionArray.map((option, index) => {
               return <CardBox name={option.name} 
                         image={option.image}
-                        key={option.step+'key'} 
+                        key={index} 
                         setStep={setStep} 
                         step={option.step}/>
             })}

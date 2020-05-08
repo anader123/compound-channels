@@ -18,6 +18,8 @@ export const formatDisplayAmount = async (value, decimals) => {
 
 // Formats data for transactions that are about to be sent
 export const formatBeforeSend = async (value, decimals) => {
+  console.log('value', value);
+  console.log('decimals', decimals);
   const bn = new BigNumber(value);
   return bn.shiftedBy(decimals).toString(10);
 };

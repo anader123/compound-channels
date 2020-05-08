@@ -63,8 +63,8 @@ export default function Sign(props) {
 
   const createSig = async () => {
     const userAddress = window.ethereum.selectedAddress;
-    const { tokenAddress, channelAddress } = channelDetails;
-    const amount = await formatBeforeSend(signAmount, tokenAddress);
+    const { decimals, channelAddress } = channelDetails;
+    const amount = await formatBeforeSend(signAmount, decimals);
     // if(+amount <= +channelDetails.balance) {
       await signData(userAddress, amount, channelAddress, setSignature, nextStep);
     // }

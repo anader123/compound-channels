@@ -36,7 +36,7 @@ export default function Dashboard(props) {
                         step={option.step}/>
             })}
           </Flex>
-          <Button width={'5em'} onClick={() => setStepDash(0)}>Home</Button>
+          <Button width={'5em'} onClick={() => setStepDash(0)}>Back</Button>
         </Flex >
       )
     case 1: 

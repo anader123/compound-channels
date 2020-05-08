@@ -60,6 +60,7 @@ contract CompoundChannel {
     token.transfer(sender, balance);
   }
 
+  // FIXME: need to add channel nonce to prevent double spends for reusable channels
   function close(
     uint256 _amount,
     bytes memory _signature

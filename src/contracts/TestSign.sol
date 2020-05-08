@@ -9,6 +9,7 @@ contract TestSign {
   uint256 constant chainId = 42; //Kovan
   address constant verifyingContract = 0xa771B67bF544ACe95431A52BA89Fbf55b861bA83;
   bytes32 constant salt = 0xf2e421f4a3edcb9b1111d503bfe733db1e3f6cdc2b7971ee739626c97e86a558;
+  uint8 channelNonce;
 
   string private constant EIP712_DOMAIN = "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract,bytes32 salt)";
   string private constant PAYMENT_TYPE = "Payment(uint256 amount)";
@@ -27,6 +28,7 @@ contract TestSign {
 
   struct Payment {
     uint256 amount;
+    uint8 nonce;
   }
 
   function hashPayment(Payment memory payment) private pure returns (bytes32) {
@@ -45,7 +47,8 @@ contract TestSign {
     bytes memory _signature
     ) public {
       Payment memory payment = Payment({
-        amount: _amount
+        amount: _amount,
+        nonce: channelNonce
       });
 
       bytes32 hash = hashPayment(payment);

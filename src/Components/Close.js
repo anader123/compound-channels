@@ -4,11 +4,14 @@ import React, { useState, useEffect } from 'react';
 import LoadingChannels from './Units/LoadChannels';
 import ConfirmationBox from './Units/ConfirmationBox';
 import InputBox from './Units/InputBox';
+import LoadingScreen from './Units/LoadingScreen';
+import TransactionBox from './Units/TransactionBox';
 
 import Dai from '../Images/dai.png';
 
 // Ethereum
-import { formatBeforeSend, addressShortener, signData, loadChannels } from '../Ethereum/EthHelper';
+import { formatBeforeSend, addressShortener, loadChannels } from '../Ethereum/EthHelper';
+import { initalizeChannelContract } from '../Ethereum/ContractInstances';
 
 import {
   Flex,
@@ -17,15 +20,17 @@ import {
 
 export default function Close(props) {
   const { setStepDash } = props;
-  const [ step, setStep ] = useState(1);
+  const [ step, setStep ] = useState(0);
   const [ amount, setAmount ] = useState(0); // not converted amount
   const [ channelDetails, setChannelDetails ] = useState({channelAddress: '0x0000000000000000000000000000000000000000', recipient: '0x0000000000000000000000000000000000000000'});
   const [ signature, setSignature ] = useState('');
   const [ channels, setChannels ] = useState([]);
+  const [ txHash, setTxHash ] = useState('');
+  const [ channelAddress, setChannelAddress ] = useState('');
 
   const inputs = [
     {
-      label: "Amount",
+      label: "Allotted Amount",
       value: amount,
       type: "number",
       fx: setAmount,
@@ -36,14 +41,13 @@ export default function Close(props) {
       value: signature,
       type: "string",
       fx: setSignature,
-      // text: `Balance: ${channelDetails.formattedBalance} ${channelDetails.symbol}`
     }
   ];
 
   const confirmDetails = [
     `Channel Address: ${addressShortener(channelDetails.channelAddress)}`,
     `Recipient Address: ${addressShortener(channelDetails.recipient)}`,
-    `Amount: ${amount} ${channelDetails.symbol}`
+    `Allotted Amount: ${amount} ${channelDetails.symbol}`
   ];
 
   const getChannels = async () => {
@@ -58,6 +62,35 @@ export default function Close(props) {
     }
   }, [])
 
+  const closeChannel = async () => {
+    const userAddress = window.ethereum.selectedAddress;
+    const checkSumUserAddress = window.web3.toChecksumAddress(userAddress)
+    const recipient = channelDetails.recipient;
+
+    if(checkSumUserAddress === recipient) {
+      const channelAddress = channelDetails.channelAddress;
+      const decimals = channelDetails.decimals;
+  
+      // Sets up contract instances
+      const decimalAmount = await formatBeforeSend(amount, decimals);
+      const channelContract = await initalizeChannelContract(channelAddress);
+  
+      channelContract.methods.close(decimalAmount, signature).send({from: userAddress})
+      .once('transactionHash', (transactionHash) => {
+        setStep(step + 1);
+        setTxHash(transactionHash);
+      })
+      .once('receipt', (receipt) => {
+        setStep(step + 2);
+        setChannelAddress(receipt.events.rChannelCreated.eturnValues.channelAddress);
+      })
+      .on('error', console.error);
+    }
+    else {
+      window.alert('Current address is not the recipient for this channel');
+    }
+  }
+
   const nextStep = () => {
     const newStep = step + 1;
     setStep(newStep)
@@ -65,18 +98,6 @@ export default function Close(props) {
   const previousStep = () => {
     const newStep = step - 1;
     setStep(newStep)
-  }
-
-  const createSig = async () => {
-    const userAddress = window.ethereum.selectedAddress;
-    const { decimals, channelAddress } = channelDetails;
-    const amount = await formatBeforeSend(amount, decimals);
-    // if(+amount <= +channelDetails.balance) {
-      await signData(userAddress, amount, channelAddress, setSignature, nextStep);
-    // }
-    // else {
-    //   window.alert('Please enter a smaller amount')
-    // }
   }
 
   const updateChannel = (channel) => {
@@ -87,29 +108,38 @@ export default function Close(props) {
   const inputLabel = `Channel: ${addressShortener(channelDetails.channelAddress)}`
 
   switch(step) {
-    case 1: 
+    case 0: 
       return (
         <LoadingChannels channels={channels} setStepDash={setStepDash} updateChannel={updateChannel} previousStep={previousStep} nextStep={nextStep} />
       )
-    case 2:
+    case 1:
       return (
         <Flex flexDirection={'column'} alignItems={'center'} justifyContent={'center'}>
           <InputBox text={true} dropDown={false} label={inputLabel} inputs={inputs} />
           <Flex>
             <Button onClick={previousStep}>Back</Button>
-            <Button onClick={createSig}>Sign</Button>
+            <Button onClick={nextStep}>Next</Button>
           </Flex>
         </Flex>
       )
-    case 3:
+    case 2:
       return (
         <ConfirmationBox 
-          image={{bool: false}}
-          confirmButton={false}
+          image={{bool:true,src:channelDetails.image}}
+          confirmButton={true}
           previousStep={previousStep} 
           confirmDetails={confirmDetails}
-          confirmHeading={"Message Signed"}
+          confirmHeading={"Close Channel"}
+          confirmFunction={closeChannel}
         />
+      )
+    case 3:
+      return (
+        <LoadingScreen />
+      )
+    case 4:
+      return (
+        <TransactionBox setStepDash={setStepDash} channelAddress={channelAddress} txHash={txHash} ERC20Details={channelDetails}/>
       )
     default:
       return step;

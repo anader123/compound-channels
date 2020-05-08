@@ -63,18 +63,20 @@ export default function Supply(props) {
     setStep(newStep)
   }
 
-  const supplyAssets = async (
-    tokenAddress, 
-    channelAddress, 
-    supplyAmount, 
-    decimals, 
-    sender
-    ) => {
-    const decimalAmount = await formatBeforeSend(supplyAmount, decimals);
+  const supplyAssets = async () => {
+    const sender = window.ethereum.selectedAddress;
+    const tokenAddress = channelDetails.tokenAddress;
+    const channelAddress = channelDetails.channelAddress;
+    const decimals = channelDetails.decimals;
+
+    // Sets up contract instances
+    const decimalAmount = await formatBeforeSend(amount, decimals);
     const ERC20Contract = await initalizeERC20(tokenAddress);
     const channelContract = await initalizeChannelContract(channelAddress);
-    await ERC20Contract.methods.approve(channelAddress, supplyAmount).send({from: sender});
-    await channelContract.methods.depositFunds(decimalAmount).send({from: sender})
+
+    // Approves token and then deposits funds into the channel
+    await ERC20Contract.methods.approve(channelAddress, decimalAmount).send({from: sender});
+    channelContract.methods.depositFunds(decimalAmount).send({from: sender})
     .once('transactionHash', (transactionHash) => {
       setStep(step + 1);
       setTxHash(transactionHash);
@@ -92,7 +94,7 @@ export default function Supply(props) {
   }
 
   const inputLabel = `Channel: ${addressShortener(channelDetails.channelAddress)}`;
-  const confirmHeading = 'Confirm your Transaction';
+  const confirmHeading = 'Confirm Deposit Amount';
   
   switch(step) {
     case 1: 
@@ -115,10 +117,10 @@ export default function Supply(props) {
           </Flex>
         </Flex>
       )
-    case 2:
+    case 3:
       return (
         <ConfirmationBox 
-        image={{bool:false}}
+        image={{bool:true, src:channelDetails.image}}
         confirmButton={true}
         confirmHeading={confirmHeading} 
         confirmDetails={confirmDetails} 
@@ -126,11 +128,11 @@ export default function Supply(props) {
         confirmFunction={supplyAssets} 
         />
       )
-    case 3:
+    case 4:
       return (
         <LoadingScreen />
       )
-    case 4:
+    case 5:
       return (
         <TransactionBox setStepDash={setStepDash} channelAddress={channelAddress} txHash={txHash}/>
       )
