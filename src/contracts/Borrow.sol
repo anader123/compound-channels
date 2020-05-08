@@ -77,6 +77,7 @@ contract BorrowProxy {
         revert("Comptroller.enterMarkets failed.");
     }
 
+    // FIXME: figure out the proper ratio for the amount that someone can borrow, wrong amount;
     cToken.borrow(_amount);
     uint256 borrowedAmount = cToken.borrowBalanceCurrent(address(this));
     // Takes borrow amount and converts back to cToken

@@ -41,11 +41,11 @@ export default function Dashboard(props) {
       )
     case 1: 
       return (
-       <Close  setStep={setStep}/>   
+       <Close setStepDash={setStepDash}  setStep={setStep}/>   
       )
     case 2:
       return (
-       <ForceClose setStep={setStep}/>
+       <ForceClose setStepDash={setStepDash} setStep={setStep}/>
       )
     default:
       return step;

@@ -15,8 +15,8 @@ import iBorrow from '../Images/borrow.svg';
 import iSupply from '../Images/supply.svg';
 
 const optionArray = [
-  {name: "Borrow Assets", step: 1, image: iBorrow},
-  {name: "Supply Assets", step: 1, image: iSupply}
+  {name: "Supply Assets", step: 1, image: iSupply},
+  {name: "Borrow Assets", step: 1, image: iBorrow}
 ];
 
 export default function Dashboard(props) {
@@ -28,10 +28,10 @@ export default function Dashboard(props) {
       return (
         <Flex mt={'3%'}  sx={{ flexDirection:'column', alignItems:'center'}}>
           <Flex width={'75%'} m={4} sx={{ flexWrap: 'wrap',justifyContent:'center'}}>
-            {optionArray.map(option => {
+            {optionArray.map((option, index) => {
               return <CardBox name={option.name} 
                         image={option.image}
-                        key={option.step+'key'} 
+                        key={index} 
                         setStep={setStep} 
                         step={option.step}/>
             })}
@@ -40,12 +40,12 @@ export default function Dashboard(props) {
         </Flex >
       )
     case 1: 
-      return (
-       <Borrow setStepDash={setStep} setStep={setStep}/>   
-      )
+      // return (
+      //  <Borrow setStepDash={setStep} />   
+      // )
     case 2:
       return (
-       <Supply setStepDash={setStep} setStep={setStep}/>
+       <Supply setStepDash={setStep} />
       )
     default:
       return step;

@@ -6,13 +6,7 @@ import { initalizeERC20, factoryContract } from '../Ethereum/ContractInstances';
 import { assetData } from '../Ethereum/AssetData';
 
 import {
-  Input,
-  Label
-} from '@rebass/forms';
-
-import {
   Flex,
-  Card,
   Button
 } from 'rebass';
 
@@ -43,22 +37,28 @@ export default function CardBox(props) {
       window.alert('Please enter in a valid address.')
     }
   }
+
   const createNewChannel = async () => {
     const userAddress = window.ethereum.selectedAddress;
-    console.log(factoryContract.methods)
-    await factoryContract.methods.createChannel(recipientAddress, endTime, ERC20Details.tokenAddress, ERC20Details.cTokenAddress).send({ from:userAddress, gas:'100000' })
-    .on('receipt', (receipt) => {
-      setTxHash(receipt.transactionHash);
-      setChannelAddress(receipt.events.ChannelCreated.channelAddress);
-      console.log(receipt);
+    await factoryContract.methods.createChannel(
+      recipientAddress, 
+      +endTime, 
+      ERC20Details.tokenAddress, 
+      ERC20Details.cTokenAddress
+      ).send({ from:userAddress, gas:'1500000' })
+    .once('transactionHash', (transactionHash) => {
       setStep(step + 1);
+      setTxHash(transactionHash);
+    })
+    .once('receipt', (receipt) => {
+      console.log(receipt)
+      setStep(step + 2);
+      setChannelAddress(receipt.events.rChannelCreated.eturnValues.channelAddress);
     })
     .on('error', console.error); 
-    setStep(step + 1);
   }
   const previousStep = () => {
-    const newStep = step - 1;
-    setStep(newStep)
+    setStep(step - 1)
   }
 
   const setToken = (symbol) => {
@@ -126,7 +126,7 @@ export default function CardBox(props) {
       )
     case 4:
       return (
-       <TransactionBox channelAddress={channelAddress} txHash={txHash} ERC20Details={ERC20Details}/>
+       <TransactionBox setStepDash={setStepDash} channelAddress={channelAddress} txHash={txHash} ERC20Details={ERC20Details}/>
       )
     default:
       return step;

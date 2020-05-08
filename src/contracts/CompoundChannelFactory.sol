@@ -90,6 +90,8 @@ contract CompoundChannelFactory {
   // State Variables
   mapping(address => address[]) public senderRegistery;
   mapping(address => address[]) public recipientRegistery;
+  mapping(address => uint8) public senderCount;
+  mapping(address => uint8) public recipientCount;
 
   // Signature Information
   uint256 constant chainId = 42; //Kovan
@@ -128,6 +130,8 @@ contract CompoundChannelFactory {
     // Record new channel information
     senderRegistery[msg.sender].push(address(compChan));
     recipientRegistery[_recipient].push(address(compChan));
+    senderCount[msg.sender] += 1;
+    recipientCount[_recipient] += 1;
     emit ChannelCreated(address(compChan), msg.sender, _recipient);
     return true;
   }

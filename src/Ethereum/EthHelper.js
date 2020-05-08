@@ -10,55 +10,53 @@ export const addressShortener = (address) => {
 }
 
 // Formats data from the blockchain
-export const formatDisplayAmount = async (value) => {
-  // const ERC20Contract = await initalizeERC20(tokenAddress);
-  // const decimals = await ERC20Contract.methods.decimals().call();
-  const decimals = 18;
+export const formatDisplayAmount = async (value, decimals) => {
   const bn = new BigNumber(value);
-  
   const number = bn.shiftedBy(-decimals).toString(10);
-  console.log(number);
   return number
 };
 
 // Formats data for transactions that are about to be sent
-export const formatBeforeSend = async (value) => {
-  // const ERC20Contract = await initalizeERC20(tokenAddress);
-  // const decimals = await ERC20Contract.methods.decimals().call()
-  const decimals = 18;
+export const formatBeforeSend = async (value, decimals) => {
   const bn = new BigNumber(value);
-  
   return bn.shiftedBy(decimals).toString(10);
 };
 
 export const loadChannels = async (userAddress, registeryName) => {
   let channels = [];
+  let loopNum;
+  let channelDetails = {};
   let channelAddress;
-  for(let i = 0; i < 3; i++) {
+
+  if(registeryName === 'sender') {
+    loopNum = await factoryContract.methods.senderCount(userAddress).call();
+  }
+  else {
+    loopNum = await factoryContract.methods.recipientCount(userAddress).call();
+  }
+
+  for(let i = 0; i < loopNum; i++) {
     if(registeryName === 'sender') {
-      channelAddress = factoryContract.methods.senderRegistery(userAddress, i).call();
+      channelAddress = await factoryContract.methods.senderRegistery(userAddress, i).call();
     }
     else {
-      channelAddress = factoryContract.methods.recipientRegistery(userAddress, i).call();
+      channelAddress = await factoryContract.methods.recipientRegistery(userAddress, i).call();
     }
-  
-  // Makes sure that there is a channel registered
-  if(channelAddress !== '0x0000000000000000000000000000000000000000') {
-    let channelDetails;
 
     const channelContract = await initalizeChannelContract(channelAddress);
     const recipient = await channelContract.methods.recipient().call();
     const assetAddresss = await channelContract.methods.token().call();
     const sender = await channelContract.methods.sender().call();
     const balance = await channelContract.methods.underlyingBalance().call();
-    channelDetails = assetData.find(token => token.tokenAddress === assetAddresss);
+    const tokenDetails = await assetData.find(token => token.tokenAddress === assetAddresss);
+    channelDetails = {... tokenDetails};
 
     channelDetails.recipient = recipient;
     channelDetails.sender = sender;
     channelDetails.balance = balance;
-    channelDetails.formattedBalance = await formatDisplayAmount(balance);
+    channelDetails.channelAddress = channelContract.options.address;
+    channelDetails.formattedBalance = await formatDisplayAmount(balance, tokenDetails.decimals);
     channels.push(channelDetails);
-    }
   }
   return channels;
 };
@@ -108,7 +106,6 @@ export const signData = async (
     message: message
   });
 
-  console.log(JSON.parse(data));
   const formattedSigner = web3.utils.toChecksumAddress(userAddress);
   web3.currentProvider.sendAsync(
     {
@@ -141,9 +138,8 @@ export const verifySignature = async (
     verifyingContract: channelAddress,
     salt: "0xf2e421f4a3edcb9b1111d503bfe733db1e3f6cdc2b7971ee739626c97e86a558"
   };
-  console.log(amount)
+  
   const message = {
-    // amount: '100000000000000000'
     amount: amount
   };
   

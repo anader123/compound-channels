@@ -48,16 +48,17 @@ export default function Inspect(props) {
     `Signature: ${signature}`,
   ]
 
-  // TODO: need to test once contract is running
-  // useEffect(() => {
-  //   getChannels();
-  // })
-
   const getChannels = async () => {
     const userAddress = window.ethereum.selectedAddress;
-    channels = await loadChannels(userAddress, 'recipient');
-    setChannels(channels);
+    const returnChannels = await loadChannels(userAddress, 'recipient');
+    setChannels(returnChannels);
   }
+
+  useEffect(() => {
+    if(channels.length === 0) {
+      getChannels();
+    }
+  }, [])
   
   const nextStep = () => {
     const newStep = step + 1;
@@ -69,8 +70,8 @@ export default function Inspect(props) {
   }
 
   const verifySig = async () => {
-    const { channelAddress, sender } = channelDetails;
-    const amount = await formatBeforeSend(signAmount);
+    const { channelAddress, sender, decimals } = channelDetails;
+    const amount = await formatBeforeSend(signAmount, decimals);
     const returnValue = await verifySignature(sender, amount, channelAddress, signature);
     setSigStatus(returnValue);
     nextStep()
@@ -86,7 +87,7 @@ export default function Inspect(props) {
   switch(step) {
     case 1: 
       return (
-        <LoadingChannels updateChannel={updateChannel} previousStep={previousStep} nextStep={nextStep} setStepDash={setStepDash}/>
+        <LoadingChannels channels={channels} updateChannel={updateChannel} previousStep={previousStep} nextStep={nextStep} setStepDash={setStepDash}/>
       )
     case 2:
       return (

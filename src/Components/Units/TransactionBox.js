@@ -16,7 +16,7 @@ import {
 
 
 export default function TransactionBox(props) {
-  const { txHash, channelAddress, ERC20Details } = props;
+  const { txHash, channelAddress, setStepDash } = props;
   return (
     <Flex flexDirection={'column'} alignItems={'center'} justifyContent={'center'}>
       <Card sx={tallCardBoxFormatting}>
@@ -34,7 +34,7 @@ export default function TransactionBox(props) {
             href={`https://kovan.etherscan.io/tx/${txHash}`}>View on Etherscan</Link>
         </Flex>
       </Card>
-          <Button>Home</Button>
+        <Button onClick={()=>setStepDash(0)}>Home</Button>
     </Flex>
   )
 }
