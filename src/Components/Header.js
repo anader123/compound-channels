@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import piggyBank from '../Images/piggy-bank.svg'
 
 import {
@@ -28,19 +28,28 @@ export default function Header(props) {
     if(window.ethereum !== undefined) {
         if(window.ethereum.selectedAddress !== null 
           && window.ethereum.selectedAddress !== undefined) {
-          const address = window.ethereum.selectedAddress;
-          setUserAddress(window.ethereum.selectedAddress);
-          setWalletConnected(true);
-          initializeWeb3();
-          // Format Display Address
-          const shortAddress = addressShortener(address);
-          setShortUserAddress(shortAddress);
+            const address = window.ethereum.selectedAddress;
+            setUserAddress(address);
+            setWalletConnected(true);
+            initializeWeb3();
+            const shortAddress = addressShortener(address);
+            setShortUserAddress(shortAddress);
+
+          // Sets display address if the user changes their address
+          window.ethereum.on('accountsChanged', (accounts) => {
+            setUserAddress(accounts[0]);
+            const shortAddress = addressShortener(accounts[0]);
+            setShortUserAddress(shortAddress);
+          });
         }
       }
-    }, [setUserAddress, 
+    }, [
+      setUserAddress, 
       setShortUserAddress, 
       setWalletConnected, 
-      userAddress]);
+      userAddress
+    ]);
+
   return (
     <Flex
       px={2}

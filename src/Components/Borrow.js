@@ -52,7 +52,7 @@ export default function Borrow(props) {
     if(channels.length === 0) {
       getChannels();
     }
-  }, [])
+  },[channels.length])
 
   const nextStep = () => {
     const newStep = step + 1;
@@ -115,7 +115,7 @@ export default function Borrow(props) {
           </Flex>
         </Flex>
       )
-    case 2:
+    case 3:
       return (
         <ConfirmationBox 
         image={{bool:false}}
@@ -126,11 +126,11 @@ export default function Borrow(props) {
         confirmFunction={supplyAssets} 
         />
       )
-    case 3:
+    case 4:
       return (
         <LoadingScreen />
       )
-    case 4:
+    case 5:
       return (
         <TransactionBox setStepDash={setStepDash} channelAddress={channelAddress} txHash={txHash}/>
       )

@@ -7,8 +7,6 @@ import InputBox from './Units/InputBox';
 import LoadingScreen from './Units/LoadingScreen';
 import TransactionBox from './Units/TransactionBox';
 
-import Dai from '../Images/dai.png';
-
 // Ethereum
 import { formatBeforeSend, addressShortener, loadChannels } from '../Ethereum/EthHelper';
 import { initalizeChannelContract } from '../Ethereum/ContractInstances';
@@ -62,7 +60,7 @@ export default function Close(props) {
     if(channels.length === 0) {
       getChannels();
     }
-  }, [])
+  }, [channels.length])
 
   const closeChannel = async () => {
     const userAddress = window.ethereum.selectedAddress;

@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { factoryContract, initalizeChannelContract, initalizeERC20, web3 } from './ContractInstances';
+import { factoryContract, initalizeChannelContract, web3 } from './ContractInstances';
 import { assetData } from './AssetData';
 const sigUtil = require('eth-sig-util');
 
@@ -51,7 +51,7 @@ export const loadChannels = async (userAddress, registeryName) => {
     const sender = await channelContract.methods.sender().call();
     const balance = await channelContract.methods.underlyingBalance().call();
     const tokenDetails = await assetData.find(token => token.tokenAddress === assetAddresss);
-    channelDetails = {... tokenDetails};
+    channelDetails = {...tokenDetails};
 
     channelDetails.recipient = recipient;
     channelDetails.sender = sender;

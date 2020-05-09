@@ -5,8 +5,6 @@ import LoadingChannels from './Units/LoadChannels';
 import ConfirmationBox from './Units/ConfirmationBox';
 import InputBox from './Units/InputBox';
 
-import Dai from '../Images/dai.png';
-
 // Ethereum
 import { formatBeforeSend, addressShortener, signData, loadChannels } from '../Ethereum/EthHelper';
 
@@ -52,7 +50,7 @@ export default function Sign(props) {
     if(channels.length === 0) {
       getChannels();
     }
-  }, [])
+  }, [channels.length])
 
   const nextStep = () => {
     const newStep = step + 1;

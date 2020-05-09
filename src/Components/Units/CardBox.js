@@ -1,11 +1,8 @@
 import React from 'react';
 import {
-  Flex,
-  Text,
   Box,
   Card,
   Image,
-  Link,
   Heading
 } from 'rebass';
 

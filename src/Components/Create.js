@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 
 // Ethereum
-import { formatBeforeSend, addressShortener, createChannel } from '../Ethereum/EthHelper';
-import { initalizeERC20, factoryContract } from '../Ethereum/ContractInstances';
+import { addressShortener } from '../Ethereum/EthHelper';
+import { factoryContract } from '../Ethereum/ContractInstances';
 import { assetData } from '../Ethereum/AssetData';
 
 import {

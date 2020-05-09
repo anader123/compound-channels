@@ -60,7 +60,7 @@ export default function Inspect(props) {
     if(channels.length === 0) {
       getChannels();
     }
-  }, [])
+  }, [channels.length])
   
   const nextStep = () => {
     const newStep = step + 1;

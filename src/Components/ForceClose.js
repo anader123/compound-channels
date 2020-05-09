@@ -3,27 +3,17 @@ import React, { useState, useEffect } from 'react';
 // Components
 import LoadingChannels from './Units/LoadChannels';
 import ConfirmationBox from './Units/ConfirmationBox';
-import InputBox from './Units/InputBox';
 import LoadingScreen from './Units/LoadingScreen';
 import TransactionBox from './Units/TransactionBox';
 
-import Dai from '../Images/dai.png';
-
 // Ethereum
-import { formatBeforeSend, addressShortener, loadChannels } from '../Ethereum/EthHelper';
+import { addressShortener, loadChannels } from '../Ethereum/EthHelper';
 import { initalizeChannelContract } from '../Ethereum/ContractInstances';
-
-import {
-  Flex,
-  Button
-} from 'rebass';
 
 export default function ForceClose(props) {
   const { setStepDash } = props;
   const [ step, setStep ] = useState(0);
-  const [ amount, setAmount ] = useState(0); // not converted amount
   const [ channelDetails, setChannelDetails ] = useState({channelAddress: '0x0000000000000000000000000000000000000000', recipient: '0x0000000000000000000000000000000000000000'});
-  const [ signature, setSignature ] = useState('');
   const [ channels, setChannels ] = useState([]);
   const [ txHash, setTxHash ] = useState('');
   const [ channelAddress, setChannelAddress ] = useState('');
@@ -32,7 +22,7 @@ export default function ForceClose(props) {
   const confirmDetails = [
     `Channel Address: ${addressShortener(channelDetails.channelAddress)}`,
     `Recipient Address: ${addressShortener(channelDetails.recipient)}`,
-    `Allotted Amount: ${amount} ${channelDetails.symbol}`
+    `Allotted Amount: ${channelDetails.balance} ${channelDetails.symbol}`
   ];
 
   const getChannels = async () => {
@@ -46,7 +36,7 @@ export default function ForceClose(props) {
     if(channels.length === 0) {
       getChannels();
     }
-  }, [])
+  }, [channels.length])
 
   const forceCloseChannel = async () => {
     const userAddress = window.ethereum.selectedAddress;
@@ -54,14 +44,11 @@ export default function ForceClose(props) {
     const recipient = channelDetails.recipient;
 
     if(checkSumUserAddress === recipient) {
-      const channelAddress = channelDetails.channelAddress;
-      const decimals = channelDetails.decimals;
-  
+      const channelAddress = channelDetails.channelAddress;  
       // Sets up contract instances
-      const decimalAmount = await formatBeforeSend(amount, decimals);
       const channelContract = await initalizeChannelContract(channelAddress);
   
-      channelContract.methods.close(decimalAmount, signature).send({from: userAddress})
+      channelContract.methods.forceClose().send({from: userAddress})
       .once('transactionHash', (transactionHash) => {
         setStep(step + 1);
         setTxHash(transactionHash);
