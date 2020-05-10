@@ -8,7 +8,7 @@ import TransactionBox from './Units/TransactionBox';
 
 // Ethereum
 import { addressShortener, loadChannels } from '../Ethereum/EthHelper';
-import { initalizeChannelContract } from '../Ethereum/ContractInstances';
+import { initalizeERC20Channel, initalizeEthChannel } from '../Ethereum/ContractInstances';
 
 export default function ForceClose(props) {
   const { setStepDash } = props;
@@ -22,7 +22,7 @@ export default function ForceClose(props) {
   const confirmDetails = [
     `Channel Address: ${addressShortener(channelDetails.channelAddress)}`,
     `Recipient Address: ${addressShortener(channelDetails.recipient)}`,
-    `Allotted Amount: ${channelDetails.balance} ${channelDetails.symbol}`
+    `Allotted Amount: ${channelDetails.formattedBalance} ${channelDetails.symbol}`
   ];
 
   const getChannels = async () => {
@@ -41,12 +41,18 @@ export default function ForceClose(props) {
   const forceCloseChannel = async () => {
     const userAddress = window.ethereum.selectedAddress;
     const checkSumUserAddress = window.web3.toChecksumAddress(userAddress)
-    const recipient = channelDetails.recipient;
+    const sender = channelDetails.sender;
+    let channelContract;
 
-    if(checkSumUserAddress === recipient) {
+    if(checkSumUserAddress === sender) {
       const channelAddress = channelDetails.channelAddress;  
-      // Sets up contract instances
-      const channelContract = await initalizeChannelContract(channelAddress);
+      // Sets up contract instances for either Eth or ERC20
+      if(channelDetails.symbol === 'ETH') {
+        channelContract = await initalizeEthChannel(channelAddress);
+      }
+      else {
+        channelContract = await initalizeERC20Channel(channelAddress);
+      }
   
       channelContract.methods.forceClose().send({from: userAddress})
       .once('transactionHash', (transactionHash) => {
@@ -60,7 +66,7 @@ export default function ForceClose(props) {
       .on('error', console.error);
     }
     else {
-      window.alert('Current address is not the recipient for this channel');
+      window.alert('Current address is not the sender for this channel');
     }
   }
 
@@ -108,7 +114,7 @@ export default function ForceClose(props) {
       )
     case 3:
       return (
-        <TransactionBox setStepDash={setStepDash} channelAddress={channelAddress} txHash={txHash} ERC20Details={channelDetails}/>
+        <TransactionBox setStepDash={setStepDash} channelAddress={channelAddress} txHash={txHash} assetDetails={channelDetails}/>
       )
     default:
       return step;

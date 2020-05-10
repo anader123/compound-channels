@@ -22,7 +22,7 @@ export default function CardBox(props) {
   // Info needed for creating a channel
   const [ endTime, setEndTime ] = useState(0);
   const [ recipientAddress, setRecipientAddress ] = useState('');
-  const [ ERC20Details, setERC20Details ] = useState(assetData[0]);
+  const [ assetDetails, setAssetDetails ] = useState(assetData[0]);
 
   // Transaction Info 
   const [ txHash, setTxHash ] = useState('');
@@ -40,30 +40,52 @@ export default function CardBox(props) {
 
   const createNewChannel = async () => {
     const userAddress = window.ethereum.selectedAddress;
-    await factoryContract.methods.createChannel(
-      recipientAddress, 
-      +endTime, 
-      ERC20Details.tokenAddress, 
-      ERC20Details.cTokenAddress
-      ).send({ from:userAddress, gas:'1500000' })
-    .once('transactionHash', (transactionHash) => {
-      setStep(step + 1);
-      setTxHash(transactionHash);
-    })
-    .once('receipt', (receipt) => {
-      console.log(receipt)
-      setStep(step + 2);
-      setChannelAddress(receipt.events.ChannelCreated.returnValues.channelAddress);
-    })
-    .on('error', console.error); 
+    if(assetDetails.symbol === 'ETH') {
+      // Ether channel
+      await factoryContract.methods.createEthChannel(
+        recipientAddress, 
+        +endTime, 
+        assetDetails.cTokenAddress
+        ).send({ from:userAddress, gas:'2000000' })
+      .once('transactionHash', (transactionHash) => {
+        setStep(step + 1);
+        setTxHash(transactionHash);
+      })
+      .once('receipt', (receipt) => {
+        console.log(receipt)
+        setStep(step + 2);
+        setChannelAddress(receipt.events.ChannelCreated.returnValues.channelAddress);
+      })
+      .on('error', console.error); 
+    }
+    else {
+      // ERC20 token channel
+      await factoryContract.methods.createErc20Channel(
+        recipientAddress, 
+        +endTime, 
+        assetDetails.tokenAddress, 
+        assetDetails.cTokenAddress
+        ).send({ from:userAddress, gas:'2000000' })
+      .once('transactionHash', (transactionHash) => {
+        setStep(step + 1);
+        setTxHash(transactionHash);
+      })
+      .once('receipt', (receipt) => {
+        console.log(receipt)
+        setStep(step + 2);
+        setChannelAddress(receipt.events.ChannelCreated.returnValues.channelAddress);
+      })
+      .on('error', console.error); 
+    }
   }
+
   const previousStep = () => {
     setStep(step - 1)
   }
 
   const setToken = (symbol) => {
     const tokenDetails = assetData.find(token => token.symbol === symbol);
-    setERC20Details(tokenDetails);
+    setAssetDetails(tokenDetails);
   }
 
   const inputs = [
@@ -82,14 +104,14 @@ export default function CardBox(props) {
   ];
 
   const confirmDetails = [
-    `Asset: ${ERC20Details.symbol}`,
+    `Asset: ${assetDetails.symbol}`,
     `Recipient: ${addressShortener(recipientAddress)}`,
     `EndTime: ${endTime}`
   ]
 
   const image = {
     bool: true,
-    src: ERC20Details.image
+    src: assetDetails.image
   }
 
   const confirmHeading = 'Confirm your Channel';
@@ -118,7 +140,7 @@ export default function CardBox(props) {
         confirmDetails={confirmDetails} 
         previousStep={previousStep} 
         confirmFunction={createNewChannel} 
-        ERC20Details={ERC20Details}/>
+        assetDetails={assetDetails}/>
       )
     case 3:
       return (
@@ -126,7 +148,7 @@ export default function CardBox(props) {
       )
     case 4:
       return (
-       <TransactionBox setStepDash={setStepDash} channelAddress={channelAddress} txHash={txHash} ERC20Details={ERC20Details}/>
+       <TransactionBox setStepDash={setStepDash} channelAddress={channelAddress} txHash={txHash} assetDetails={assetDetails}/>
       )
     default:
       return step;

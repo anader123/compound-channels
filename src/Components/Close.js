@@ -9,7 +9,7 @@ import TransactionBox from './Units/TransactionBox';
 
 // Ethereum
 import { formatBeforeSend, addressShortener, loadChannels } from '../Ethereum/EthHelper';
-import { initalizeChannelContract } from '../Ethereum/ContractInstances';
+import { initalizeERC20Channel, initalizeEthChannel } from '../Ethereum/ContractInstances';
 
 import {
   Flex,
@@ -70,11 +70,18 @@ export default function Close(props) {
     if(checkSumUserAddress === recipient) {
       const channelAddress = channelDetails.channelAddress;
       const decimals = channelDetails.decimals;
+      const decimalAmount = await formatBeforeSend(amount, decimals);
+      let channelContract;
   
       // Sets up contract instances
-      const decimalAmount = await formatBeforeSend(amount, decimals);
-      const channelContract = await initalizeChannelContract(channelAddress);
-  
+      if(channelDetails.symbol === 'ETH') {
+        channelContract = await initalizeEthChannel(channelAddress);
+      }
+      else {
+        channelContract = await initalizeERC20Channel(channelAddress);
+      }
+
+      console.log(decimalAmount, signature)
       channelContract.methods.close(decimalAmount, signature).send({from: userAddress})
       .once('transactionHash', (transactionHash) => {
         setStep(step + 1);
@@ -147,7 +154,7 @@ export default function Close(props) {
       )
     case 4:
       return (
-        <TransactionBox setStepDash={setStepDash} channelAddress={channelAddress} txHash={txHash} ERC20Details={channelDetails}/>
+        <TransactionBox setStepDash={setStepDash} channelAddress={channelAddress} txHash={txHash} assetDetails={channelDetails}/>
       )
     default:
       return step;

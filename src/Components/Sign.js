@@ -63,10 +63,17 @@ export default function Sign(props) {
 
   const createSig = async () => {
     const userAddress = window.ethereum.selectedAddress;
-    const { decimals, channelAddress } = channelDetails;
+    const { decimals, channelAddress, channelNonce } = channelDetails;
     const amount = await formatBeforeSend(signAmount, decimals);
     // if(+amount <= +channelDetails.balance) {
-      await signData(userAddress, amount, channelAddress, setSignature, nextStep);
+      await signData(
+        userAddress, 
+        amount, 
+        channelAddress, 
+        setSignature, 
+        nextStep,
+        channelNonce
+        );
     // }
     // else {
     //   window.alert('Please enter a smaller amount')

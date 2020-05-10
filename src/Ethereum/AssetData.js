@@ -60,7 +60,7 @@ export const assetData = [
   },
   {
     "tokenAddress": "0x0000000000000000000000000000000000000000",
-    "cTokenAddress": "0xf92fbe0d3c0dcdae407923b2ac17ec223b1084e4",
+    "cTokenAddress": "0xf92FbE0D3C0dcDAE407923b2Ac17eC223b1084E4",
     "symbol": "ETH",
     "name": "Ether",
     "image": ETH,

@@ -4,21 +4,108 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 
-interface CompoundContractInterface {
+interface CERC20 {
   function mint(uint mintAmount) external returns (uint);
   function redeem(uint redeemTokens) external returns (uint);
-  function balanceOf(address guy) external view returns (uint);
+  function balanceOf(address account) external view returns (uint);
 }
 
-contract CompoundChannel {
+interface CETH {
+  function mint() external payable;
+  function exchangeRateCurrent() external returns (uint256);
+  function supplyRatePerBlock() external returns (uint256);
+  function redeem(uint) external returns (uint);
+  function redeemUnderlying(uint) external returns (uint);
+  function balanceOf(address account) external view returns (uint256);
+}
+
+contract EthChannel {
   using SafeMath for uint256;
 //  State Variables
   uint256 public underlyingBalance; // underlying asset balance
   address payable public sender;
   address payable public recipient;
   uint256 public endTime;
+  uint8 public channelNonce;
+  CETH public cEther;
+  CompoundChannelFactory public compFactory;
+
+//   Events
+    // Need to add events
+  event EthDeposited(address depositor, uint256 amount);
+
+  constructor(
+    address payable _sender,
+    address payable _recipient,
+    uint256 _endTime,
+    address _cEtherAddress,
+    address _factoryAddress
+    ) public {
+    sender = _sender;
+    recipient = _recipient;
+    endTime = _endTime;
+    cEther = CETH(_cEtherAddress);
+    compFactory = CompoundChannelFactory(_factoryAddress);
+  }
+
+  function depositEth() public payable returns(bool) {
+    cEther.mint{gas: 250000, value: msg.value}(); //0.6.0 syntax
+    underlyingBalance.add(msg.value); // update underlying asset balance
+    emit EthDeposited(msg.sender, msg.value);
+    return true;
+  }
+
+  function forceClose() public {
+    require(now > endTime, 'Too early to close');
+    require(msg.sender == sender, 'Not the sender address');
+    underlyingBalance = 0;
+    
+    uint256 cEthBalance = cEther.balanceOf(address(this));
+    require(cEther.redeem(cEthBalance) == 0, "redeem error");
+    uint256 balance = address(this).balance;
+    sender.transfer(balance);
+  }
+
+  function close(
+    uint256 _amount,
+    bytes memory _signature
+  ) public {
+    require(msg.sender == recipient, 'nonrecipient address');
+
+    require(compFactory.checkSignature(
+      sender,
+      address(this),
+      channelNonce,
+      _amount,
+      _signature
+    ), 'invalid signature');
+
+    channelNonce += 1;
+    underlyingBalance = 0;
+    // Redeem Tokens
+    uint256 cEthBalance = cEther.balanceOf(address(this));
+    require(cEther.redeem(cEthBalance) == 0, "redeem error");
+
+    uint256 balance = address(this).balance;
+    uint256 toRecipient = balance < _amount ? balance : _amount;
+    recipient.transfer(toRecipient);
+    if (toRecipient < balance) sender.transfer(balance.sub(toRecipient));
+  }
+  
+  fallback() external payable { } //Needed to recieve ether
+  
+}
+
+contract Erc20Channel {
+  using SafeMath for uint256;
+//  State Variables
+  uint256 public underlyingBalance; // underlying asset balance
+  address payable public sender;
+  address payable public recipient;
+  uint256 public endTime;
+  uint8 public channelNonce;
   IERC20 public token;
-  CompoundContractInterface public cToken;
+  CERC20 public cToken;
   CompoundChannelFactory public compFactory;
 
 //   Events
@@ -36,14 +123,14 @@ contract CompoundChannel {
     sender = _sender;
     recipient = _recipient;
     endTime = _endTime;
-    token = IERC20(_tokenAddress);
-    cToken = CompoundContractInterface(_cTokenAddress);
+    token = IERC20(_tokenAddress); // zero address if underlying is Ether 
+    cToken = CERC20(_cTokenAddress);
     compFactory = CompoundChannelFactory(_factoryAddress);
   }
 
-  function depositFunds(uint256 _amount) public returns(bool) {
+  function depositERC20(uint256 _amount) public returns(bool) {
     token.transferFrom(msg.sender, address(this), _amount);
-    underlyingBalance += _amount; // update underlying asset balance
+    underlyingBalance.add(_amount); // update underlying asset balance
     require(token.approve(address(cToken), _amount), 'approval error');
     require(cToken.mint(_amount) == 0, 'minting error');
     emit FundsDeposited(msg.sender, _amount, address(token));
@@ -53,10 +140,11 @@ contract CompoundChannel {
   function forceClose() public {
     require(now > endTime);
     require(msg.sender == sender);
+    underlyingBalance = 0;
+    
     uint256 cTokenBalance = cToken.balanceOf(address(this));
     require(cToken.redeem(cTokenBalance) == 0, "redeem error");
     uint256 balance = token.balanceOf(address(this));
-    underlyingBalance = underlyingBalance.add(0);
     token.transfer(sender, balance);
   }
 
@@ -70,10 +158,13 @@ contract CompoundChannel {
     require(compFactory.checkSignature(
       sender,
       address(this),
+      channelNonce,
       _amount,
       _signature
     ), 'invalid signature');
 
+    channelNonce += 1;
+    underlyingBalance = 0;
     // Redeem Tokens
     uint256 cTokenBalance = cToken.balanceOf(address(this));
     require(cToken.redeem(cTokenBalance) == 0, "redeem error");
@@ -81,8 +172,7 @@ contract CompoundChannel {
     uint256 balance = token.balanceOf(address(this));
     uint256 toRecipient = balance < _amount ? balance : _amount;
     require(token.transfer(recipient, toRecipient), "transfer error");
-    underlyingBalance = 0;
-    if (toRecipient < balance) token.transfer(sender, balance - toRecipient);
+    if (toRecipient < balance) token.transfer(sender, balance.sub(toRecipient));
   }
 }
 
@@ -99,19 +189,20 @@ contract CompoundChannelFactory {
   bytes32 constant salt = 0xf2e421f4a3edcb9b1111d503bfe733db1e3f6cdc2b7971ee739626c97e86a558;
 
   string private constant EIP712_DOMAIN = "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract,bytes32 salt)";
-  string private constant PAYMENT_TYPE = "Payment(uint256 amount)";
+  string private constant PAYMENT_TYPE = "Payment(uint256 amount,uint8 nonce)";
 
   bytes32 private constant EIP712_DOMAIN_TYPEHASH = keccak256(abi.encodePacked(EIP712_DOMAIN));
   bytes32 private constant PAYMENT_TYPEHASH = keccak256(abi.encodePacked(PAYMENT_TYPE));
 
   struct Payment {
     uint256 amount;
+    uint8 nonce;
   }
 
   // Events
   event ChannelCreated(address channelAddress, address sender, address recipient);
 
-  function createChannel(
+  function createErc20Channel(
     address payable _recipient,
     uint256 _endTime,
     address _tokenAddress,
@@ -119,7 +210,7 @@ contract CompoundChannelFactory {
     ) public returns(bool) {
 
     // Creates new Channel Contract
-    CompoundChannel compChan = new CompoundChannel(
+    Erc20Channel compChan = new Erc20Channel(
       msg.sender,
       _recipient,
       _endTime,
@@ -134,6 +225,30 @@ contract CompoundChannelFactory {
     senderCount[msg.sender] += 1;
     recipientCount[_recipient] += 1;
     emit ChannelCreated(address(compChan), msg.sender, _recipient);
+    return true;
+  }
+  
+  function createEthChannel(
+    address payable _recipient,
+    uint256 _endTime,
+    address _cTokenAddress
+    ) public returns(bool) {
+
+    // Creates new Channel Contract
+    EthChannel ethChan = new EthChannel(
+      msg.sender,
+      _recipient,
+      _endTime,
+      _cTokenAddress,
+      address(this) // Factory Address
+    );
+
+    // Record new channel information
+    senderRegistery[msg.sender].push(address(ethChan));
+    recipientRegistery[_recipient].push(address(ethChan));
+    senderCount[msg.sender] += 1;
+    recipientCount[_recipient] += 1;
+    emit ChannelCreated(address(ethChan), msg.sender, _recipient);
     return true;
   }
 
@@ -156,7 +271,8 @@ contract CompoundChannelFactory {
       DOMAIN_SEPARATOR,
       keccak256(abi.encode(
         PAYMENT_TYPEHASH,
-        payment.amount
+        payment.amount,
+        payment.nonce
       ))
     ));
   }
@@ -164,11 +280,13 @@ contract CompoundChannelFactory {
   function checkSignature(
     address _sender,
     address _channelAddress,
+    uint8 _channelNonce,
     uint256 _amount,
     bytes memory _signature
     ) public pure returns (bool) {
       Payment memory payment = Payment({
-        amount: _amount
+        amount: _amount,
+        nonce: _channelNonce
       });
 
       bytes32 hash = hashPayment(payment, _channelAddress);

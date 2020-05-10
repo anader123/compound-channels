@@ -9,7 +9,7 @@ import TransactionBox from './Units/TransactionBox';
 
 // Ethereum
 import { formatBeforeSend, addressShortener, loadChannels } from '../Ethereum/EthHelper';
-import { initalizeERC20, initalizeChannelContract } from '../Ethereum/ContractInstances';
+// import { initalizeERC20, initalizeERC20Channel, initalizeEthChannel } from '../Ethereum/ContractInstances';
 
 import {
   Flex,
@@ -63,28 +63,34 @@ export default function Borrow(props) {
     setStep(newStep)
   }
 
-  const supplyAssets = async (
-    tokenAddress, 
-    channelAddress, 
-    supplyAmount, 
-    decimals, 
-    sender
-    ) => {
-    const decimalAmount = await formatBeforeSend(supplyAmount, decimals);
-    const ERC20Contract = await initalizeERC20(tokenAddress);
-    const channelContract = await initalizeChannelContract(channelAddress);
-    await ERC20Contract.methods.approve(channelAddress, supplyAmount).send({from: sender});
-    await channelContract.methods.depositFunds(decimalAmount).send({from: sender})
-    .once('transactionHash', (transactionHash) => {
-      setStep(step + 1);
-      setTxHash(transactionHash);
-    })
-    .once('receipt', (receipt) => {
-      setStep(step + 2);
-      setChannelAddress(receipt.events.rChannelCreated.eturnValues.channelAddress);
-    })
-    .on('error', console.error); 
-  }
+  // FIXME: need to reconfigure for borrow 
+  // const supplyAssets = async () => {
+  //   const sender = window.ethereum.selectedAddress;
+  //   const tokenAddress = channelDetails.tokenAddress;
+  //   const channelAddress = channelDetails.channelAddress;
+  //   const decimals = channelDetails.decimals;
+
+  //   const decimalAmount = await formatBeforeSend(supplyAmount, decimals);
+  //   let channelContract;
+  //   if(channelDetails.symbol === 'ETH') {
+
+  //   }
+  //   else {
+  //     channelContract = await initalizeERC20Channel(channelAddress);
+  //     const ERC20Contract = await initalizeERC20(tokenAddress);
+  //     await ERC20Contract.methods.approve(channelAddress, supplyAmount).send({from: sender});
+  //     await channelContract.methods.depositFunds(decimalAmount).send({from: sender})
+  //     .once('transactionHash', (transactionHash) => {
+  //       setStep(step + 1);
+  //       setTxHash(transactionHash);
+  //     })
+  //     .once('receipt', (receipt) => {
+  //       setStep(step + 2);
+  //       setChannelAddress(receipt.events.rChannelCreated.eturnValues.channelAddress);
+  //     })
+  //     .on('error', console.error); 
+  //   }
+  // }
 
   const updateChannel = (channel) => {
     setChannelDetails(channel);
@@ -123,7 +129,7 @@ export default function Borrow(props) {
         confirmHeading={confirmHeading} 
         confirmDetails={confirmDetails} 
         previousStep={previousStep} 
-        confirmFunction={supplyAssets} 
+        // confirmFunction={supplyAssets} 
         />
       )
     case 4:

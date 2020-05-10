@@ -3,7 +3,8 @@ import Web3 from 'web3';
 // Contract ABI
 import { ERC20Abi } from './AbiData';
 import compoundChannelFactory from '../abis/CompoundChannelFactory.json';
-import compoundChannel from '../abis/CompoundChannel.json';
+import ERC20Channel from '../abis/Erc20Channel.json';
+import EthChannel from '../abis/EthChannel.json';
 
 // Contract Instances
 export let web3;
@@ -13,7 +14,7 @@ export let borrowContract;
 
 // const factoryAddress = compoundChannelFactory.networks[999].address;
 // console.log(factoryAddress)
-const factoryAddress = '0x11001BB2110C850B8B80947fc759378A67b5Dced'; // Kovan address 
+const factoryAddress = '0x967cF9a6B0b02aB4cca0F3c56920780C0Cfa4678'; // Kovan address 
 
 // Creates Core contract instance
 export const initializeWeb3 = () => {
@@ -32,7 +33,12 @@ export const initalizeERC20 = async (tokenAddress) => {
   return ERC20Contract;
 }
 
-export const initalizeChannelContract = async (channelAddress) => {
-  channelContract = new web3.eth.Contract(compoundChannel.abi, channelAddress);
+export const initalizeEthChannel = async (channelAddress) => {
+  channelContract = new web3.eth.Contract(EthChannel.abi, channelAddress);
+  return channelContract;
+}
+
+export const initalizeERC20Channel = async (channelAddress) => {
+  channelContract = new web3.eth.Contract(ERC20Channel.abi, channelAddress);
   return channelContract;
 }

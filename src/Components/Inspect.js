@@ -6,7 +6,12 @@ import ConfirmationBox from './Units/ConfirmationBox';
 import InputBox from './Units/InputBox';
 
 // Ethereum
-import { formatBeforeSend, addressShortener, verifySignature, loadChannels } from '../Ethereum/EthHelper';
+import { 
+  formatBeforeSend, 
+  addressShortener, 
+  verifySignature, 
+  loadChannels 
+} from '../Ethereum/EthHelper';
 
 // Images
 import CheckMark from '../Images/checkmark.svg';
@@ -72,9 +77,15 @@ export default function Inspect(props) {
   }
 
   const verifySig = async () => {
-    const { channelAddress, sender, decimals } = channelDetails;
+    const { channelAddress, sender, decimals, channelNonce } = channelDetails;
     const amount = await formatBeforeSend(signAmount, decimals);
-    const returnValue = await verifySignature(sender, amount, channelAddress, signature);
+    const returnValue = await verifySignature(
+      sender, 
+      amount, 
+      channelNonce, 
+      channelAddress,
+      signature
+      );
     setSigStatus(returnValue);
     nextStep()
   }
