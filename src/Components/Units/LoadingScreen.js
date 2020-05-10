@@ -15,7 +15,7 @@ export default function LoadingScreen() {
       <Card sx={tallCardBoxFormatting}>
         <Flex flexDirection={'column'} alignItems={'center'}>
           <Heading mb={4}>Transaction in Progress</Heading>
-          <ReactLoading type={'cubes'} color={'#47d395'} width={150} />
+          <ReactLoading type={'cubes'} color={'#47d395'} width={130} />
         </Flex>
       </Card>
     </Flex>

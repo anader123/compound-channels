@@ -6,9 +6,9 @@ import REP from '../Images/rep.png';
 import ZRX from '../Images/zrx.png';
 import WBTC from '../Images/wbtc.png';
 import ETH from '../Images/eth.png';
+import USDT from '../Images/tether.png';
 
 // This data is specific to Kovan
-
 export const assetData = [
   {
     "tokenAddress": "0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa",
@@ -65,5 +65,13 @@ export const assetData = [
     "name": "Ether",
     "image": ETH,
     "decimals": 18
-  },
+  }
+  // {
+  //   "tokenAddress": "",
+  //   "cTokenAddress": "",
+  //   "symbol": "USDT",
+  //   "name": "Tether",
+  //   "image": USDT,
+  //   "decimals": 6
+  // }
 ]

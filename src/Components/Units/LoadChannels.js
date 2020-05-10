@@ -10,6 +10,8 @@ import {
   Button
 } from 'rebass';
 
+import ReactLoading from 'react-loading';
+
 // Ethereum 
 import { addressShortener } from '../../Ethereum/EthHelper';
 
@@ -47,7 +49,9 @@ function LoadingBox(props) {
             />
           )})
         :
-        <Heading>Loading...</Heading>
+        <Flex sx={{ height:'200px'}}>
+          <ReactLoading type={'spin'} color={'#47d395'} width={160}></ReactLoading>
+        </Flex>
       }
     </Flex>
   )

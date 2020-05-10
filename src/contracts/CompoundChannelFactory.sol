@@ -5,18 +5,19 @@ import "@openzeppelin/contracts/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 
 interface CERC20 {
-  function mint(uint mintAmount) external returns (uint);
-  function redeem(uint redeemTokens) external returns (uint);
-  function balanceOf(address account) external view returns (uint);
+  function mint(uint256) external returns (uint256);
+  function redeem(uint256) external returns (uint256);
+  function balanceOf(address) external view returns (uint256);
 }
 
 interface CETH {
   function mint() external payable;
   function exchangeRateCurrent() external returns (uint256);
   function supplyRatePerBlock() external returns (uint256);
-  function redeem(uint) external returns (uint);
-  function redeemUnderlying(uint) external returns (uint);
-  function balanceOf(address account) external view returns (uint256);
+  function redeem(uint256) external returns (uint256);
+  function redeemUnderlying(uint256) external returns (uint256);
+  function balanceOf(address) external view returns (uint256);
+  function borrow(uint256) external returns (uint256);
 }
 
 contract EthChannel {
@@ -91,6 +92,36 @@ contract EthChannel {
     recipient.transfer(toRecipient);
     if (toRecipient < balance) sender.transfer(balance.sub(toRecipient));
   }
+
+  function borrowEthAgainstERC20(
+    address _tokenGive, 
+    address _cTokenGive, 
+    uint256 _giveAmount,
+    uint256 _getAmount,
+    address _compTrollAddress
+    ) public {
+    require(address(cEther) != _cTokenGive);
+    IERC20 tokenGive = IERC20(_tokenGive);
+    CERC20 cTokenGive = CERC20(_cTokenGive);
+    Comptroller comptroller = Comptroller(_compTrollAddress);
+    // Move allowance to channel
+    tokenGive.transferFrom(msg.sender, address(this), _giveAmount);
+
+    // Supply Colateral for borrow
+    require(tokenGive.approve(_cTokenGive, _giveAmount), 'approval error');
+    require(cTokenGive.mint(_giveAmount) == 0, 'minting error');
+
+    // Enter the market
+    address[] memory cTokens = new address[](1);
+    cTokens[0] = _cTokenGive;
+    uint256[] memory errors = comptroller.enterMarkets(cTokens);
+    if (errors[0] != 0) {
+      revert("Comptroller.enterMarkets failed.");
+    }
+    cEther.borrow(_getAmount);
+    underlyingBalance = underlyingBalance.add(_getAmount); // update underlying asset balance
+    cEther.mint{gas: 250000, value: _getAmount}(); //0.6.0 syntax
+  }
   
   fallback() external payable { } //Needed to recieve ether
   
@@ -148,7 +179,6 @@ contract Erc20Channel {
     token.transfer(sender, balance);
   }
 
-  // FIXME: need to add channel nonce to prevent double spends for reusable channels
   function close(
     uint256 _amount,
     bytes memory _signature
@@ -174,6 +204,72 @@ contract Erc20Channel {
     require(token.transfer(recipient, toRecipient), "transfer error");
     if (toRecipient < balance) token.transfer(sender, balance.sub(toRecipient));
   }
+
+  function borrowERC20AgainstERC20(
+    address _tokenGive, 
+    address _cTokenGive, 
+    uint256 _giveAmount,
+    uint256 _getAmount,
+    address _compTrollAddress
+    ) public {
+    // Prevents from entering the market of the channel asset
+    require(address(cToken) != _cTokenGive);
+
+    // Contract Instances
+    IERC20 tokenGive = IERC20(_tokenGive);
+    CERC20 cTokenGive = CERC20(_cTokenGive);
+    Comptroller comptroller = Comptroller(_compTrollAddress);
+
+    // Move allowance to channel
+    tokenGive.transferFrom(msg.sender, address(this), _giveAmount);
+
+    // Supply Colateral for borrow
+    require(tokenGive.approve(_cTokenGive, _giveAmount), 'approval error');
+    require(cTokenGive.mint(_giveAmount) == 0, 'minting error');
+
+    // Enter the market
+    address[] memory cTokens = new address[](1);
+    cTokens[0] = _cTokenGive;
+    uint256[] memory errors = comptroller.enterMarkets(cTokens);
+    if (errors[0] != 0) {
+      revert("Comptroller.enterMarkets failed.");
+    }
+    cToken.borrow(_getAmount);
+    underlyingBalance = underlyingBalance.add(_getAmount); // update underlying asset balance
+    // Takes borrow amount and converts back to cToken
+    token.approve(address(cToken), _getAmount);
+    require(cToken.mint(_getAmount) == 0, 'minting error');
+  }
+
+  function borrowERC20AgainstETH(
+    address _cEthGive, 
+    uint256 _getAmount,
+    address _compTrollAddress
+    ) public payable {
+    require(address(cToken) != _cEthGive);
+
+    // Contract Instances
+    CETH cEthGive = CETH(_cEthGive);
+    Comptroller comptroller = Comptroller(_compTrollAddress);
+    
+    // Supply Colateral for borrow
+    cEthGive.mint{gas: 250000, value: msg.value}(); //0.6.0 syntax
+
+    // Enter the market
+    address[] memory cTokens = new address[](1);
+    cTokens[0] = _cEthGive;
+    uint256[] memory errors = comptroller.enterMarkets(cTokens);
+    if (errors[0] != 0) {
+      revert("Comptroller.enterMarkets failed.");
+    }
+    cToken.borrow(_getAmount);
+    underlyingBalance = underlyingBalance.add(_getAmount); // update underlying asset balance
+    // Takes borrow amount and converts back to cToken
+    token.approve(address(address(cToken)), _getAmount);
+    require(cToken.mint(_getAmount) == 0, 'minting error');
+  }
+  
+  fallback() external payable { } //Needed to recieve ether
 }
 
 contract CompoundChannelFactory {
