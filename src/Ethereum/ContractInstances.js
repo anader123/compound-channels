@@ -14,7 +14,8 @@ export let borrowContract;
 
 // const factoryAddress = compoundChannelFactory.networks[999].address;
 // console.log(factoryAddress)
-const factoryAddress = '0x967cF9a6B0b02aB4cca0F3c56920780C0Cfa4678'; // Kovan address 
+const factoryAddress = '0x3f301ca75ebc84db14e006bbea25eb65652b7c7c'; // Kovan address 
+
 
 // Creates Core contract instance
 export const initializeWeb3 = () => {

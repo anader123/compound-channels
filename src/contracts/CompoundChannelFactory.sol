@@ -50,14 +50,14 @@ contract EthChannel {
 
   function depositEth() public payable returns(bool) {
     cEther.mint{gas: 250000, value: msg.value}(); //0.6.0 syntax
-    underlyingBalance.add(msg.value); // update underlying asset balance
+    underlyingBalance = underlyingBalance.add(msg.value); // update underlying asset balance
     emit EthDeposited(msg.sender, msg.value);
     return true;
   }
 
   function forceClose() public {
-    require(now > endTime, 'Too early to close');
-    require(msg.sender == sender, 'Not the sender address');
+    require(now > endTime, 'too early to close');
+    require(msg.sender == sender, 'nonsender address');
     underlyingBalance = 0;
     
     uint256 cEthBalance = cEther.balanceOf(address(this));
@@ -130,7 +130,7 @@ contract Erc20Channel {
 
   function depositERC20(uint256 _amount) public returns(bool) {
     token.transferFrom(msg.sender, address(this), _amount);
-    underlyingBalance.add(_amount); // update underlying asset balance
+    underlyingBalance = underlyingBalance.add(_amount); // update underlying asset balance
     require(token.approve(address(cToken), _amount), 'approval error');
     require(cToken.mint(_amount) == 0, 'minting error');
     emit FundsDeposited(msg.sender, _amount, address(token));
@@ -138,8 +138,8 @@ contract Erc20Channel {
   }
 
   function forceClose() public {
-    require(now > endTime);
-    require(msg.sender == sender);
+    require(now > endTime, 'too early to close');
+    require(msg.sender == sender, 'nonsender address');
     underlyingBalance = 0;
     
     uint256 cTokenBalance = cToken.balanceOf(address(this));
@@ -231,7 +231,7 @@ contract CompoundChannelFactory {
   function createEthChannel(
     address payable _recipient,
     uint256 _endTime,
-    address _cTokenAddress
+    address _cEthAddress
     ) public returns(bool) {
 
     // Creates new Channel Contract
@@ -239,7 +239,7 @@ contract CompoundChannelFactory {
       msg.sender,
       _recipient,
       _endTime,
-      _cTokenAddress,
+      _cEthAddress,
       address(this) // Factory Address
     );
 
