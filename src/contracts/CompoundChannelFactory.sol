@@ -8,6 +8,7 @@ interface CERC20 {
   function mint(uint256) external returns (uint256);
   function redeem(uint256) external returns (uint256);
   function balanceOf(address) external view returns (uint256);
+  function borrow(uint256) external returns (uint256);
 }
 
 interface CETH {
@@ -18,6 +19,12 @@ interface CETH {
   function redeemUnderlying(uint256) external returns (uint256);
   function balanceOf(address) external view returns (uint256);
   function borrow(uint256) external returns (uint256);
+}
+
+interface Comptroller {
+  function markets(address) external returns (bool, uint256);
+  function enterMarkets(address[] calldata) external returns (uint256[] memory);
+  function getAccountLiquidity(address) external view returns (uint256, uint256, uint256);
 }
 
 contract EthChannel {
