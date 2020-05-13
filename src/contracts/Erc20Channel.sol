@@ -46,7 +46,6 @@ contract Erc20Channel {
   IERC20 public token;
   CERC20 public cToken;
   address public factoryAddress;
-  CompChannelFactory public compFactory;
   bool initialized;
 
 //   Events
@@ -56,13 +55,6 @@ contract Erc20Channel {
   // event ChannelClose();
   // event FundsBorrowed();
   
-  constructor(
-     address _factoryAddress
-     ) public {
-        factoryAddress = _factoryAddress;
-        compFactory = CompChannelFactory(_factoryAddress);
-   }
-   
   function init(
     address payable _sender,
     address payable _recipient,
@@ -71,12 +63,11 @@ contract Erc20Channel {
     address _cTokenAddress,
     address _factoryAddress
   ) public returns(bool) {
-    require(msg.sender == factoryAddress);
-    require(initialized == false);
+     // Makes sure the function can only be called once 
+    require(initialized == false, 'already initialized');
     initialized = true;
 
     factoryAddress = _factoryAddress;
-    compFactory = CompChannelFactory(_factoryAddress);
     sender = _sender;
     recipient = _recipient;
     endTime = _endTime;
@@ -100,6 +91,7 @@ contract Erc20Channel {
     require(now > endTime, 'too early to close');
     require(msg.sender == sender, 'nonsender address');
     underlyingBalance = 0;
+    channelNonce += 1;
     
     uint256 cTokenBalance = cToken.balanceOf(address(this));
     require(cToken.redeem(cTokenBalance) == 0, "redeem error");
@@ -112,6 +104,7 @@ contract Erc20Channel {
     bytes memory _signature
   ) public {
     require(msg.sender == recipient, 'nonrecipient address');
+   CompChannelFactory compFactory = CompChannelFactory(factoryAddress);
 
     require(compFactory.checkSignature(
       sender,
@@ -237,6 +230,7 @@ contract Erc20Channel {
     require(cEther.redeem(cEthBalance) == 0, 'redeem error');
     sender.transfer(address(this).balance);
   }
-  
-  fallback() external payable { } //Needed to recieve ether
+  fallback() external payable { }
+//   fallback() external { revert("Function not found"); } 
+//   receive() external payable { }
 }

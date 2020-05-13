@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 // Ethereum
 import { addressShortener } from '../Ethereum/EthHelper';
-import { factoryContract } from '../Ethereum/ContractInstances';
+import { factoryContract, ethChanModel, erc20ChanModel } from '../Ethereum/ContractInstances';
 import { assetData } from '../Ethereum/AssetData';
 
 import {
@@ -43,6 +43,7 @@ export default function CardBox(props) {
     if(assetDetails.symbol === 'ETH') {
       // Ether channel
       await factoryContract.methods.createEthChannel(
+        ethChanModel,
         recipientAddress, 
         +endTime, 
         assetDetails.cTokenAddress
@@ -60,7 +61,8 @@ export default function CardBox(props) {
     }
     else {
       // ERC20 token channel
-      await factoryContract.methods.createErc20Channel(
+      await factoryContract.methods.createERC20Channel(
+        erc20ChanModel,
         recipientAddress, 
         +endTime, 
         assetDetails.tokenAddress, 

@@ -14,9 +14,11 @@ export let borrowContract;
 export let comptrollerContract;
 
 // const factoryAddress = compoundChannelFactory.networks[999].address;
-const factoryAddress = '0x3f301ca75ebc84db14e006bbea25eb65652b7c7c'; // Kovan address 
+// const factoryAddress = '0x3f301ca75ebc84db14e006bbea25eb65652b7c7c'; // Non-clone factory Kovan address 
 const comptrollerAddress = '0x1f5d7f3caac149fe41b8bd62a3673fe6ec0ab73b'; // Kovan address
-
+const factoryAddress = '0xAc29bc122C1d2e7bf5C767f0013D8EeFf6149805'; //cloneFactory on Kovan 
+export const ethChanModel = '0x5c465A28Fa81DF524B9aCbf0741d6a320c1Eb44E'; //EthChan model on Kovan
+export const erc20ChanModel = '0x7cb83e3b5b942dee7ad4c814588170888e21dd7f'; // ERC20Chan model on Kovan
 
 // Creates Core contract instance
 export const initializeWeb3 = () => {
@@ -24,7 +26,7 @@ export const initializeWeb3 = () => {
     const provider =  window.web3.currentProvider;
     web3 = new Web3(provider);
     factoryContract = new web3.eth.Contract(compoundChannelFactory.abi, factoryAddress);
-    comptrollerContract = new web3.eth.Contract(comptrollerContract, comptrollerAddress);
+    comptrollerContract = new web3.eth.Contract(ComptrollerAbi, comptrollerAddress);
   }
   catch (err) {
     throw new Error(`No inject web3: ${err}`);

@@ -45,7 +45,6 @@ contract EthChannel {
   uint8 public channelNonce;
   CETH public cEther;
   address public factoryAddress;
-  CompChannelFactory public compFactory;
   bool initialized;
 
 //   Events
@@ -67,7 +66,6 @@ contract EthChannel {
     initialized = true;
 
     factoryAddress = _factoryAddress;
-    compFactory = CompChannelFactory(factoryAddress);
     sender = _sender;
     recipient = _recipient;
     endTime = _endTime;
@@ -88,6 +86,7 @@ contract EthChannel {
     require(now > endTime, 'too early to close');
     require(msg.sender == sender, 'nonsender address');
     underlyingBalance = 0;
+    channelNonce += 1;
     
     uint256 cEthBalance = cEther.balanceOf(address(this));
     require(cEther.redeem(cEthBalance) == 0, "redeem error");
@@ -100,6 +99,7 @@ contract EthChannel {
     bytes memory _signature
   ) public {
     require(msg.sender == recipient, 'nonrecipient address');
+    CompChannelFactory compFactory = CompChannelFactory(factoryAddress);
 
     require(compFactory.checkSignature(
       sender,
@@ -181,6 +181,7 @@ contract EthChannel {
     tokenGave.transfer(sender, tokenBalance);
   }
   
-  fallback() external payable { } //0.6.0 
-  // function() external payable {} //0.5.0
+  fallback() external payable { }
+//   fallback() external payable { revert("Function not found"); } 
+//   receive() external payable { }
 }
