@@ -13,8 +13,8 @@ interface CERC20 {
   function redeem(uint256) external returns (uint256);
   function balanceOf(address) external view returns (uint256);
   function borrow(uint256) external returns (uint256);
-  function borrowBalanceCurrent(address account) external returns (uint);
-  function repayBorrow(uint repayAmount) external returns (uint);
+  function borrowBalanceCurrent(address) external returns (uint256);
+  function repayBorrow(uint256) external returns (uint256);
 }
 
 interface CETH {
@@ -25,7 +25,7 @@ interface CETH {
   function redeemUnderlying(uint256) external returns (uint256);
   function balanceOf(address) external view returns (uint256);
   function borrow(uint256) external returns (uint256);
-  function borrowBalanceCurrent(address account) external returns (uint);
+  function borrowBalanceCurrent(address) external returns (uint256);
   function repayBorrow() external payable;
 }
 
@@ -186,7 +186,7 @@ contract Erc20Channel {
     cToken.borrow(_getAmount);
     underlyingBalance = underlyingBalance.add(_getAmount); // update underlying asset balance
     // Takes borrow amount and converts back to cToken
-    token.approve(address(address(cToken)), _getAmount);
+    token.approve(address(cToken), _getAmount);
     require(cToken.mint(_getAmount) == 0, 'minting error');
   }
 
@@ -194,20 +194,23 @@ contract Erc20Channel {
     uint256 allowance = token.allowance(msg.sender, address(this));
     uint256 repayAmount = cToken.borrowBalanceCurrent(address(this));
 
-    if(allowance > repayAmount) {
-      token.transfer(address(this), repayAmount);
-      cToken.repayBorrow(repayAmount);
+    if (allowance > repayAmount) {
+      token.transferFrom(msg.sender, address(this), repayAmount);
+      token.approve(address(cToken), repayAmount);
+      require(cToken.repayBorrow(repayAmount) == 0, 'repay error');
     }
 
     else {
-      token.transfer(address(this), allowance);
-      cToken.repayBorrow(allowance);
+      token.transferFrom(msg.sender, address(this), allowance);
+      token.approve(address(cToken), allowance);
+      require(cToken.repayBorrow(allowance) == 0, 'repay error');
     }
   }
 
   function withdrawLoanedERC20(address _tokenGave, address _cTokenGave) public {
     require(_tokenGave != address(token));
     require(_cTokenGave != address(cToken));
+    require(sender == msg.sender);
 
     uint256 repayAmount = cToken.borrowBalanceCurrent(address(this));
     require(repayAmount == 0, 'need to repay debt');
@@ -222,6 +225,9 @@ contract Erc20Channel {
   }
 
   function withdrawLoanedEth(address _cEth) public {
+    require(_cEth != address(cToken));
+    require(sender == msg.sender);
+    
     uint256 repayAmount = cToken.borrowBalanceCurrent(address(this));
     require(repayAmount == 0, 'need to repay debt');
 
@@ -230,6 +236,7 @@ contract Erc20Channel {
     require(cEther.redeem(cEthBalance) == 0, 'redeem error');
     sender.transfer(address(this).balance);
   }
+  
   fallback() external payable { }
 //   fallback() external { revert("Function not found"); } 
 //   receive() external payable { }

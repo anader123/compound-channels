@@ -11,6 +11,7 @@ import {
 } from 'rebass';
 
 import ReactLoading from 'react-loading';
+import Xmark from '../../Images/xmark.svg';
 
 // Ethereum 
 import { addressShortener } from '../../Ethereum/EthHelper';
@@ -27,7 +28,11 @@ export default function LoadChannels(props) {
     <Flex sx={{alignItems:'center', justifyContent:'center', flexDirection:'column'}}>
       <Heading mb={3}>Choose a Channel Contract</Heading>
       {channelLoaded && channels.length === 0 ? 
-        <Text>This address isn't a {addressType} for any channel.</Text>:
+        <Flex sx={{flexDirection:'column', height:'300px', justifyContent:'center'}}>
+          <Image width={'auto'} mb={'20px'} height={'30%'} src={Xmark}/>
+          <Text sx={{fontSize:'1.2em'}}>{addressShortener(window.ethereum.selectedAddress)} isn't a {addressType} for any channel.</Text>
+        </Flex>
+        :
         <LoadingBox updateChannel={updateChannel} channels={channels}/>
       }
       <Button onClick={()=>setStepDash(0)}>Back</Button>
@@ -38,7 +43,7 @@ export default function LoadChannels(props) {
 function LoadingBox(props) {
   const { channels, updateChannel } = props;
   return(
-    <Flex width={'75%'} mt={5} m={4} sx={{ flexWrap:'wrap', justifyContent:'center'}}>
+    <Flex width={'75%'} mt={5} m={4} sx={{ minHeight:'300px', flexWrap:'wrap', justifyContent:'center'}}>
       {channels.length !== 0 ?
         channels.map((channel, index) => {
           return (
@@ -49,7 +54,7 @@ function LoadingBox(props) {
             />
           )})
         :
-        <Flex sx={{ height:'200px'}}>
+        <Flex sx={{ height:'300px'}}>
           <ReactLoading type={'spin'} color={'#47d395'} width={160}></ReactLoading>
         </Flex>
       }

@@ -24,8 +24,9 @@ export default function InputBox(props) {
   return (
     <Flex flexDirection={'column'} alignItems={'center'} justifyContent={'center'}>
       <Card sx={tallCardBoxFormatting}>
-        <Flex flexDirection={'column'} justifyContent={'center'} height={'300px'}>
-          <Heading mb={2}>{label}</Heading>
+        <Flex flexDirection={'column'} alignItems={'flex-start'} height={'350px'}>
+          <Heading mb={'40px'}>{label}</Heading>
+          <Flex flexDirection={'column'} height={'200px'} justifyContent={'space-around'}>
           {dropDown?<TokenDropdown setToken={setToken} />:<div/>}
           {inputs.map((input, index) => {
             return (
@@ -41,6 +42,7 @@ export default function InputBox(props) {
               </Flex>
             )
           })}
+          </Flex>
         </Flex>
       </Card>
     </Flex>

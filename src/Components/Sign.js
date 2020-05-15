@@ -28,7 +28,8 @@ export default function Sign(props) {
       value: signAmount,
       type: "number",
       fx: setSignAmount,
-      text: `Balance: ${channelDetails.formattedBalance} ${channelDetails.symbol}`
+      text: `Balance: ${channelDetails.formattedBalance} ${channelDetails.symbol}`,
+      text: `Channel: ${addressShortener(channelDetails.channelAddress)}`
     }
   ];
 
@@ -85,7 +86,7 @@ export default function Sign(props) {
     nextStep();
   }
 
-  const inputLabel = `Channel: ${addressShortener(channelDetails.channelAddress)}`
+  const inputLabel = 'Sign an Amount';
 
   switch(step) {
     case 1: 

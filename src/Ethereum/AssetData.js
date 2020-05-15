@@ -6,7 +6,7 @@ import REP from '../Images/rep.png';
 import ZRX from '../Images/zrx.png';
 import WBTC from '../Images/wbtc.png';
 import ETH from '../Images/eth.png';
-import USDT from '../Images/tether.png';
+// import USDT from '../Images/tether.png';
 
 // This data is specific to Kovan
 export const assetData = [

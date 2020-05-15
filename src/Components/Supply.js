@@ -25,6 +25,7 @@ export default function Supply(props) {
   const [ channelDetails, setChannelDetails ] = useState({channelAddress: '0x0000000000000000000000000000000000000000', recipient: '0x0000000000000000000000000000000000000000'});
   const [ txHash, setTxHash ] = useState('');
   const [ channelAddress, setChannelAddress ] = useState('');
+  const [ channelLoaded, setChannelLoaded ] = useState(false);
 
   const inputs = [
     {
@@ -46,6 +47,7 @@ export default function Supply(props) {
     const userAddress = window.ethereum.selectedAddress;
     const returnChannels = await loadChannels(userAddress, 'sender');
     setChannels(returnChannels);
+    setChannelLoaded(true);
   }
 
   useEffect(() => {
@@ -119,7 +121,9 @@ export default function Supply(props) {
         updateChannel={updateChannel} 
         channels={channels} 
         previousStep={previousStep} 
-        nextStep={nextStep} 
+        nextStep={nextStep}
+        channelLoaded={channelLoaded}
+        addressType={'sender address'} 
         />
       )
     case 2:

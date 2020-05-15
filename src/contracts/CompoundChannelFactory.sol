@@ -76,14 +76,14 @@ contract CompoundChannelFactory {
   ) public {
 
     address payable clone = createClone(_contract2Clone);
-    Erc20Channel(clone).init(
+    require(Erc20Channel(clone).init(
       msg.sender,
       _recipient,
       _endTime,
       _tokenAddress,
       _cTokenAddress,
       address(this)
-    );
+    ), 'init failed');
 
     // Record new channel information
     senderRegistery[msg.sender].push(clone);

@@ -13,7 +13,7 @@ interface CERC20 {
   function redeem(uint256) external returns (uint256);
   function balanceOf(address) external view returns (uint256);
   function borrow(uint256) external returns (uint256);
-  function borrowBalanceCurrent(address account) external returns (uint);
+  function borrowBalanceCurrent(address account) external view returns (uint);
   function repayBorrow(uint repayAmount) external returns (uint);
 }
 
@@ -25,7 +25,7 @@ interface CETH {
   function redeemUnderlying(uint256) external returns (uint256);
   function balanceOf(address) external view returns (uint256);
   function borrow(uint256) external returns (uint256);
-  function borrowBalanceCurrent(address account) external returns (uint);
+  function borrowBalanceCurrent(address account) external view returns (uint);
   function repayBorrow() external payable;
 }
 
@@ -168,7 +168,10 @@ contract EthChannel {
   }
 
   function withdrawLoanedERC20(address _cTokenGave, address _tokenGave) public {
+    require(_tokenGave != address(token));
     require(_cTokenGave != address(cEther));
+    require(sender == msg.sender);
+    
     uint256 repayAmount = cEther.borrowBalanceCurrent(address(this));
     require(repayAmount == 0, 'need to repay debt');
 

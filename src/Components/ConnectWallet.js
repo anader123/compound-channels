@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Heading } from 'rebass';
+import { Button, Heading, Flex } from 'rebass';
 
 // Ethereum 
 import { initializeWeb3 } from '../Ethereum/ContractInstances';
@@ -34,9 +34,9 @@ export default function ConnectWallet(props) {
     }
   }
   return (
-    <div>
+    <Flex sx={{justifyContent:'center', flexDirection:'column', alignItems:'center'}}>
       <Heading mt={6}>Please connect your Ethereum wallet to create a Channel.</Heading>
       <Button mt={4} onClick={connectWallet}>Connect Wallet</Button>
-    </div>
+    </Flex>
   )
 }
