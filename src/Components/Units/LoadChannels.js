@@ -43,7 +43,7 @@ export default function LoadChannels(props) {
 function LoadingBox(props) {
   const { channels, updateChannel } = props;
   return(
-    <Flex width={'75%'} mt={5} m={4} sx={{ minHeight:'300px', flexWrap:'wrap', justifyContent:'center'}}>
+    <Flex width={'75%'} mt={5} m={4} sx={{ minHeight:'300px', flexWrap:'wrap', alignItems:'center', justifyContent:'center'}}>
       {channels.length !== 0 ?
         channels.map((channel, index) => {
           return (
@@ -54,10 +54,10 @@ function LoadingBox(props) {
             />
           )})
         :
-        <Flex sx={{ height:'300px'}}>
+        <Flex sx={{ height:'160px'}}>
           <ReactLoading type={'spin'} color={'#47d395'} width={160}></ReactLoading>
         </Flex>
-      }
+      } 
     </Flex>
   )
 }

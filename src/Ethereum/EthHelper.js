@@ -14,6 +14,26 @@ export const addressShortener = (address) => {
   return shortAddress;
 }
 
+export const signatureShortener = (sig) => {
+  const shortSig = `${sig.slice(0, 11)}...${sig.slice(124, 132)}`;
+  return shortSig;
+}
+
+export const calculateEndTime = async (days, hours) => {
+  BigNumber.config({ DECIMAL_PLACES: 0 })
+  const currentTime = Date.now();
+  const currentTimeBN = new BigNumber(currentTime);
+  const dayBN = new BigNumber(days);
+  const hourBN = new BigNumber(hours);
+
+  const currentUnixTimeBN = currentTimeBN.div(1000);
+  const daysInSec = await dayBN.times(24).times(60).times(60);
+  const hoursInSec = await hourBN.times(60).times(60);
+  const additionalTime = daysInSec.plus(hoursInSec);
+  const endTime = await currentUnixTimeBN.plus(additionalTime);
+  return endTime;
+}
+
 // Formats data from the blockchain
 export const formatDisplayAmount = async (value, decimals) => {
   const bn = new BigNumber(value);

@@ -110,6 +110,7 @@ export const cardBoxFormatting = {
   alignItems: 'center',
   flexDirection: 'column',
   cursor: 'pointer',
+  backgroundColor:'rgb(22, 23, 24)'
 }
 
 export const tallCardBoxFormatting = {
@@ -123,5 +124,6 @@ export const tallCardBoxFormatting = {
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-  flexDirection: 'column'
+  flexDirection: 'column',
+  backgroundColor:'rgb(22, 23, 24)'
 }

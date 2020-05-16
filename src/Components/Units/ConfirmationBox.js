@@ -1,7 +1,6 @@
 import React from 'react';
 import { tallCardBoxFormatting } from '../../theme';
 
-
 import {
   Flex,
   Card,

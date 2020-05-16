@@ -9,8 +9,9 @@ import InputBox from './Units/InputBox';
 import { 
   formatBeforeSend, 
   addressShortener, 
+  signatureShortener,
   verifySignature, 
-  loadChannels 
+  loadChannels
 } from '../Ethereum/EthHelper';
 
 // Images
@@ -34,24 +35,24 @@ export default function Inspect(props) {
 
   const inputs = [
     {
-      label: "Amount",
-      value: signAmount,
-      type: "number",
-      fx: setSignAmount
-    },
-    {
       label: "Signature",
       value: signature,
       type: "string",
       fx: setSignature
+    },
+    {
+      label: "Amount",
+      value: signAmount,
+      type: "number",
+      fx: setSignAmount
     }
   ];
 
   const confirmDetails = [
+    `Signature: ${signatureShortener(signature)}`,
     `Channel Address: ${addressShortener(channelDetails.channelAddress)}`,
     `Sender Address: ${addressShortener(channelDetails.sender)}`,
     `Amount: ${signAmount} ${channelDetails.symbol}`,
-    `Signature: ${signature}`,
   ]
 
   const getChannels = async () => {
@@ -113,7 +114,13 @@ export default function Inspect(props) {
     case 2:
       return (
         <Flex flexDirection={'column'} alignItems={'center'} justifyContent={'center'}>
-          <InputBox text={true} dropDown={false} label={inputLabel} inputs={inputs} />
+          <InputBox 
+          text={true}
+          textInfo={[]} 
+          dropDown={false} 
+          label={inputLabel} 
+          inputs={inputs} 
+          />
           <Flex>
             <Button onClick={previousStep}>Back</Button>
             <Button onClick={verifySig}>Verify Sig</Button>

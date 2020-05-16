@@ -137,7 +137,14 @@ export default function Borrow(props) {
     case 2:
       return (
         <Flex flexDirection={'column'} alignItems={'center'} justifyContent={'center'}>
-          <InputBox text={true} setToken={setLoanedAsset} dropDown={true} label={inputLabel} inputs={inputs} />
+          <InputBox 
+            text={true} 
+            setToken={setLoanedAsset} 
+            dropDown={true} 
+            label={inputLabel} 
+            inputs={inputs} 
+            textInfo={[]} 
+          />
           <Flex>
             <Button onClick={previousStep}>Back</Button>
             <Button onClick={nextStep}>Next</Button>

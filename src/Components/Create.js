@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 
 // Ethereum
-import { addressShortener } from '../Ethereum/EthHelper';
+import { addressShortener, calculateEndTime } from '../Ethereum/EthHelper';
 import { createChannel } from '../Ethereum/ChannelContractFunctions';
 import { assetData } from '../Ethereum/AssetData';
+
 
 import {
   Flex,
@@ -15,12 +16,14 @@ import InputBox from './Units/InputBox';
 import ConfirmationBox from './Units/ConfirmationBox';
 import TransactionBox from './Units/TransactionBox';
 import LoadingScreen from './Units/LoadingScreen';
+import TokenDropdown from './Units/TokenDropdown';
 
 export default function CardBox(props) {
   const { setStepDash } = props; // Dashboard Step Setter
   const [ step, setStep ] = useState(1);
   // Info needed for creating a channel
-  const [ endTime, setEndTime ] = useState(0);
+  const [ hours, setHours] = useState(0);
+  const [ days, setDays] = useState(0);
   const [ recipientAddress, setRecipientAddress ] = useState('');
   const [ assetDetails, setAssetDetails ] = useState(assetData[0]);
 
@@ -43,13 +46,14 @@ export default function CardBox(props) {
     const symbol = assetDetails.symbol;
     const tokenAddress = assetDetails.tokenAddress;
     const cTokenAddress = assetDetails.cTokenAddress;
-
+    const endTime = await calculateEndTime(days, hours);
+    
     try {
       createChannel(
         userAddress,
         recipientAddress, 
         symbol, 
-        +endTime,
+        endTime,
         tokenAddress, 
         cTokenAddress, 
         setStep, 
@@ -72,6 +76,17 @@ export default function CardBox(props) {
     setAssetDetails(tokenDetails);
   }
 
+  const confirmDetails = [
+    `Asset: ${assetDetails.symbol}`,
+    `Recipient: ${addressShortener(recipientAddress)}`,
+    `Length: ${days} days and ${hours} hours`
+  ]
+
+  const image = {
+    bool: true,
+    src: assetDetails.image
+  }
+
   const inputs = [
     {
       label: "Recipient Address",
@@ -80,34 +95,30 @@ export default function CardBox(props) {
       fx: setRecipientAddress
     },
     {
-      label: "Channel Experation Time",
-      value: endTime,
+      label: "Number of Days",
+      value: days,
       type: "number",
-      fx: setEndTime
+      fx: setDays
+    },
+    {
+      label: "Number of Hours",
+      value: hours,
+      type: "number",
+      fx: setHours
     }
   ];
 
-  const confirmDetails = [
-    `Asset: ${assetDetails.symbol}`,
-    `Recipient: ${addressShortener(recipientAddress)}`,
-    `EndTime: ${endTime}`
-  ]
-
-  const image = {
-    bool: true,
-    src: assetDetails.image
-  }
-
-  const confirmHeading = 'Confirm your Channel';
+  const confirmHeading = "Confirm your Channel Info"
 
   switch(step) {
     case 1: 
       return (
       <Flex flexDirection={'column'} alignItems={'center'} justifyContent={'center'}>
         <InputBox
-          label={"Create a Channel"} 
+          label={"Enter Channel Info"} 
           inputs={inputs} 
           setToken={setToken} 
+          textInfo={[]}
           dropDown={true} />
           <Flex>
             <Button onClick={()=>setStepDash(0)}>Back</Button>

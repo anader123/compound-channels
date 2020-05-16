@@ -18,7 +18,7 @@ export default function InputBox(props) {
     dropDown, 
     setToken, 
     label, 
-    text 
+    textInfo 
   } = props;
 
   return (
@@ -27,11 +27,15 @@ export default function InputBox(props) {
         <Flex flexDirection={'column'} alignItems={'flex-start'} height={'350px'}>
           <Heading mb={'40px'}>{label}</Heading>
           <Flex flexDirection={'column'} height={'200px'} justifyContent={'space-around'}>
+          {textInfo.map((info, index) => {
+            return (
+              <Text key={index}>{info.text}</Text>
+            )
+          })}
           {dropDown?<TokenDropdown setToken={setToken} />:<div/>}
           {inputs.map((input, index) => {
             return (
               <Flex key={index} flexDirection={'column'} mt={'5px'} >
-                {text?<Text mb={4}>{input.text}</Text>:<div/>}
                 <Label pb={1}>{input.label}</Label>
                  <Input 
                     type={input.type} 
