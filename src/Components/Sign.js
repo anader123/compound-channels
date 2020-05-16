@@ -66,7 +66,7 @@ export default function Sign(props) {
     const userAddress = window.ethereum.selectedAddress;
     const { decimals, channelAddress, channelNonce } = channelDetails;
     const amount = await formatBeforeSend(signAmount, decimals);
-    // if(+amount <= +channelDetails.balance) {
+    if(+amount <= +channelDetails.balance) {
       await signData(
         userAddress, 
         amount, 
@@ -75,10 +75,10 @@ export default function Sign(props) {
         nextStep,
         channelNonce
         );
-    // }
-    // else {
-    //   window.alert('Please enter a smaller amount')
-    // }
+    }
+    else {
+      window.alert('Please enter a smaller amount')
+    }
   }
 
   const updateChannel = (channel) => {

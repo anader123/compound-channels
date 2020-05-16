@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 // Ethereum
 import { addressShortener } from '../Ethereum/EthHelper';
-import { factoryContract, ethChanModel, erc20ChanModel } from '../Ethereum/ContractInstances';
+import { createChannel } from '../Ethereum/ChannelContractFunctions';
 import { assetData } from '../Ethereum/AssetData';
 
 import {
@@ -40,44 +40,26 @@ export default function CardBox(props) {
 
   const createNewChannel = async () => {
     const userAddress = window.ethereum.selectedAddress;
-    if(assetDetails.symbol === 'ETH') {
-      // Ether channel
-      await factoryContract.methods.createEthChannel(
-        ethChanModel,
+    const symbol = assetDetails.symbol;
+    const tokenAddress = assetDetails.tokenAddress;
+    const cTokenAddress = assetDetails.cTokenAddress;
+
+    try {
+      createChannel(
+        userAddress,
         recipientAddress, 
-        +endTime, 
-        assetDetails.cTokenAddress
-        ).send({ from:userAddress, gas:'2000000' })
-      .once('transactionHash', (transactionHash) => {
-        setStep(step + 1);
-        setTxHash(transactionHash);
-      })
-      .once('receipt', (receipt) => {
-        console.log(receipt)
-        setStep(step + 2);
-        setChannelAddress(receipt.events.ChannelCreated.returnValues.channelAddress);
-      })
-      .on('error', console.error); 
+        symbol, 
+        +endTime,
+        tokenAddress, 
+        cTokenAddress, 
+        setStep, 
+        setTxHash,
+        setChannelAddress,
+        step
+      )
     }
-    else {
-      // ERC20 token channel
-      await factoryContract.methods.createERC20Channel(
-        erc20ChanModel,
-        recipientAddress, 
-        +endTime, 
-        assetDetails.tokenAddress, 
-        assetDetails.cTokenAddress
-        ).send({ from:userAddress, gas:'2000000' })
-      .once('transactionHash', (transactionHash) => {
-        setStep(step + 1);
-        setTxHash(transactionHash);
-      })
-      .once('receipt', (receipt) => {
-        console.log(receipt)
-        setStep(step + 2);
-        setChannelAddress(receipt.events.ChannelCreated.returnValues.channelAddress);
-      })
-      .on('error', console.error); 
+    catch (error) {
+      console.log(error);
     }
   }
 

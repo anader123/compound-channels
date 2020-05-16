@@ -9,7 +9,7 @@ import TransactionBox from './Units/TransactionBox';
 
 // Ethereum
 import { formatBeforeSend, addressShortener, loadChannels } from '../Ethereum/EthHelper';
-import { initalizeERC20, initalizeERC20Channel, initalizeEthChannel } from '../Ethereum/ContractInstances';
+import { supplyAssets } from '../Ethereum/ChannelContractFunctions';
 
 import {
   Flex,
@@ -24,7 +24,6 @@ export default function Supply(props) {
   const [ amount, setAmount ] = useState(0); // not converted amount
   const [ channelDetails, setChannelDetails ] = useState({channelAddress: '0x0000000000000000000000000000000000000000', recipient: '0x0000000000000000000000000000000000000000'});
   const [ txHash, setTxHash ] = useState('');
-  const [ channelAddress, setChannelAddress ] = useState('');
   const [ channelLoaded, setChannelLoaded ] = useState(false);
 
   const inputs = [
@@ -65,44 +64,24 @@ export default function Supply(props) {
     setStep(newStep)
   }
 
-  const supplyAssets = async () => {
+  const supplyChannelAssets = async () => {
     const sender = window.ethereum.selectedAddress;
     const tokenAddress = channelDetails.tokenAddress;
     const channelAddress = channelDetails.channelAddress;
     const decimals = channelDetails.decimals;
     const decimalAmount = await formatBeforeSend(amount, decimals);
-    let channelContract; 
-
-    if(channelDetails.symbol === 'ETH') {
-      channelContract = await initalizeEthChannel(channelAddress);
-      channelContract.methods.depositEth().send({from: sender, value: decimalAmount})
-      .once('transactionHash', (transactionHash) => {
-        setStep(step + 1);
-        setTxHash(transactionHash);
-      })
-      .once('receipt', (receipt) => {
-        setStep(step + 2);
-        setChannelAddress(receipt.events.rChannelCreated.eturnValues.channelAddress);
-      })
-      .on('error', console.error); 
-    }
-    else {
-      const ERC20Contract = await initalizeERC20(tokenAddress);
-      channelContract = await initalizeERC20Channel(channelAddress);
-  
-      // Approves token and then deposits funds into the channel
-      await ERC20Contract.methods.approve(channelAddress, decimalAmount).send({from: sender});
-      channelContract.methods.depositERC20(decimalAmount).send({from: sender})
-      .once('transactionHash', (transactionHash) => {
-        setStep(step + 1);
-        setTxHash(transactionHash);
-      })
-      .once('receipt', (receipt) => {
-        setStep(step + 2);
-        setChannelAddress(receipt.events.rChannelCreated.eturnValues.channelAddress);
-      })
-      .on('error', console.error); 
-    }
+    const symbol = channelDetails.symbol;
+    
+    supplyAssets(
+      sender,
+      tokenAddress,
+      channelAddress,
+      decimalAmount,
+      symbol,
+      step,
+      setStep,
+      setTxHash
+    );
   }
 
   const updateChannel = (channel) => {
@@ -144,7 +123,7 @@ export default function Supply(props) {
         confirmHeading={confirmHeading} 
         confirmDetails={confirmDetails} 
         previousStep={previousStep} 
-        confirmFunction={supplyAssets} 
+        confirmFunction={supplyChannelAssets} 
         />
       )
     case 4:
@@ -153,7 +132,7 @@ export default function Supply(props) {
       )
     case 5:
       return (
-        <TransactionBox setStepDash={setStepDash} channelAddress={channelAddress} txHash={txHash}/>
+        <TransactionBox setStepDash={setStepDash} channelAddress={channelDetails.channelAddress} txHash={txHash}/>
       )
     default:
       return step;

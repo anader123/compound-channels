@@ -9,7 +9,7 @@ import TransactionBox from './Units/TransactionBox';
 
 // Ethereum
 import { formatBeforeSend, addressShortener, loadChannels } from '../Ethereum/EthHelper';
-import { initalizeERC20, initalizeERC20Channel, initalizeEthChannel, comptrollerAddress } from '../Ethereum/ContractInstances';
+import { borrowAsset } from '../Ethereum/ChannelContractFunctions';
 
 import { assetData } from '../Ethereum/AssetData';
 
@@ -25,7 +25,6 @@ export default function Borrow(props) {
   const [ channels, setChannels ] = useState([]);
   const [ channelDetails, setChannelDetails ] = useState({channelAddress: '0x0000000000000000000000000000000000000000', recipient: '0x0000000000000000000000000000000000000000'});
   const [ txHash, setTxHash ] = useState('');
-  const [ channelAddress, setChannelAddress ] = useState('');
   const [ loanedAssetDetails, setLoanedAssetDetails ] = useState({symbol:'DAI'});
   const [ borrowAmount, setBorrowAmount ] = useState('');
   const [ loanAmount, setLoanAmount ] = useState('');
@@ -75,88 +74,37 @@ export default function Borrow(props) {
     setStep(newStep)
   }
 
-  // FIXME: need to reconfigure for borrow 
-  const borrowAsset = async () => {
+  const borrowChannelAsset = async () => {
     const sender = window.ethereum.selectedAddress;
     const tokenAddress = channelDetails.tokenAddress;
     const channelAddress = channelDetails.channelAddress;
-    const decimals = channelDetails.decimals;
+    const loanDecimals = loanedAssetDetails.decimals;
+    const borrowDecimals = channelDetails.decimals;
+    const decimalLoanAmount = await formatBeforeSend(loanAmount, loanDecimals);
+    const decimalBorrowAmount = await formatBeforeSend(borrowAmount, borrowDecimals);
+    const borrowAssetSymbol = channelDetails.symbol;
+    const loanedAssetSymbol = loanedAssetDetails.symbol;
+    const loanedTokenAddress = loanedAssetDetails.tokenAddress;
+    const loandTokenCTokenAddress = loanedAssetDetails.cTokenAddress;
 
-    if(channelDetails.symbol === loanedAssetDetails.symbol) {
-      window.alert('Please choose another asset to borrow');
-      return;
-    }
-    
-    let channelContract;
-    const decimalLoanAmount = await formatBeforeSend(loanAmount, decimals);
-    const decimalBorrowAmount = await formatBeforeSend(borrowAmount, decimals);
-
-    if(channelDetails.symbol === 'ETH') {
-      const ERC20Contract = await initalizeERC20(tokenAddress);
-      await ERC20Contract.methods.approve(
-        channelAddress, 
-        decimalLoanAmount
-      ).send({from: sender});
-
-      channelContract = await initalizeEthChannel(channelAddress);
-      channelContract.methods.borrowEthAgainstERC20(
-        loanedAssetDetails.tokenAddress,
-        loanedAssetDetails.cTokenAddress,
+    try{
+      borrowAsset(
+        sender,
+        tokenAddress,
+        channelAddress,
         decimalLoanAmount,
         decimalBorrowAmount,
-        comptrollerAddress
-      ).send({from: sender})
-      .once('transactionHash', (transactionHash) => {
-        setStep(step + 1);
-        setTxHash(transactionHash);
-      })
-      .once('receipt', (receipt) => {
-        setStep(step + 2);
-        setChannelAddress(receipt.events.rChannelCreated.eturnValues.channelAddress);
-      })
-      .on('error', console.error); 
+        borrowAssetSymbol,
+        loanedAssetSymbol,
+        loanedTokenAddress,
+        loandTokenCTokenAddress,
+        step,
+        setStep,
+        setTxHash
+      );
     }
-
-    else {
-      channelContract = await initalizeERC20Channel(channelAddress);
-      if(loanedAssetDetails.symbol === 'ETH') {
-        console.log(loanedAssetDetails)
-        await channelContract.methods.borrowERC20AgainstETH(
-          loanedAssetDetails.cTokenAddress,
-          decimalBorrowAmount,
-          comptrollerAddress
-        ).send({from: sender, value: decimalLoanAmount})
-        .once('transactionHash', (transactionHash) => {
-          setStep(step + 1);
-          setTxHash(transactionHash);
-        })
-        .once('receipt', (receipt) => {
-          setStep(step + 2);
-          setChannelAddress(receipt.events.rChannelCreated.eturnValues.channelAddress);
-        })
-        .on('error', console.error); 
-      }
-
-      else {
-        const ERC20Contract = await initalizeERC20(tokenAddress);
-        await ERC20Contract.methods.approve(channelAddress, decimalLoanAmount).send({from: sender});
-        await channelContract.methods.borrowERC20AgainstERC20(
-          loanedAssetDetails.tokenAddress,
-          loanedAssetDetails.cTokenAddress,
-          decimalLoanAmount,
-          decimalBorrowAmount,
-          comptrollerAddress
-        ).send({from: sender})
-        .once('transactionHash', (transactionHash) => {
-          setStep(step + 1);
-          setTxHash(transactionHash);
-        })
-        .once('receipt', (receipt) => {
-          setStep(step + 2);
-          setChannelAddress(receipt.events.rChannelCreated.eturnValues.channelAddress);
-        })
-        .on('error', console.error); 
-      }
+    catch(error) {
+      console.log(error);
     }
   }
 
@@ -204,7 +152,7 @@ export default function Borrow(props) {
         confirmHeading={confirmHeading} 
         confirmDetails={confirmDetails} 
         previousStep={previousStep} 
-        confirmFunction={borrowAsset} 
+        confirmFunction={borrowChannelAsset} 
         />
       )
     case 4:
@@ -213,7 +161,7 @@ export default function Borrow(props) {
       )
     case 5:
       return (
-        <TransactionBox setStepDash={setStepDash} channelAddress={channelAddress} txHash={txHash}/>
+        <TransactionBox setStepDash={setStepDash} channelAddress={channelDetails.channelAddress} txHash={txHash}/>
       )
     default:
       return step;

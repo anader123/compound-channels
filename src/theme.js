@@ -44,7 +44,7 @@ export default {
   },
   link: {
     textDecoration: 'none',
-      color: 'black',
+      color: 'white',
       '&:hover': {
           color: 'primary',
       }
@@ -94,16 +94,15 @@ export default {
 
 export const cardBoxFormatting = {
   ':hover': {
-    backgroundColor: '#F4F4FA',
+    backgroundColor: 'rgb(53, 55, 56)',
     transition: '200ms',
-    transform: 'scale(1.08)',
-    // width: 'auto'
+    transform: 'scale(1.08)'
   },
   m: [3, 4],
   p: 1,
   transition: '300ms',
   borderRadius: 2,
-  boxShadow: '0 0 16px rgba(0, 0, 0, .25)',
+  boxShadow: '0 0 16px rgba(0, 0, 0, .75)',
   height: '200px',
   width: '250px',
   display: 'flex',
@@ -118,7 +117,7 @@ export const tallCardBoxFormatting = {
   p: 1,
   transition: '300ms',
   borderRadius: 2,
-  boxShadow: '0 0 16px rgba(0, 0, 0, .25)',
+  boxShadow: '0 0 16px rgba(0, 0, 0, .75)',
   height: '450px',
   width: '350px',
   display: 'flex',

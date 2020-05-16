@@ -5,6 +5,10 @@
   max-width: 100%;
   width: 100%;
   font-family: 'Roboto', sans-serif;
-  /* background-color: rgb(7, 7, 7);
-  color: white; */
+  background-color: #282A2B;
+  color: white;
+}
+
+.new-color {
+  fill: #47d395
 }

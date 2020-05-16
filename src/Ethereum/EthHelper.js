@@ -1,5 +1,10 @@
 import BigNumber from 'bignumber.js';
-import { factoryContract, initalizeERC20Channel, initalizeEthChannel, web3 } from './ContractInstances';
+import { 
+  factoryContract, 
+  initalizeERC20Channel, 
+  initalizeEthChannel, 
+  web3
+} from './ContractInstances';
 import { assetData } from './AssetData';
 const sigUtil = require('eth-sig-util');
 
@@ -152,11 +157,6 @@ export const verifySignature = async (
   sig
   ) => {
 
-    console.log(senderAddress, 
-      amount,
-      channelNonce, 
-      channelAddress,
-      sig)
   const domainData = {
     name: "Compound Channels",
     version: "1",
@@ -186,3 +186,5 @@ export const verifySignature = async (
 
   return formattedRecovered === formattedSender;
 }
+
+

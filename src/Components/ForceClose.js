@@ -8,7 +8,7 @@ import TransactionBox from './Units/TransactionBox';
 
 // Ethereum
 import { addressShortener, loadChannels } from '../Ethereum/EthHelper';
-import { initalizeERC20Channel, initalizeEthChannel } from '../Ethereum/ContractInstances';
+import { forceClose } from '../Ethereum/ChannelContractFunctions';
 
 export default function ForceClose(props) {
   const { setStepDash } = props;
@@ -16,7 +16,6 @@ export default function ForceClose(props) {
   const [ channelDetails, setChannelDetails ] = useState({channelAddress: '0x0000000000000000000000000000000000000000', recipient: '0x0000000000000000000000000000000000000000'});
   const [ channels, setChannels ] = useState([]);
   const [ txHash, setTxHash ] = useState('');
-  const [ channelAddress, setChannelAddress ] = useState('');
   const [ channelLoaded, setChannelLoaded ] = useState(false);
 
   const confirmDetails = [
@@ -38,35 +37,26 @@ export default function ForceClose(props) {
     }
   }, [channels.length])
 
-  const forceCloseChannel = async () => {
+  const forceCloseCompChannel = async () => {
     const userAddress = window.ethereum.selectedAddress;
     const checkSumUserAddress = window.web3.toChecksumAddress(userAddress)
     const sender = channelDetails.sender;
-    let channelContract;
+    const channelAddress = channelDetails.channelAddress; 
+    const symbol = channelDetails.symbol;
 
-    if(checkSumUserAddress === sender) {
-      const channelAddress = channelDetails.channelAddress;  
-      // Sets up contract instances for either Eth or ERC20
-      if(channelDetails.symbol === 'ETH') {
-        channelContract = await initalizeEthChannel(channelAddress);
-      }
-      else {
-        channelContract = await initalizeERC20Channel(channelAddress);
-      }
-  
-      channelContract.methods.forceClose().send({from: userAddress})
-      .once('transactionHash', (transactionHash) => {
-        setStep(step + 1);
-        setTxHash(transactionHash);
-      })
-      .once('receipt', (receipt) => {
-        setStep(step + 2);
-        setChannelAddress(receipt.events.rChannelCreated.eturnValues.channelAddress);
-      })
-      .on('error', console.error);
+    try{
+      forceClose(
+        sender, 
+        checkSumUserAddress, 
+        channelAddress,
+        symbol,
+        step,
+        setStep,
+        setTxHash
+        );
     }
-    else {
-      window.alert('Current address is not the sender for this channel');
+    catch (error){
+      console.log(error);
     }
   }
 
@@ -105,7 +95,7 @@ export default function ForceClose(props) {
           previousStep={previousStep} 
           confirmDetails={confirmDetails}
           confirmHeading={"Force Close Channel"}
-          confirmFunction={forceCloseChannel}
+          confirmFunction={forceCloseCompChannel}
         />
       )
     case 2:
@@ -114,7 +104,7 @@ export default function ForceClose(props) {
       )
     case 3:
       return (
-        <TransactionBox setStepDash={setStepDash} channelAddress={channelAddress} txHash={txHash} assetDetails={channelDetails}/>
+        <TransactionBox setStepDash={setStepDash} channelAddress={channelDetails.channelAddress} txHash={txHash} assetDetails={channelDetails}/>
       )
     default:
       return step;
