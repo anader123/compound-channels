@@ -19,6 +19,14 @@ export const assetData = [
     "decimals": 18
   },
   {
+    "tokenAddress": "0x0000000000000000000000000000000000000000",
+    "cTokenAddress": "0xf92FbE0D3C0dcDAE407923b2Ac17eC223b1084E4",
+    "symbol": "ETH",
+    "name": "Ether",
+    "image": ETH,
+    "decimals": 18
+  },
+  {
     "tokenAddress": "0x9dDB308C14f700d397bB26F584Ac2E303cdc7365",
     "cTokenAddress": "0xd5ff020f970462816fdd31a603cb7d120e48376e",
     "symbol": "BAT",
@@ -58,14 +66,7 @@ export const assetData = [
     "image": WBTC,
     "decimals": 8
   },
-  {
-    "tokenAddress": "0x0000000000000000000000000000000000000000",
-    "cTokenAddress": "0xf92FbE0D3C0dcDAE407923b2Ac17eC223b1084E4",
-    "symbol": "ETH",
-    "name": "Ether",
-    "image": ETH,
-    "decimals": 18
-  }
+ 
   // {
   //   "tokenAddress": "",
   //   "cTokenAddress": "",

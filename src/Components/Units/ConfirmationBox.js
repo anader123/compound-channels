@@ -23,7 +23,7 @@ export default function LoadingScreen(props) {
     <Flex flexDirection={'column'} alignItems={'center'} justifyContent={'center'}>
       <Card sx={tallCardBoxFormatting} height={'400px'}>
         <Flex flexDirection={'column'} alignItems={'center'} height={'300px'}>
-          <Heading mb={4}>{confirmHeading}</Heading>
+          <Heading sx={{textDecoration:'underline'}} mb={4}>{confirmHeading}</Heading>
           {image.bool ? <Image width={70} height={70} src={image.src} /> : <div/>}
           {confirmDetails.map((text, index) => {
             return <Text key={index}>{text}</Text>

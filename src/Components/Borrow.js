@@ -25,46 +25,17 @@ export default function Borrow(props) {
   const [ channels, setChannels ] = useState([]);
   const [ channelDetails, setChannelDetails ] = useState({channelAddress: '0x0000000000000000000000000000000000000000', recipient: '0x0000000000000000000000000000000000000000'});
   const [ txHash, setTxHash ] = useState('');
-  const [ loanedAssetDetails, setLoanedAssetDetails ] = useState({symbol:'DAI'});
+  const [ giveAssetDetails, setGiveAssetDetails ] = useState({symbol:'DAI'});
   const [ borrowAmount, setBorrowAmount ] = useState('');
-  const [ loanAmount, setLoanAmount ] = useState('');
+  const [ giveAmount, setGiveAmount ] = useState('');
   const [ channelLoaded, setChannelLoaded ] = useState(false);
-
-  const inputs = [
-    {
-      label: `Loan Amount (${loanedAssetDetails.symbol})`,
-      value: loanAmount,
-      type: "number",
-      fx: setLoanAmount
-    },
-    {
-      label: `Borrow Amount (${channelDetails.symbol})`,
-      value: borrowAmount,
-      type: "number",
-      fx: setBorrowAmount
-    }
-  ];
-
-  const confirmDetails = [
-    `Channel Address: ${addressShortener(channelDetails.channelAddress)}`,
-    `Recipient Address: ${addressShortener(channelDetails.recipient)}`,
-    `Loan Amount: ${loanAmount} ${loanedAssetDetails.symbol}`,
-    `Borrow Amount: ${borrowAmount} ${channelDetails.symbol}`
-  ];
-
-  const getChannels = async () => {
-    const userAddress = window.ethereum.selectedAddress;
-    const returnChannels = await loadChannels(userAddress, 'sender');
-    setChannels(returnChannels);
-    setChannelLoaded(true);
-  }
 
   useEffect(() => {
     if(channels.length === 0) {
       getChannels();
     }
   },[channels.length])
-
+  
   const nextStep = () => {
     const newStep = step + 1;
     setStep(newStep)
@@ -73,31 +44,38 @@ export default function Borrow(props) {
     const newStep = step - 1;
     setStep(newStep)
   }
+  
+  const getChannels = async () => {
+    const userAddress = window.ethereum.selectedAddress;
+    const returnChannels = await loadChannels(userAddress, 'sender');
+    setChannels(returnChannels);
+    setChannelLoaded(true);
+  }
 
   const borrowChannelAsset = async () => {
     const sender = window.ethereum.selectedAddress;
     const tokenAddress = channelDetails.tokenAddress;
     const channelAddress = channelDetails.channelAddress;
-    const loanDecimals = loanedAssetDetails.decimals;
+    const giveDecimals = giveAssetDetails.decimals;
     const borrowDecimals = channelDetails.decimals;
-    const decimalLoanAmount = await formatBeforeSend(loanAmount, loanDecimals);
+    const decimalGiveAmount = await formatBeforeSend(giveAmount, giveDecimals);
     const decimalBorrowAmount = await formatBeforeSend(borrowAmount, borrowDecimals);
     const borrowAssetSymbol = channelDetails.symbol;
-    const loanedAssetSymbol = loanedAssetDetails.symbol;
-    const loanedTokenAddress = loanedAssetDetails.tokenAddress;
-    const loandTokenCTokenAddress = loanedAssetDetails.cTokenAddress;
+    const giveAssetSymbol = giveAssetDetails.symbol;
+    const giveTokenAddress = giveAssetDetails.tokenAddress;
+    const giveTokenCTokenAddress = giveAssetDetails.cTokenAddress;
 
     try{
       borrowAsset(
         sender,
         tokenAddress,
         channelAddress,
-        decimalLoanAmount,
+        decimalGiveAmount,
         decimalBorrowAmount,
         borrowAssetSymbol,
-        loanedAssetSymbol,
-        loanedTokenAddress,
-        loandTokenCTokenAddress,
+        giveAssetSymbol,
+        giveTokenAddress,
+        giveTokenCTokenAddress,
         step,
         setStep,
         setTxHash
@@ -113,13 +91,37 @@ export default function Borrow(props) {
     nextStep();
   }
 
-  const setLoanedAsset = (symbol) => {
+  const setGiveAsset = (symbol) => {
     const assetDetails = assetData.find(asset => asset.symbol === symbol);
-    setLoanedAssetDetails(assetDetails);
+    setGiveAssetDetails(assetDetails);
   }
 
-  const inputLabel = `Channel: ${addressShortener(channelDetails.channelAddress)}`;
-  const confirmHeading = 'Confirm your Transaction';
+  const inputs = [
+    {
+      label: `Give Amount (${giveAssetDetails.symbol})`,
+      value: giveAmount,
+      type: "number",
+      fx: setGiveAmount
+    },
+    {
+      label: `Borrow Amount (${channelDetails.symbol})`,
+      value: borrowAmount,
+      type: "number",
+      fx: setBorrowAmount
+    }
+  ]
+
+  const confirmDetails = [
+    `Channel Address: ${addressShortener(channelDetails.channelAddress)}`,
+    `Recipient Address: ${addressShortener(channelDetails.recipient)}`,
+    `Give Amount: ${giveAmount} ${giveAssetDetails.symbol}`,
+    `Borrow Amount: ${borrowAmount} ${channelDetails.symbol}`
+  ]
+
+  const textInfo = [
+    `Channel: ${addressShortener(channelDetails.channelAddress)}`,
+    `Balance: ${channelDetails.formattedBalance} ${channelDetails.symbol}`
+  ]
   
   switch(step) {
     case 1: 
@@ -139,11 +141,11 @@ export default function Borrow(props) {
         <Flex flexDirection={'column'} alignItems={'center'} justifyContent={'center'}>
           <InputBox 
             text={true} 
-            setToken={setLoanedAsset} 
+            setToken={setGiveAsset} 
             dropDown={true} 
-            label={inputLabel} 
+            label={'Enter Borrow Info'} 
             inputs={inputs} 
-            textInfo={[]} 
+            textInfo={textInfo} 
           />
           <Flex>
             <Button onClick={previousStep}>Back</Button>
@@ -156,7 +158,7 @@ export default function Borrow(props) {
         <ConfirmationBox 
         image={{bool:false}}
         confirmButton={true}
-        confirmHeading={confirmHeading} 
+        confirmHeading={'Confirm your Transaction'} 
         confirmDetails={confirmDetails} 
         previousStep={previousStep} 
         confirmFunction={borrowChannelAsset} 

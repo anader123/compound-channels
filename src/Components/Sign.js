@@ -39,14 +39,13 @@ export default function Sign(props) {
       label: `Amount (${channelDetails.symbol})`,
       value: signAmount,
       type: "number",
-      fx: setSignAmount,
-      text: `Balance: ${channelDetails.formattedBalance} ${channelDetails.symbol}`,
+      fx: setSignAmount
     }
   ];
 
   const textInfo = [
-    {text: `Channel: ${addressShortener(channelDetails.channelAddress)}`},
-    {text: `Balance: ${channelDetails.formattedBalance} ${channelDetails.symbol}`}
+    `Channel: ${addressShortener(channelDetails.channelAddress)}`,
+    `Balance: ${channelDetails.formattedBalance} ${channelDetails.symbol}`
   ]
 
   const sigDetails = [
@@ -65,6 +64,7 @@ export default function Sign(props) {
   const copySignature = () => {
     navigator.clipboard.writeText(signature);
     setCopied(true);
+    setTimeout(() => {setCopied(false)}, 1200);
   }
   
   const nextStep = () => {
@@ -87,7 +87,8 @@ export default function Sign(props) {
     const userAddress = window.ethereum.selectedAddress;
     const { decimals, channelAddress, channelNonce } = channelDetails;
     const amount = await formatBeforeSend(signAmount, decimals);
-    if(+amount <= +channelDetails.balance) {
+    console.log(signAmount, channelDetails.formattedBalance)
+    if(+signAmount <= +channelDetails.formattedBalance) {
       await signData(
         userAddress, 
         amount, 
@@ -135,7 +136,7 @@ export default function Sign(props) {
       <Flex flexDirection={'column'} alignItems={'center'} justifyContent={'center'}>
         <Card sx={tallCardBoxFormatting} height={'400px'}>
           <Flex flexDirection={'column'} alignItems={'center'}>
-            <Heading m={'40px'}>{"Message Signed"}</Heading>
+            <Heading sx={{textDecoration:'underline'}} m={'40px'}>{"Message Signed"}</Heading>
             <Flex sx={{flexDirection:'column', justifyContent:'center', alignItems:'center', marginBottom:'10px'}}>
             {sigDetails.map((text, index) => {
               return <Text key={index}>{text}</Text>

@@ -25,18 +25,24 @@ export default function InputBox(props) {
     <Flex flexDirection={'column'} alignItems={'center'} justifyContent={'center'}>
       <Card sx={tallCardBoxFormatting}>
         <Flex flexDirection={'column'} alignItems={'flex-start'} height={'350px'}>
-          <Heading mb={'40px'}>{label}</Heading>
-          <Flex flexDirection={'column'} height={'200px'} justifyContent={'space-around'}>
-          {textInfo.map((info, index) => {
-            return (
-              <Text key={index}>{info.text}</Text>
-            )
-          })}
+          <Heading sx={{textDecoration:'underline'}} mb={'20px'}>{label}</Heading>
+          <Flex flexDirection={'column'} height={'300px'} alignItems={'flex-start'} justifyContent={'flex-start'}>
+            {textInfo !== [] ?
+              <Flex sx={{flexDirection:'column', justifyContent:'center', marginBottom:'30px'}}>
+                {textInfo.map((info, index) => {
+                  return (
+                    <Text m={'3px'} key={index}>{info}</Text>
+                  )
+                })}
+              </Flex>
+            :
+            <div/>
+            }
           {dropDown?<TokenDropdown setToken={setToken} />:<div/>}
           {inputs.map((input, index) => {
             return (
-              <Flex key={index} flexDirection={'column'} mt={'5px'} >
-                <Label pb={1}>{input.label}</Label>
+              <Flex key={index} flexDirection={'column'} mt={'15px'} >
+                <Label sx={{color:'#b1babf', fontSize:'0.85em'}} pb={1}>{input.label}</Label>
                  <Input 
                     type={input.type} 
                     value={input.value} 

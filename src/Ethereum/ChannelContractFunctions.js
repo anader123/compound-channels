@@ -183,17 +183,17 @@ export const borrowAsset = async (
   sender,
   tokenAddress,
   channelAddress,
-  decimalLoanAmount,
+  decimalGiveAmount,
   decimalBorrowAmount,
   borrowAssetSymbol,
-  loanedAssetSymbol,
-  loanedTokenAddress,
-  loandTokenCTokenAddress,
+  giveAssetSymbol,
+  giveTokenAddress,
+  giveTokenCTokenAddress,
   step,
   setStep,
   setTxHash
 ) => {
-  if(borrowAssetSymbol === loanedAssetSymbol) {
+  if(borrowAssetSymbol === giveAssetSymbol) {
     window.alert('Please choose another asset to borrow');
     return;
   }
@@ -204,14 +204,14 @@ export const borrowAsset = async (
     const ERC20Contract = await initalizeERC20(tokenAddress);
     await ERC20Contract.methods.approve(
       channelAddress, 
-      decimalLoanAmount
+      decimalGiveAmount
     ).send({from: sender});
 
     channelContract = await initalizeEthChannel(channelAddress);
     channelContract.methods.borrowEthAgainstERC20(
-      loanedTokenAddress,
-      loandTokenCTokenAddress,
-      decimalLoanAmount,
+      giveTokenAddress,
+      giveTokenCTokenAddress,
+      decimalGiveAmount,
       decimalBorrowAmount,
       comptrollerAddress
     ).send({from: sender})
@@ -227,13 +227,13 @@ export const borrowAsset = async (
 
   else {
     channelContract = await initalizeERC20Channel(channelAddress);
-    if(loanedAssetSymbol === 'ETH') {
+    if(giveAssetSymbol === 'ETH') {
 
       await channelContract.methods.borrowERC20AgainstETH(
-        loandTokenCTokenAddress,
+        giveTokenCTokenAddress,
         decimalBorrowAmount,
         comptrollerAddress
-      ).send({from: sender, value: decimalLoanAmount})
+      ).send({from: sender, value: decimalGiveAmount})
       .once('transactionHash', (transactionHash) => {
         setStep(step + 1);
         setTxHash(transactionHash);
@@ -246,11 +246,11 @@ export const borrowAsset = async (
 
     else {
       const ERC20Contract = await initalizeERC20(tokenAddress);
-      await ERC20Contract.methods.approve(channelAddress, decimalLoanAmount).send({from: sender});
+      await ERC20Contract.methods.approve(channelAddress, decimalGiveAmount).send({from: sender});
       await channelContract.methods.borrowERC20AgainstERC20(
-        loanedTokenAddress,
-        loandTokenCTokenAddress,
-        decimalLoanAmount,
+        giveTokenAddress,
+        giveTokenCTokenAddress,
+        decimalGiveAmount,
         decimalBorrowAmount,
         comptrollerAddress
       ).send({from: sender})

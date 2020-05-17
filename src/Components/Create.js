@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 // Ethereum
-import { addressShortener, calculateEndTime } from '../Ethereum/EthHelper';
+import { addressShortener, calculateEndTime, formatUnixTime } from '../Ethereum/EthHelper';
 import { createChannel } from '../Ethereum/ChannelContractFunctions';
 import { assetData } from '../Ethereum/AssetData';
 
@@ -24,6 +24,8 @@ export default function CardBox(props) {
   // Info needed for creating a channel
   const [ hours, setHours] = useState(0);
   const [ days, setDays] = useState(0);
+  const [ endTime, setEndTime ] = useState(0);
+  const [ formattedEndTime, setFormattedEndTime ] = useState(0);
   const [ recipientAddress, setRecipientAddress ] = useState('');
   const [ assetDetails, setAssetDetails ] = useState(assetData[0]);
 
@@ -31,10 +33,25 @@ export default function CardBox(props) {
   const [ txHash, setTxHash ] = useState('');
   const [ channelAddress, setChannelAddress ] = useState('');
 
-  const nextStep = () => {
+  const nextStep = async () => {
+    const userAddress = window.ethereum.selectedAddress;
+    const checkSumUserAddress = window.web3.toChecksumAddress(userAddress);
+    if(checkSumUserAddress === recipientAddress) {
+      window.alert('Error, the recipient address is the same as your current address');
+      return;
+    }
+
     if(recipientAddress.length === 42) {
-      const newStep = step + 1;
-      setStep(newStep)
+      if(hours===0 && days===0) {
+        window.alert('Please enter a time');
+      }
+      else {
+        const calculatedEndTime = await calculateEndTime(days, hours);
+        const formattedTime = await formatUnixTime(calculatedEndTime);
+        setFormattedEndTime(formattedTime);
+        setEndTime(calculatedEndTime);
+        setStep(step + 1);
+      }
     }
     else {
       window.alert('Please enter in a valid address.')
@@ -46,7 +63,6 @@ export default function CardBox(props) {
     const symbol = assetDetails.symbol;
     const tokenAddress = assetDetails.tokenAddress;
     const cTokenAddress = assetDetails.cTokenAddress;
-    const endTime = await calculateEndTime(days, hours);
     
     try {
       createChannel(
@@ -79,7 +95,7 @@ export default function CardBox(props) {
   const confirmDetails = [
     `Asset: ${assetDetails.symbol}`,
     `Recipient: ${addressShortener(recipientAddress)}`,
-    `Length: ${days} days and ${hours} hours`
+    `End Time: ${formattedEndTime}`
   ]
 
   const image = {
@@ -108,8 +124,6 @@ export default function CardBox(props) {
     }
   ];
 
-  const confirmHeading = "Confirm your Channel Info"
-
   switch(step) {
     case 1: 
       return (
@@ -131,7 +145,7 @@ export default function CardBox(props) {
         <ConfirmationBox 
         image={image}
         confirmButton={true}
-        confirmHeading={confirmHeading} 
+        confirmHeading={'Confirm Channel Info'} 
         confirmDetails={confirmDetails} 
         previousStep={previousStep} 
         confirmFunction={createNewChannel} 

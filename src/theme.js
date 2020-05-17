@@ -12,9 +12,9 @@ export default {
     0, 4, 8, 16, 32, 64, 128, 256
   ],
   fonts: {
-      body: '"Apercu", sans-serif',
-      heading: '"Apercu", sans-serif',
-      text: '"Apercu", sans-serif'
+      body: '"Roboto", sans-serif',
+      heading: '"Roboto", sans-serif',
+      text: '"Roboto", sans-serif'
   },
   fontWeights: {
       body: 400,

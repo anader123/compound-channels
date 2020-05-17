@@ -26,8 +26,7 @@ export default function Header(props) {
 
   useEffect(() => {
     if(window.ethereum !== undefined) {
-        if(window.ethereum.selectedAddress !== null 
-          && window.ethereum.selectedAddress !== undefined) {
+        if(window.ethereum.selectedAddress !== null) {
             const address = window.ethereum.selectedAddress;
             setUserAddress(address);
             setWalletConnected(true);
@@ -41,6 +40,9 @@ export default function Header(props) {
             const shortAddress = addressShortener(accounts[0]);
             setShortUserAddress(shortAddress);
           });
+        }
+        else{
+          setWalletConnected(false);
         }
       }
     }, [
@@ -58,7 +60,7 @@ export default function Header(props) {
         Compound Channels
         </Heading >
         <Image 
-          mr={[1, 4]}
+          mr={4}
           src={piggyBank}
           height='40px'
         />
@@ -66,14 +68,14 @@ export default function Header(props) {
       <div>
       {!walletConnected 
       ?
-      <Text fontFamily={'Apercu'} mr={[1, 4]}>No Wallet Connected</Text>
+      <Text mr={4}>No Wallet Connected</Text>
       :
       <Link 
         target="_blank" 
         rel="noopener noreferrer"
         href={`https://kovan.etherscan.io/address/${userAddress}`}
       >
-        <Text mr={[1, 4]}>Address: {shortUserAddress}</Text>
+        <Text mr={4}>Address: {shortUserAddress}</Text>
       </Link>
       }
       </div>

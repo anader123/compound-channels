@@ -41,7 +41,7 @@ export default function Inspect(props) {
       fx: setSignature
     },
     {
-      label: "Amount",
+      label: `Amount (${channelDetails.symbol})`,
       value: signAmount,
       type: "number",
       fx: setSignAmount

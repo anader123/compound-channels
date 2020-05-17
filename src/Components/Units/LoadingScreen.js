@@ -13,9 +13,9 @@ export default function LoadingScreen() {
   return (
     <Flex flexDirection={'column'} alignItems={'center'} justifyContent={'center'}>
       <Card sx={tallCardBoxFormatting}>
-        <Flex flexDirection={'column'} alignItems={'center'}>
-          <Heading mb={4}>Transaction in Progress</Heading>
-          <ReactLoading type={'cubes'} color={'#47d395'} width={130} />
+        <Flex height={'300px'} flexDirection={'column'} alignItems={'center'}>
+          <Heading sx={{textDecoration:'underline'}} mb={4}>Transaction in Progress</Heading>
+          <ReactLoading type={'cubes'} color={'#47d395'} width={'190px'} />
         </Flex>
       </Card>
     </Flex>

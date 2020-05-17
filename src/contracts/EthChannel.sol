@@ -183,6 +183,14 @@ contract EthChannel {
     uint256 tokenBalance = tokenGave.balanceOf(address(this));
     tokenGave.transfer(sender, tokenBalance);
   }
+
+  function extendEndTime(uint256 _newTime) public {
+    require(msg.sender == sender, 'nonsender address');
+    require(_newTime > endTime, 'newTime needs to be > endTime');
+    
+    endTime = _newTime;
+  }
+  
   
   fallback() external payable { }
 //   fallback() external payable { revert("Function not found"); } 

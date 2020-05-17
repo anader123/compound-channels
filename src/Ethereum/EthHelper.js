@@ -5,13 +5,16 @@ import {
   initalizeEthChannel, 
   web3
 } from './ContractInstances';
+import moment from 'moment';
 import { assetData } from './AssetData';
 const sigUtil = require('eth-sig-util');
 
 
 export const addressShortener = (address) => {
-  const shortAddress = `${address.slice(0, 5)}...${address.slice(38, 42)}`;
-  return shortAddress;
+  if(address !== undefined) {
+    const shortAddress = `${address.slice(0, 6)}...${address.slice(37, 42)}`;
+    return shortAddress;
+  }
 }
 
 export const signatureShortener = (sig) => {
@@ -32,6 +35,12 @@ export const calculateEndTime = async (days, hours) => {
   const additionalTime = daysInSec.plus(hoursInSec);
   const endTime = await currentUnixTimeBN.plus(additionalTime);
   return endTime;
+}
+
+export const formatUnixTime = async (endTime) => {
+  const m = await moment.unix(endTime).toString();
+  const formattedTime = `${m.slice(0, (m.length-12))} UTC`
+  return formattedTime;
 }
 
 // Formats data from the blockchain
@@ -58,6 +67,7 @@ export const loadChannels = async (userAddress, registeryName) => {
   let balance;
   let assetDetails;
   let channelNonce;
+  let endTime;
 
   if(registeryName === 'sender') {
     loopNum = await factoryContract.methods.senderCount(userAddress).call();
@@ -81,6 +91,7 @@ export const loadChannels = async (userAddress, registeryName) => {
       sender = await channelContract.methods.sender().call();
       balance = await channelContract.methods.underlyingBalance().call();
       channelNonce = await channelContract.methods.channelNonce().call();
+      endTime = await channelContract.methods.endTime().call();
       assetDetails = await assetData.find(token => token.tokenAddress === cTokenAddress);
     }
     catch {
@@ -90,14 +101,14 @@ export const loadChannels = async (userAddress, registeryName) => {
       sender = await channelContract.methods.sender().call();
       balance = await channelContract.methods.underlyingBalance().call();
       channelNonce = await channelContract.methods.channelNonce().call();
-
+      endTime = await channelContract.methods.endTime().call();
       assetDetails = await assetData.find(asset => asset.cTokenAddress === cTokenAddress);
     }
     
     channelDetails = {...assetDetails};
     channelDetails.recipient = recipient;
     channelDetails.sender = sender;
-    channelDetails.balance = balance;
+    channelDetails.formattedEndTime = await formatUnixTime(endTime);
     channelDetails.channelNonce = channelNonce;
     channelDetails.channelAddress = channelContract.options.address;
     channelDetails.formattedBalance = await formatDisplayAmount(balance, assetDetails.decimals);

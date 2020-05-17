@@ -28,17 +28,16 @@ export default function Close(props) {
 
   const inputs = [
     {
-      label: "Allotted Amount",
-      value: amount,
-      type: "number",
-      fx: setAmount,
-      text: `Balance: ${channelDetails.formattedBalance} ${channelDetails.symbol}`
-    },
-    {
       label: "Signature",
       value: signature,
       type: "string",
-      fx: setSignature,
+      fx: setSignature
+    },
+    {
+      label: `Allotted Amount of ${channelDetails.symbol}`,
+      value: amount,
+      type: "number",
+      fx: setAmount
     }
   ];
 

@@ -236,6 +236,13 @@ contract Erc20Channel {
     require(cEther.redeem(cEthBalance) == 0, 'redeem error');
     sender.transfer(address(this).balance);
   }
+
+  function extendEndTime(uint256 _newTime) public {
+    require(msg.sender == sender, 'nonsender address');
+    require(_newTime > endTime, 'newTime needs to be > endTime');
+    
+    endTime = _newTime;
+  }
   
   fallback() external payable { }
 //   fallback() external { revert("Function not found"); } 
