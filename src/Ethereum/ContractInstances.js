@@ -1,7 +1,7 @@
 import Web3 from 'web3';
 
 // Contract ABI
-import { ERC20Abi, ComptrollerAbi, cTokenAbi } from './AbiData';
+import { ERC20Abi, ComptrollerAbi, cTokenAbi, PriceOracleAbi } from './AbiData';
 import compoundChannelFactory from '../abis/CompoundChannelFactory.json';
 import ERC20Channel from '../abis/Erc20Channel.json';
 import EthChannel from '../abis/EthChannel.json';
@@ -13,8 +13,7 @@ export let channelContract;
 export let borrowContract;
 export let comptrollerContract;
 
-// const factoryAddress = compoundChannelFactory.networks[999].address;
-// const factoryAddress = '0x3f301ca75ebc84db14e006bbea25eb65652b7c7c'; // Non-clone factory Kovan address 
+export const priceOracleAddress = '0x6998ed7daf969ea0950e01071aceeee54cccbab5' //Kovan
 export const comptrollerAddress = '0x1f5d7f3caac149fe41b8bd62a3673fe6ec0ab73b'; // Kovan address
 const factoryAddress = '0xAc29bc122C1d2e7bf5C767f0013D8EeFf6149805'; //cloneFactory on Kovan 
 export const ethChanModel = '0x5c465A28Fa81DF524B9aCbf0741d6a320c1Eb44E'; //EthChan model on Kovan
@@ -67,6 +66,16 @@ export const initalizeERC20Channel = async (channelAddress) => {
   try {
     channelContract = new web3.eth.Contract(ERC20Channel.abi, channelAddress);
     return channelContract;
+  }
+  catch (err) {
+    console.log(err);
+  }
+}
+
+export const initalizePriceOracle = async () => {
+  try {
+    const priceOracleContract = new web3.eth.Contract(PriceOracleAbi, priceOracleAddress);
+    return priceOracleContract;
   }
   catch (err) {
     console.log(err);

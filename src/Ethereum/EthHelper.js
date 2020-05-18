@@ -5,10 +5,13 @@ import {
   initalizeEthChannel, 
   web3,
   initalizeCToken,
-  initalizeERC20
+  initalizeERC20,
+  comptrollerContract,
+  initalizePriceOracle
 } from './ContractInstances';
 import moment from 'moment';
 import { assetData } from './AssetData';
+
 const sigUtil = require('eth-sig-util');
 
 
@@ -84,6 +87,43 @@ export const formatBeforeSend = async (value, decimals) => {
   const bn = new BigNumber(value);
   return bn.shiftedBy(decimals).toString(10);
 };
+
+export const calculateMaxBorrow = async (
+  supplyAmount, 
+  supplyCTokenAddress, 
+  borrowCTokenAddress,
+  supplySymbol,
+  borrowSymbol
+  ) => {
+  if(supplySymbol === borrowSymbol) {
+    window.alert(`Can't borrow against the channel asset`);
+    return 0;
+  }
+  const result = await comptrollerContract.methods.markets(supplyCTokenAddress).call();
+  const {0: isListed, 1: collateralFactorMantissa} = result;
+
+  if(isListed && +supplyAmount > 0) {
+    const priceOricalContract = await initalizePriceOracle();
+
+    const formattedColatFactor = await web3.utils.fromWei(collateralFactorMantissa);
+    const maxSupplyValue = (+supplyAmount * +formattedColatFactor);
+
+    const decimalsSupplyAssetPrice = await priceOricalContract.methods.getUnderlyingPrice(supplyCTokenAddress).call();
+    const decimalsBorrowAssetPrice = await priceOricalContract.methods.getUnderlyingPrice(borrowCTokenAddress).call();
+
+    const formattedSupplyAssetPrice = web3.utils.fromWei(decimalsSupplyAssetPrice);
+    const formattedBorrowAssetPrice = web3.utils.fromWei(decimalsBorrowAssetPrice);
+
+    const maxEthValue = (maxSupplyValue * +formattedSupplyAssetPrice);
+    const maxBorrowValue = (maxEthValue / +formattedBorrowAssetPrice);
+
+    return maxBorrowValue.toFixed(2);
+  }
+  else{
+    console.error('Not a cToken address');
+    return 0;
+  }
+}
 
 export const loadChannels = async (userAddress, registeryName) => {
   let channels = [];

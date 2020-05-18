@@ -149,5 +149,5 @@ export const channelBoxFormatting = {
   flexDirection: 'column',
   cursor: 'pointer',
   backgroundColor:'rgb(22, 23, 24)',
-  border:'solid 2px rgb(71, 211, 149, 0.20)'
+  border:'solid 3px rgb(71, 211, 149, 0.20)'
 }

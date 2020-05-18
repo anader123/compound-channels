@@ -8,7 +8,12 @@ import LoadingScreen from './Units/LoadingScreen';
 import TransactionBox from './Units/TransactionBox';
 
 // Ethereum
-import { formatBeforeSend, addressShortener, loadChannels } from '../Ethereum/EthHelper';
+import { 
+  formatBeforeSend, 
+  addressShortener, 
+  loadChannels, 
+  calculateMaxBorrow 
+} from '../Ethereum/EthHelper';
 import { borrowAsset } from '../Ethereum/ChannelContractFunctions';
 
 import { assetData } from '../Ethereum/AssetData';
@@ -23,12 +28,13 @@ export default function Borrow(props) {
 
   const [ step, setStep ] = useState(1);
   const [ channels, setChannels ] = useState([]);
-  const [ channelDetails, setChannelDetails ] = useState({channelAddress: '0x0000000000000000000000000000000000000000', recipient: '0x0000000000000000000000000000000000000000'});
+  const [ channelDetails, setChannelDetails ] = useState(assetData[0]);
   const [ txHash, setTxHash ] = useState('');
-  const [ giveAssetDetails, setGiveAssetDetails ] = useState({symbol:'DAI'});
+  const [ giveAssetDetails, setGiveAssetDetails ] = useState(assetData[0]);
   const [ borrowAmount, setBorrowAmount ] = useState('');
   const [ giveAmount, setGiveAmount ] = useState('');
   const [ channelLoaded, setChannelLoaded ] = useState(false);
+  const [ maxBorrow, setMaxBorrow ] = useState(0);
 
   useEffect(() => {
     if(channels.length === 0) {
@@ -40,6 +46,18 @@ export default function Borrow(props) {
     const newStep = step + 1;
     setStep(newStep)
   }
+
+  const compareAndNextStep = () => {
+   
+    if(maxBorrow > (borrowAmount * 1.25)) {
+      const newStep = step + 1;
+      setStep(newStep);
+    }
+    else{
+      window.alert('Please enter a smaller Borrow Amount')
+    }
+  }
+
   const previousStep = () => {
     const newStep = step - 1;
     setStep(newStep)
@@ -96,12 +114,28 @@ export default function Borrow(props) {
     setGiveAssetDetails(assetDetails);
   }
 
+  const calculateMaxBorrowChannel = async (value) => {
+    const supplyCTokenAddress = giveAssetDetails.cTokenAddress;
+    const supplySymbol = giveAssetDetails.symbol;
+    const borrowCTokenAddress = channelDetails.cTokenAddress;
+    const borrowSymbol = channelDetails.symbol;
+    const maxBorrow = await calculateMaxBorrow(
+      value, 
+      supplyCTokenAddress, 
+      borrowCTokenAddress,
+      supplySymbol,
+      borrowSymbol
+      );
+    setMaxBorrow(maxBorrow);
+    setGiveAmount(value)
+  }
+
   const inputs = [
     {
-      label: `Give Amount (${giveAssetDetails.symbol})`,
+      label: `Supply Amount (${giveAssetDetails.symbol})`,
       value: giveAmount,
       type: "number",
-      fx: setGiveAmount
+      fx: calculateMaxBorrowChannel
     },
     {
       label: `Borrow Amount (${channelDetails.symbol})`,
@@ -120,7 +154,8 @@ export default function Borrow(props) {
 
   const textInfo = [
     `Channel: ${addressShortener(channelDetails.channelAddress)}`,
-    `Balance: ${channelDetails.formattedBalance} ${channelDetails.symbol}`
+    `Channel Balance: ${channelDetails.formattedBalance} ${channelDetails.symbol}`,
+    `Max Borrow: ${maxBorrow} ${channelDetails.symbol}`
   ]
   
   switch(step) {
@@ -149,7 +184,7 @@ export default function Borrow(props) {
           />
           <Flex>
             <Button onClick={previousStep}>Back</Button>
-            <Button onClick={nextStep}>Next</Button>
+            <Button onClick={compareAndNextStep}>Next</Button>
           </Flex>
         </Flex>
       )
