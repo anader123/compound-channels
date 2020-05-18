@@ -156,7 +156,9 @@ export default function CardBox(props) {
       )
     case 4:
       return (
-       <TransactionBox setStepDash={setStepDash} channelAddress={channelAddress} txHash={txHash} assetDetails={assetDetails}/>
+       <TransactionBox 
+       setStepDash={setStepDash} 
+       txText={`The channel was created at address: ${addressShortener(channelAddress)}`} txHash={txHash} assetDetails={assetDetails}/>
       )
     default:
       return step;

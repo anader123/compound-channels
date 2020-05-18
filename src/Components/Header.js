@@ -57,7 +57,7 @@ export default function Header(props) {
       px={2}
       alignItems='center'>
         <Heading p={3} fontSize={[ 2, 4 ]}>
-        Compound Channels
+        cChannels
         </Heading >
         <Image 
           mr={4}

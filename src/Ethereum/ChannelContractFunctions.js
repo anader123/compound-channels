@@ -64,7 +64,6 @@ export const createChannel = async (
 export const closeChannel = async (
   symbol,
   userAddress, 
-  checkSumUserAddress, 
   recipient, 
   channelAddress, 
   decimalAmount,
@@ -73,7 +72,7 @@ export const closeChannel = async (
   step,
   setTxHash,
 ) => {
-  if(checkSumUserAddress === recipient) {
+  if(userAddress === recipient) {
     let channelContract;
 
     // Sets up contract instances

@@ -34,7 +34,7 @@ export default function Repay(props) {
 
   const [ step, setStep ] = useState(1);
   const [ channels, setChannels ] = useState([]);
-  const [ channelDetails, setChannelDetails ] = useState({channelAddress: '0x0000000000000000000000000000000000000000', recipient: '0x0000000000000000000000000000000000000000'});
+  const [ channelDetails, setChannelDetails ] = useState(assetData[0]);
   const [ txHash, setTxHash ] = useState('');
   const [ formattedRepayAmount, setFormattedRepayAmount ] = useState(5);
   const [ repayAmountDecimals, setRepayAmountDecimals] = useState(5);
@@ -130,7 +130,7 @@ export default function Repay(props) {
       );
     }
     catch(error) {
-      console.log(error);
+      console.error(error);
     }
   }
 
@@ -201,7 +201,11 @@ export default function Repay(props) {
       )
     case 6:
       return (
-        <TransactionBox setStepDash={setStepDash} channelAddress={channelDetails.channelAddress} txHash={txHash}/>
+        <TransactionBox 
+        setStepDash={setStepDash} 
+        txText={'Funds were successfully withdrawn'}
+        txHash={txHash}
+        />
       )
     default:
       return step;

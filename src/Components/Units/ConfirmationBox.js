@@ -24,10 +24,12 @@ export default function LoadingScreen(props) {
       <Card sx={tallCardBoxFormatting} height={'400px'}>
         <Flex flexDirection={'column'} alignItems={'center'} height={'300px'}>
           <Heading sx={{textDecoration:'underline'}} mb={4}>{confirmHeading}</Heading>
-          {image.bool ? <Image width={70} height={70} src={image.src} /> : <div/>}
-          {confirmDetails.map((text, index) => {
-            return <Text key={index}>{text}</Text>
-          })}
+          <Flex sx={{flexDirection:'column', justifyContent:'flex-start', alignItems:'space-around'}}>
+            {confirmDetails.map((text, index) => {
+              return <Text color={'#dee2e4'} m={'3px'} key={index}>{text}</Text>
+            })}
+          </Flex>
+          {image.bool ? <Image sx={{marginTop:'30px', width:'75px', height:'auto'}} src={image.src} /> : <div/>}
         </Flex>
       </Card>
       <Flex>

@@ -205,7 +205,11 @@ export default function Borrow(props) {
       )
     case 5:
       return (
-        <TransactionBox setStepDash={setStepDash} channelAddress={channelDetails.channelAddress} txHash={txHash}/>
+        <TransactionBox 
+        setStepDash={setStepDash} 
+        txHash={txHash}
+        txText={`Funds were successfully added: ${borrowAmount} ${channelDetails.symbol}`} 
+        />
       )
     default:
       return step;

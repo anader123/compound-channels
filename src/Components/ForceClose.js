@@ -9,11 +9,12 @@ import TransactionBox from './Units/TransactionBox';
 // Ethereum
 import { addressShortener, loadChannels } from '../Ethereum/EthHelper';
 import { forceClose } from '../Ethereum/ChannelContractFunctions';
+import { assetData } from '../Ethereum/AssetData';
 
 export default function ForceClose(props) {
   const { setStepDash } = props;
   const [ step, setStep ] = useState(0);
-  const [ channelDetails, setChannelDetails ] = useState({channelAddress: '0x0000000000000000000000000000000000000000', recipient: '0x0000000000000000000000000000000000000000'});
+  const [ channelDetails, setChannelDetails ] = useState(assetData[0]);
   const [ channels, setChannels ] = useState([]);
   const [ txHash, setTxHash ] = useState('');
   const [ channelLoaded, setChannelLoaded ] = useState(false);
@@ -104,7 +105,12 @@ export default function ForceClose(props) {
       )
     case 3:
       return (
-        <TransactionBox setStepDash={setStepDash} channelAddress={channelDetails.channelAddress} txHash={txHash} assetDetails={channelDetails}/>
+        <TransactionBox 
+        setStepDash={setStepDash} 
+        channelAddress={channelDetails.channelAddress} 
+        txHash={txHash} 
+        txText={`The channel successfully closed: ${addressShortener(channelDetails.channelAddress)}`} 
+        />
       )
     default:
       return step;

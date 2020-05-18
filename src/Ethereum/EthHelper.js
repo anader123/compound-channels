@@ -255,7 +255,7 @@ export const verifySignature = async (
   channelNonce, 
   channelAddress,
   sig
-  ) => {
+) => {
 
   const domainData = {
     name: "Compound Channels",

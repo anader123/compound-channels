@@ -1,7 +1,6 @@
 import React from 'react';
 import { tallCardBoxFormatting } from '../../theme';
 import checkmark from '../../Images/checkmark.svg';
-import { addressShortener } from '../../Ethereum/EthHelper';
 
 import {
   Flex,
@@ -13,20 +12,14 @@ import {
   Button
 } from 'rebass';
 
-
-
 export default function TransactionBox(props) {
-  const { txHash, channelAddress, setStepDash } = props;
+  const { txHash, txText, setStepDash } = props;
   return (
     <Flex flexDirection={'column'} alignItems={'center'} justifyContent={'center'}>
       <Card sx={tallCardBoxFormatting}>
         <Flex flexDirection={'column'} alignItems={'center'} justifyContent={'center'}>
           <Heading mb={4}>Transaction Confirmed</Heading>
-          <Text mb={1}>Your channel was created at address:</Text>
-          <Link
-            target="_blank" 
-            rel="noopener noreferrer"
-            href={`https://kovan.etherscan.io/address/${channelAddress}`}>{addressShortener(channelAddress)}</Link>
+          <Text mb={1}>{txText}</Text>
           <Image m={4} height={'100px'} width={'100px'} src={checkmark} />
           <Link 
             target="_blank" 

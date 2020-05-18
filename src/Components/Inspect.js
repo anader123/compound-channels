@@ -22,12 +22,13 @@ import {
   Flex,
   Button
 } from 'rebass';
+import { assetData } from '../Ethereum/AssetData';
 
 export default function Inspect(props) {
   const { setStepDash } = props;
   const [ step, setStep ] = useState(1);
   const [ signAmount, setSignAmount ] = useState(0); // not converted amount
-  const [ channelDetails, setChannelDetails ] = useState({channelAddress: '0x0000000000000000000000000000000000000000', sender: '0x0000000000000000000000000000000000000000'});
+  const [ channelDetails, setChannelDetails ] = useState(assetData[0]);
   const [ signature, setSignature ] = useState('');
   const [ sigStatus, setSigStatus ] = useState(false);
   const [ channels, setChannels ] = useState([]);

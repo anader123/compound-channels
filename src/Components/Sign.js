@@ -23,12 +23,13 @@ import {
 } from 'rebass';
 import { tallCardBoxFormatting } from '../theme';
 import signImage from '../Images/sign.svg';
+import { assetData } from '../Ethereum/AssetData';
 
 export default function Sign(props) {
   const { setStepDash } = props;
   const [ step, setStep ] = useState(1);
   const [ signAmount, setSignAmount ] = useState(0); // not converted amount
-  const [ channelDetails, setChannelDetails ] = useState({channelAddress: '0x0000000000000000000000000000000000000000', recipient: '0x0000000000000000000000000000000000000000'});
+  const [ channelDetails, setChannelDetails ] = useState(assetData[0]);
   const [ signature, setSignature ] = useState('');
   const [ channels, setChannels ] = useState([]);
   const [ channelLoaded, setChannelLoaded ] = useState(false);
@@ -87,7 +88,6 @@ export default function Sign(props) {
     const userAddress = window.ethereum.selectedAddress;
     const { decimals, channelAddress, channelNonce } = channelDetails;
     const amount = await formatBeforeSend(signAmount, decimals);
-    console.log(signAmount, channelDetails.formattedBalance)
     if(+signAmount <= +channelDetails.formattedBalance) {
       await signData(
         userAddress, 

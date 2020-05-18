@@ -15,26 +15,32 @@ import {
   Flex,
   Button
 } from 'rebass';
+import { assetData } from '../Ethereum/AssetData';
 
 export default function Supply(props) {
   const { setStepDash } = props;
 
   const [ step, setStep ] = useState(1);
   const [ channels, setChannels ] = useState([]);
-  const [ amount, setAmount ] = useState(0); // not converted amount
-  const [ channelDetails, setChannelDetails ] = useState({channelAddress: '0x0000000000000000000000000000000000000000', recipient: '0x0000000000000000000000000000000000000000'});
+  const [ amount, setAmount ] = useState(0); // not converted decimal amount
+  const [ channelDetails, setChannelDetails ] = useState(assetData[0]);
   const [ txHash, setTxHash ] = useState('');
   const [ channelLoaded, setChannelLoaded ] = useState(false);
 
   const inputs = [
     {
-      label: "Amount",
+      label: `Amount (${channelDetails.symbol})`,
       value: amount,
       type: "number",
-      fx: setAmount,
-      text: `Balance: ${channelDetails.formattedBalance} ${channelDetails.symbol}`
+      fx: setAmount
     }
   ];
+
+  const textInfo = [
+    `Channel Address: ${addressShortener(channelDetails.channelAddress)}`,
+    `Recipient Address: ${addressShortener(channelDetails.recipient)}`,
+    `Channel Balance: ${channelDetails.formattedBalance} ${channelDetails.symbol}`
+  ]
 
   const confirmDetails = [
     `Channel Address: ${addressShortener(channelDetails.channelAddress)}`,
@@ -89,8 +95,6 @@ export default function Supply(props) {
     nextStep();
   }
 
-  const inputLabel = `Channel: ${addressShortener(channelDetails.channelAddress)}`;
-  const confirmHeading = 'Confirm Deposit Amount';
   
   switch(step) {
     case 1: 
@@ -111,9 +115,9 @@ export default function Supply(props) {
           <InputBox 
             text={true} 
             dropDown={false} 
-            label={inputLabel} 
+            label={'Choose an Amount'} 
             inputs={inputs} 
-            textInfo={[]} 
+            textInfo={textInfo} 
           />
           <Flex>
             <Button onClick={previousStep}>Back</Button>
@@ -126,7 +130,7 @@ export default function Supply(props) {
         <ConfirmationBox 
         image={{bool:true, src:channelDetails.image}}
         confirmButton={true}
-        confirmHeading={confirmHeading} 
+        confirmHeading={'Confirm Deposit Amount'} 
         confirmDetails={confirmDetails} 
         previousStep={previousStep} 
         confirmFunction={supplyChannelAssets} 
@@ -138,7 +142,12 @@ export default function Supply(props) {
       )
     case 5:
       return (
-        <TransactionBox setStepDash={setStepDash} channelAddress={channelDetails.channelAddress} txHash={txHash}/>
+        <TransactionBox 
+        setStepDash={setStepDash} 
+        txHash={txHash}
+        txText={`Funds were successfully added: ${amount} ${channelDetails.symbol}`} 
+        />
+        
       )
     default:
       return step;

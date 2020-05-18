@@ -8,19 +8,25 @@ import LoadingScreen from './Units/LoadingScreen';
 import TransactionBox from './Units/TransactionBox';
 
 // Ethereum
-import { formatBeforeSend, addressShortener, loadChannels } from '../Ethereum/EthHelper';
+import { 
+  formatBeforeSend, 
+  addressShortener, 
+  loadChannels,
+  verifySignature
+} from '../Ethereum/EthHelper';
 import { closeChannel } from '../Ethereum/ChannelContractFunctions';
 
 import {
   Flex,
   Button
 } from 'rebass';
+import { assetData } from '../Ethereum/AssetData';
 
 export default function Close(props) {
   const { setStepDash } = props;
   const [ step, setStep ] = useState(0);
   const [ amount, setAmount ] = useState(0); // not converted amount
-  const [ channelDetails, setChannelDetails ] = useState({channelAddress: '0x0000000000000000000000000000000000000000', recipient: '0x0000000000000000000000000000000000000000'});
+  const [ channelDetails, setChannelDetails ] = useState(assetData[0]);
   const [ signature, setSignature ] = useState('');
   const [ channels, setChannels ] = useState([]);
   const [ txHash, setTxHash ] = useState('');
@@ -46,6 +52,12 @@ export default function Close(props) {
     `Recipient Address: ${addressShortener(channelDetails.recipient)}`,
     `Allotted Amount: ${amount} ${channelDetails.symbol}`
   ];
+  
+  useEffect(() => {
+    if(channels.length === 0) {
+      getChannels();
+    }
+  }, [channels.length])
 
   const getChannels = async () => {
     const userAddress = window.ethereum.selectedAddress;
@@ -54,26 +66,15 @@ export default function Close(props) {
     setChannelLoaded(true);
   }
 
-  useEffect(() => {
-    if(channels.length === 0) {
-      getChannels();
-    }
-  }, [channels.length])
-
   const closeCompChannel = async () => {
-    const symbol = channelDetails.symbol;
-    const userAddress = window.ethereum.selectedAddress;
-    const checkSumUserAddress = window.web3.toChecksumAddress(userAddress)
-    const recipient = channelDetails.recipient;
-    const channelAddress = channelDetails.channelAddress;
-    const decimals = channelDetails.decimals;
+    const {symbol, recipient, decimals, channelAddress } = channelDetails;
+    const userAddress = await window.web3.toChecksumAddress(window.ethereum.selectedAddress);
     const decimalAmount = await formatBeforeSend(amount, decimals);
 
     try{
       closeChannel(
         symbol,
         userAddress, 
-        checkSumUserAddress, 
         recipient, 
         channelAddress, 
         decimalAmount,
@@ -91,6 +92,26 @@ export default function Close(props) {
   const nextStep = () => {
     const newStep = step + 1;
     setStep(newStep)
+  }
+
+  const nextAndVerifySig = async () => {
+    const {decimals, channelNonce, channelAddress, sender } = channelDetails;
+    const decimalAmount = await formatBeforeSend(amount, decimals);
+    const sigValid = await verifySignature(
+      sender, 
+      decimalAmount, 
+      channelNonce, 
+      channelAddress, 
+      signature
+    );
+
+    if(!sigValid) {
+      window.alert('Invalid sigature');
+      return;
+    }
+    else {
+      nextStep();
+    }
   }
   const previousStep = () => {
     const newStep = step - 1;
@@ -129,7 +150,7 @@ export default function Close(props) {
           />
           <Flex>
             <Button onClick={previousStep}>Back</Button>
-            <Button onClick={nextStep}>Next</Button>
+            <Button onClick={nextAndVerifySig}>Next</Button>
           </Flex>
         </Flex>
       )
@@ -150,7 +171,11 @@ export default function Close(props) {
       )
     case 4:
       return (
-        <TransactionBox setStepDash={setStepDash} channelAddress={channelDetails.channelAddress} txHash={txHash} assetDetails={channelDetails}/>
+        <TransactionBox 
+        setStepDash={setStepDash} 
+        txHash={txHash} assetDetails={channelDetails}
+        txText={`The channel successfully closed: ${addressShortener(channelDetails.channelAddress)}`} 
+        />
       )
     default:
       return step;
