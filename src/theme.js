@@ -110,7 +110,8 @@ export const cardBoxFormatting = {
   alignItems: 'center',
   flexDirection: 'column',
   cursor: 'pointer',
-  backgroundColor:'rgb(22, 23, 24)'
+  backgroundColor:'rgb(22, 23, 24)',
+  border:'solid 2px rgb(71, 211, 149, 0.20)'
 }
 
 export const tallCardBoxFormatting = {
@@ -125,5 +126,28 @@ export const tallCardBoxFormatting = {
   justifyContent: 'center',
   alignItems: 'center',
   flexDirection: 'column',
-  backgroundColor:'rgb(22, 23, 24)'
+  backgroundColor:'rgb(22, 23, 24)',
+  border:'solid 2px rgb(71, 211, 149, 0.20)'
+}
+
+export const channelBoxFormatting = {
+  ':hover': {
+    backgroundColor: 'rgb(53, 55, 56)',
+    transition: '200ms',
+    transform: 'scale(1.08)'
+  },
+  m: [3, 4],
+  p: 1,
+  transition: '300ms',
+  borderRadius: 2,
+  boxShadow: '0 0 16px rgba(0, 0, 0, .75)',
+  height: '250px',
+  width: '320px',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  flexDirection: 'column',
+  cursor: 'pointer',
+  backgroundColor:'rgb(22, 23, 24)',
+  border:'solid 2px rgb(71, 211, 149, 0.20)'
 }

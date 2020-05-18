@@ -1,5 +1,5 @@
 import React from 'react';
-import { cardBoxFormatting } from '../../theme';
+import { channelBoxFormatting } from '../../theme';
 import {
   Box,
   Card,
@@ -66,12 +66,12 @@ function ChannelBox(props) {
   const { channel, updateChannel } = props;
   return (
     <Box>
-      <Card onClick={() => updateChannel(channel)} width={'300px'} sx={cardBoxFormatting}>
+      <Card onClick={() => updateChannel(channel)} sx={channelBoxFormatting}>
         <Heading fontSize={2}>Channel: {addressShortener(channel.channelAddress)}</Heading>
-        <Image width={'auto'} m={2} height={'30%'} src={channel.image} />
+        <Image width={'auto'} m={'10px'} height={'30%'} src={channel.image} />
+        <Text>End Time: {channel.formattedEndTime}</Text>
         <Text>Recipient: {addressShortener(channel.recipient)}</Text>
         <Text>Balance: {channel.formattedBalance} {channel.symbol}</Text>
-        <Text>End Time: {channel.formattedEndTime}</Text>
       </Card>
     </Box>
   )

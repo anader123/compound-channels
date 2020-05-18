@@ -136,13 +136,13 @@ export default function Sign(props) {
       <Flex flexDirection={'column'} alignItems={'center'} justifyContent={'center'}>
         <Card sx={tallCardBoxFormatting} height={'400px'}>
           <Flex flexDirection={'column'} alignItems={'center'}>
-            <Heading sx={{textDecoration:'underline'}} m={'40px'}>{"Message Signed"}</Heading>
-            <Flex sx={{flexDirection:'column', justifyContent:'center', alignItems:'center', marginBottom:'10px'}}>
+            <Heading sx={{textDecoration:'underline'}} mb={'35px'}>{"Message Signed"}</Heading>
+            <Flex sx={{flexDirection:'column', justifyContent:'flex-start', alignItems:'space-around', marginBottom:'10px'}}>
             {sigDetails.map((text, index) => {
               return <Text key={index}>{text}</Text>
             })}
             </Flex>
-            <Image width={70} height={70} src={signImage}/>
+            <Image m={'10px'} width={70} height={70} src={signImage}/>
             <Text>Signature: {signatureShortener(signature)}</Text>
           </Flex>
           <Button onClick={copySignature}>Copy Signature</Button>

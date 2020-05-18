@@ -149,7 +149,6 @@ contract EthChannel {
     cEther.borrow(_getAmount);
     underlyingBalance = underlyingBalance.add(_getAmount); // update underlying asset balance
     cEther.mint{gas: 250000, value: _getAmount}(); //0.6.0 syntax
-    // cEther.mint.value(msg.value).gas(250000); //0.5.0 syntax
   }
 
   function repayEthBorrowed() public payable {
@@ -158,17 +157,14 @@ contract EthChannel {
 
     if(received > repayAmount) {
       cEther.repayBorrow{value: repayAmount}(); // 0.6.0 syntax
-    //   cEther.repayBorrow.value(repayAmount); // 0.5.0 syntax
       msg.sender.transfer(received - repayAmount);
     }
     else {
       cEther.repayBorrow{value: received}(); // 0.6.0 syntax
-    // cEther.repayBorrow.value(received); // 0.5.0 syntax
     }
   }
 
   function withdrawLoanedERC20(address _cTokenGave, address _tokenGave) public {
-    require(_tokenGave != address(token));
     require(_cTokenGave != address(cEther));
     require(sender == msg.sender);
     

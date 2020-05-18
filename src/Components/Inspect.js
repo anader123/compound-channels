@@ -48,6 +48,13 @@ export default function Inspect(props) {
     }
   ];
 
+  const textInfo = [
+    `Channel: ${addressShortener(channelDetails.channelAddress)}`,
+    `Balance: ${channelDetails.formattedBalance} ${channelDetails.symbol}`,
+    `End Time: ${channelDetails.formattedEndTime}`
+  ]
+
+
   const confirmDetails = [
     `Signature: ${signatureShortener(signature)}`,
     `Channel Address: ${addressShortener(channelDetails.channelAddress)}`,
@@ -95,9 +102,7 @@ export default function Inspect(props) {
     setChannelDetails(channel);
     nextStep();
   }
-
-  const inputLabel = `Channel: ${addressShortener(channelDetails.channelAddress)}`;
-
+  
   switch(step) {
     case 1: 
       return (
@@ -116,9 +121,9 @@ export default function Inspect(props) {
         <Flex flexDirection={'column'} alignItems={'center'} justifyContent={'center'}>
           <InputBox 
           text={true}
-          textInfo={[]} 
+          textInfo={textInfo} 
           dropDown={false} 
-          label={inputLabel} 
+          label={'Enter a Signature'} 
           inputs={inputs} 
           />
           <Flex>

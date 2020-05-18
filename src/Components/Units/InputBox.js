@@ -24,11 +24,11 @@ export default function InputBox(props) {
   return (
     <Flex flexDirection={'column'} alignItems={'center'} justifyContent={'center'}>
       <Card sx={tallCardBoxFormatting}>
-        <Flex flexDirection={'column'} alignItems={'flex-start'} height={'350px'}>
+        <Flex flexDirection={'column'} alignItems={'center'} height={'350px'}>
           <Heading sx={{textDecoration:'underline'}} mb={'20px'}>{label}</Heading>
-          <Flex flexDirection={'column'} height={'300px'} alignItems={'flex-start'} justifyContent={'flex-start'}>
+          <Flex flexDirection={'column'} height={'300px'} alignItems={'center'} justifyContent={'flex-start'}>
             {textInfo !== [] ?
-              <Flex sx={{flexDirection:'column', justifyContent:'center', marginBottom:'30px'}}>
+              <Flex sx={{flexDirection:'column', justifyContent:'center', alignItems:'flex-start', marginBottom:'30px',  marginTop:'20px'}}>
                 {textInfo.map((info, index) => {
                   return (
                     <Text m={'3px'} key={index}>{info}</Text>

@@ -1,7 +1,7 @@
 import Web3 from 'web3';
 
 // Contract ABI
-import { ERC20Abi, ComptrollerAbi } from './AbiData';
+import { ERC20Abi, ComptrollerAbi, cTokenAbi } from './AbiData';
 import compoundChannelFactory from '../abis/CompoundChannelFactory.json';
 import ERC20Channel from '../abis/Erc20Channel.json';
 import EthChannel from '../abis/EthChannel.json';
@@ -37,6 +37,16 @@ export const initalizeERC20 = async (tokenAddress) => {
   try {
     let ERC20Contract = await new web3.eth.Contract(ERC20Abi, tokenAddress);
     return ERC20Contract;
+  }
+  catch (err) {
+    console.log(err);
+  }
+}
+
+export const initalizeCToken = async (cTokenAddress) => {
+  try {
+    let cTokenContract = await new web3.eth.Contract(cTokenAbi, cTokenAddress);
+    return cTokenContract;
   }
   catch (err) {
     console.log(err);

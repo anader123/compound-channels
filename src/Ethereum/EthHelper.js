@@ -3,7 +3,9 @@ import {
   factoryContract, 
   initalizeERC20Channel, 
   initalizeEthChannel, 
-  web3
+  web3,
+  initalizeCToken,
+  initalizeERC20
 } from './ContractInstances';
 import moment from 'moment';
 import { assetData } from './AssetData';
@@ -20,6 +22,33 @@ export const addressShortener = (address) => {
 export const signatureShortener = (sig) => {
   const shortSig = `${sig.slice(0, 11)}...${sig.slice(124, 132)}`;
   return shortSig;
+}
+
+export const calculateRepayAmount = async (channelAddress, cTokenAddress, decimals) => {
+  const cTokenContract = await initalizeCToken(cTokenAddress);
+  // Works for cEth as well.
+  let repayDecimals = await cTokenContract.methods.borrowBalanceCurrent(channelAddress).call();
+  let repayAmountDecimals = await new BigNumber(repayDecimals);
+  repayAmountDecimals = await repayAmountDecimals.plus(repayAmountDecimals.times(0.0001))
+  repayAmountDecimals = parseFloat(repayAmountDecimals).toFixed(0);
+
+  let formattedRepayAmount = await formatDisplayAmount(repayDecimals, decimals);
+  formattedRepayAmount = parseFloat(formattedRepayAmount).toFixed(5);
+
+  return {repayAmountDecimals, formattedRepayAmount};
+}
+
+export const getETHBalance = async (address) => {
+  const decimalBalance = await web3.eth.getBalance(address); 
+  const formattedBalance = await formatDisplayAmount(decimalBalance, 18);
+  return formattedBalance;
+} 
+
+export const getERC20Balance = async (address, tokenAddress, decimals) => {
+  const ERC20Contract = await initalizeERC20(tokenAddress);
+  const decimalBalance = await ERC20Contract.methods.balanceOf(address).call();
+  const formattedBalance = await formatDisplayAmount(decimalBalance, decimals);
+  return formattedBalance;
 }
 
 export const calculateEndTime = async (days, hours) => {

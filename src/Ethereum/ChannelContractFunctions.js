@@ -3,7 +3,6 @@ import {
   initalizeERC20,
   initalizeERC20Channel, 
   initalizeEthChannel, 
-  web3,
   ethChanModel,
   erc20ChanModel,
   comptrollerAddress
@@ -271,19 +270,88 @@ export const repayAsset = async (
   sender,
   decimalRepayAmount,
   symbol,
-  tokenAddress
+  tokenAddress,
+  step,
+  setStep,
+  setTxHash
 ) => {
   let channelContract;
   if(symbol === 'ETH') {
     // EthChannel that needs to repay token
     channelContract = await initalizeEthChannel(channelAddress);
-    channelContract.methods.repayEthBorrowed().send({from:sender, value:decimalRepayAmount}); 
+    channelContract.methods.repayEthBorrowed().send({from:sender, value:decimalRepayAmount})
+    .once('transactionHash', (transactionHash) => {
+      setStep(step + 1);
+    })
+    .once('receipt', (receipt) => {
+      setStep(step + 2);
+    })
+    .on('error', console.error); 
   }
   else {
     // ERC20Channel that needs to repay token 
     channelContract = await initalizeERC20Channel(channelAddress);
     const ERC20Contract = await initalizeERC20(tokenAddress);
     ERC20Contract.methods.approve(channelAddress, decimalRepayAmount).send({from:sender});
-    channelContract.methods.repayERC20Borrowed().send({from:sender});
+    channelContract.methods.repayERC20Borrowed().send({from:sender})
+    .once('transactionHash', (transactionHash) => {
+      setTxHash(transactionHash);
+      setStep(step + 1);
+    })
+    .once('receipt', (receipt) => {
+      setStep(step + 2);
+    })
+    .on('error', console.error); 
+  }
+}
+
+
+export const withdrawLoaned = async (
+  channelAddress,
+  sender,
+  channelSymbol,
+  withdrawSymbol,
+  tokenAddress,
+  cTokenAddress,
+  step,
+  setStep,
+  setTxHash
+) => {
+  let channelContract;
+  if(channelSymbol === 'ETH') {
+    channelContract = await initalizeEthChannel(channelAddress);
+    channelContract.methods.withdrawLoanedERC20(cTokenAddress, tokenAddress).send({from:sender})
+    .once('transactionHash', (transactionHash) => {
+      setTxHash(transactionHash);
+      setStep(step + 1);
+    })
+    .once('receipt', (receipt) => {
+      setStep(step + 2);
+    })
+    .on('error', console.error); 
+  }
+  else {
+    channelContract = await initalizeERC20Channel(channelAddress);
+    if(withdrawSymbol === 'ETH') {
+      channelContract.methods.withdrawLoanedEth(cTokenAddress).send({from:sender})
+      .once('transactionHash', (transactionHash) => {
+        setTxHash(transactionHash);
+        setStep(step + 1);
+      })
+      .once('receipt', (receipt) => {
+        setStep(step + 2);
+      })
+      .on('error', console.error); 
+    }
+    else {
+      channelContract.methods.withdrawLoanedERC20(tokenAddress, cTokenAddress).send({from:sender})
+      .once('transactionHash', (transactionHash) => {
+        setStep(step + 1);
+      })
+      .once('receipt', (receipt) => {
+        setStep(step + 2);
+      })
+      .on('error', console.error); 
+    }
   }
 }

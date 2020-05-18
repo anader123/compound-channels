@@ -16,7 +16,6 @@ import InputBox from './Units/InputBox';
 import ConfirmationBox from './Units/ConfirmationBox';
 import TransactionBox from './Units/TransactionBox';
 import LoadingScreen from './Units/LoadingScreen';
-import TokenDropdown from './Units/TokenDropdown';
 
 export default function CardBox(props) {
   const { setStepDash } = props; // Dashboard Step Setter
