@@ -37,7 +37,8 @@ interface Comptroller {
 
 contract Erc20Channel {
   using SafeMath for uint256;
-//  State Variables
+
+/* ============ State variables ============ */
   uint256 public underlyingBalance; // underlying asset balance
   address payable public sender;
   address payable public recipient;
@@ -48,13 +49,37 @@ contract Erc20Channel {
   address public factoryAddress;
   bool initialized;
 
-//   Events
-    // Need to add events
-  event FundsDeposited(address depositor, uint256 amount, address TokenAddress);
-  // event ChannelForceClosed();
-  // event ChannelClose();
-  // event FundsBorrowed();
-  
+/* ============ Events ============ */
+  event FundsDeposited(address depositor, uint256 amount, address tokenAddress);
+  event ChannelForceClosed(uint256 senderAmount, uint256 closedTime);
+  event ChannelClosed(uint256 senderAmount, uint256 recipientAmount, uint256 closedTime);
+  event FundsBorrowedAgainstERC20(
+    address tokenGive, 
+    uint256 giveAmount, 
+    address tokenBorrowed, 
+    uint256 borrowAmount
+  );
+  event FundsBorrowedAgainstEth(
+    uint256 giveAmount, 
+    address tokenBorrowed, 
+    uint256 borrowAmount
+  );
+  event BorrowedFundsRepaid(uint256 repayAmount, address tokenAddress);
+  event LoanedERC20Withdrawn(address tokenAddress, uint256 withdrawAmount);
+  event LoanedEthWithdrawn(uint256 withdrawAmount);
+  event EndTimeExtended(uint256 newTime);
+
+  /* ============ Public Functions ============ */
+  /**
+   * Initializes state variable and can only run once when the channel is created/cloned in place of constructor
+   *
+   * @param _sender               Address that will be depositing funds into the channel
+   * @param _recipient            Address that will recieve some of the funds when channel is closed
+   * @param _endTime              Time in unix when the channel can be forced closed
+   * @param _tokenAddress         Address of the underlying token for the channel (ex: DAI Address)
+   * @param _cTokenAddress        Address of the cToken for the channel (ex: cDAI Address)
+   * @param _factoryAddress       The address of the factory that created the channel
+   */
   function init(
     address payable _sender,
     address payable _recipient,
@@ -77,6 +102,11 @@ contract Erc20Channel {
     return true; 
   }
 
+  /**
+   * Used to deposit the underlying asset into the channel and converts it into cToken (ex: deposit DAI for a cDAI channel)
+   *
+   * @param _amount             The amount of underlying token to be added to the channel
+   */
   function depositERC20(uint256 _amount) public returns(bool) {
     token.transferFrom(msg.sender, address(this), _amount);
     underlyingBalance = underlyingBalance.add(_amount); // update underlying asset balance
@@ -87,6 +117,10 @@ contract Erc20Channel {
     return true;
   }
 
+  /**
+   * Emergency function that is to be called if the recipient doesn't call the close function before the specified endTime
+   *
+   */ 
   function forceClose() public {
     require(now > endTime, 'too early to close');
     require(msg.sender == sender, 'nonsender address');
@@ -97,8 +131,15 @@ contract Erc20Channel {
     require(cToken.redeem(cTokenBalance) == 0, "redeem error");
     uint256 balance = token.balanceOf(address(this));
     token.transfer(sender, balance);
+    emit ChannelForceClosed(balance, block.timestamp);
   }
 
+  /**
+   * Called by the recipient when they would like to recieve their payment
+   *
+   * @param _amount             The amount of underlying token that was signed to the recipient
+   * @param _signature          Sig that was created to the recipient for a specific amount
+   */
   function close(
     uint256 _amount,
     bytes memory _signature
@@ -123,8 +164,25 @@ contract Erc20Channel {
     uint256 balance = token.balanceOf(address(this));
     uint256 toRecipient = balance < _amount ? balance : _amount;
     require(token.transfer(recipient, toRecipient), "transfer error");
-    if (toRecipient < balance) token.transfer(sender, balance.sub(toRecipient));
+    if (toRecipient < balance) {
+      uint256 toSender = balance.sub(toRecipient);
+      token.transfer(sender, toSender);
+      emit ChannelClosed(toSender, toRecipient, block.timestamp);
+    }
+    else {
+      emit ChannelClosed(0, toRecipient, block.timestamp);
+    }
   }
+
+  /**
+   * Allows someone to borrow the underlying ERC20 token of the channel from Compound against a different Compound ERC20 asset
+   *
+   * @param _tokenGive            ERC20 address that is provided to borrow against
+   * @param _cTokenGive           cToken address of the token that is provided to borrow against
+   * @param _giveAmount           The amount of the provided to token that they are willing to supply
+   * @param _getAmount            How much of the underlying token they would like to receive
+   * @param _compTrollAddress     Compound Comptroller Address
+   */
 
   function borrowERC20AgainstERC20(
     address _tokenGive, 
@@ -160,17 +218,26 @@ contract Erc20Channel {
     // Takes borrow amount and converts back to cToken
     token.approve(address(cToken), _getAmount);
     require(cToken.mint(_getAmount) == 0, 'minting error');
+
+    emit FundsBorrowedAgainstERC20(_tokenGive, _giveAmount, address(token), _getAmount);
   }
 
+  /**
+   * Allows someone to borrow the underlying ERC20 token of the channel from Compound against a Ether
+   *
+   * @param _cEth                 cEther address
+   * @param _getAmount            How much of the underlying token they would like to receive
+   * @param _compTrollAddress     Compound Comptroller Address
+   */
   function borrowERC20AgainstETH(
-    address _cEthGive, 
+    address _cEth, 
     uint256 _getAmount,
     address _compTrollAddress
     ) public payable {
-    require(address(cToken) != _cEthGive);
+    require(address(cToken) != _cEth);
 
     // Contract Instances
-    CETH cEthGive = CETH(_cEthGive);
+    CETH cEthGive = CETH(_cEth);
     Comptroller comptroller = Comptroller(_compTrollAddress);
     
     // Supply Colateral for borrow
@@ -178,7 +245,7 @@ contract Erc20Channel {
 
     // Enter the market
     address[] memory cTokens = new address[](1);
-    cTokens[0] = _cEthGive;
+    cTokens[0] = _cEth;
     uint256[] memory errors = comptroller.enterMarkets(cTokens);
     if (errors[0] != 0) {
       revert("Comptroller.enterMarkets failed.");
@@ -188,8 +255,14 @@ contract Erc20Channel {
     // Takes borrow amount and converts back to cToken
     token.approve(address(cToken), _getAmount);
     require(cToken.mint(_getAmount) == 0, 'minting error');
+
+    emit FundsBorrowedAgainstEth(msg.value, address(token), _getAmount);
   }
 
+  /**
+   * Repays the borrowed underlying asset of the channel if an allowance has been set for the channel contract
+   *
+   */ 
   function repayERC20Borrowed() public {
     uint256 allowance = token.allowance(msg.sender, address(this));
     uint256 repayAmount = cToken.borrowBalanceCurrent(address(this));
@@ -198,15 +271,23 @@ contract Erc20Channel {
       token.transferFrom(msg.sender, address(this), repayAmount);
       token.approve(address(cToken), repayAmount);
       require(cToken.repayBorrow(repayAmount) == 0, 'repay error');
+      emit BorrowedFundsRepaid(repayAmount, address(token));
     }
 
     else {
       token.transferFrom(msg.sender, address(this), allowance);
       token.approve(address(cToken), allowance);
       require(cToken.repayBorrow(allowance) == 0, 'repay error');
+      emit BorrowedFundsRepaid(allowance, address(token));
     }
   }
 
+  /**
+   * Withdraws the ERC20 that was used to borrow against once the debt has been repaid
+   *
+   * @param _tokenGave            ERC20 token address of the token that was supplied
+   * @param _cTokenGave           cToken address of the token that was supplied
+   */
   function withdrawLoanedERC20(address _tokenGave, address _cTokenGave) public {
     require(_tokenGave != address(token));
     require(_cTokenGave != address(cToken));
@@ -222,8 +303,14 @@ contract Erc20Channel {
     require(cTokenGave.redeem(cTokenBalance) == 0, 'redeem error');
     uint256 tokenBalance = tokenGave.balanceOf(address(this));
     tokenGave.transfer(sender, tokenBalance);
+    emit LoanedERC20Withdrawn(_tokenGave, tokenBalance);
   }
 
+  /**
+   * Withdraws the Ether that was used to borrow against once the debt has been repaid
+   *
+   * @param _cEth           cToken address of the token that was supplied
+   */
   function withdrawLoanedEth(address _cEth) public {
     require(_cEth != address(cToken));
     require(sender == msg.sender);
@@ -235,13 +322,20 @@ contract Erc20Channel {
     uint256 cEthBalance = cEther.balanceOf(address(this));
     require(cEther.redeem(cEthBalance) == 0, 'redeem error');
     sender.transfer(address(this).balance);
+    emit LoanedEthWithdrawn(address(this).balance);
   }
 
+  /**
+   * Extends the end time of the channel to a further date if proposed by the sender and the new time is greater than the currenct end time
+   *
+   * @param _newTime         Proposed new end time
+   */
   function extendEndTime(uint256 _newTime) public {
     require(msg.sender == sender, 'nonsender address');
     require(_newTime > endTime, 'newTime needs to be > endTime');
     
     endTime = _newTime;
+    emit EndTimeExtended(_newTime);
   }
   
   fallback() external payable { }

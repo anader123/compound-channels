@@ -8,30 +8,34 @@ import { Erc20Channel } from './Erc20Channel.sol';
 
 contract CompoundChannelFactory {
   using ECDSA for bytes32;
-  // State Variables
+
+  /* ============ State variables ============ */
   mapping(address => address[]) public senderRegistery;
   mapping(address => address[]) public recipientRegistery;
   mapping(address => uint8) public senderCount;
   mapping(address => uint8) public recipientCount;
 
-  // Signature Information
+  /* ============ EIP712 Signature Information  ============ */
   uint256 constant chainId = 42; //Kovan
   bytes32 constant salt = 0xf2e421f4a3edcb9b1111d503bfe733db1e3f6cdc2b7971ee739626c97e86a558;
-
   string private constant EIP712_DOMAIN = "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract,bytes32 salt)";
   string private constant PAYMENT_TYPE = "Payment(uint256 amount,uint8 nonce)";
-
   bytes32 private constant EIP712_DOMAIN_TYPEHASH = keccak256(abi.encodePacked(EIP712_DOMAIN));
   bytes32 private constant PAYMENT_TYPEHASH = keccak256(abi.encodePacked(PAYMENT_TYPE));
-
   struct Payment {
     uint256 amount;
     uint8 nonce;
   }
 
-  // Events
+  /* ============ Events ============ */
   event ChannelCreated(address channelAddress, address sender, address recipient);
 
+  /* ============ Public Functions ============ */
+  /**
+   * Creates a channel contract clone EIP 1167
+   *
+   * @param target           Address to be cloned
+   */
   function createClone(address payable target) public returns (address payable result) {
     bytes20 targetBytes = bytes20(target);
     assembly {
@@ -43,6 +47,14 @@ contract CompoundChannelFactory {
     }
   }
 
+  /**
+   * Creates a cChannel that only handels Ether
+   *
+   * @param _contract2Clone       Contract address to Eth Channel Template
+   * @param _recipient            Address that will recieve the funds when channel is closed
+   * @param _endTime              Time in unix when the channel can be forced closed
+   * @param _cEthAddress          cEther address
+   */
   function createEthChannel(
     address payable _contract2Clone,
     address payable _recipient,
@@ -59,7 +71,7 @@ contract CompoundChannelFactory {
       address(this)
     ), 'init failed');
 
-    // Record new channel information
+    // Records new channel information
     senderRegistery[msg.sender].push(clone);
     recipientRegistery[_recipient].push(clone);
     senderCount[msg.sender] += 1;
@@ -67,6 +79,14 @@ contract CompoundChannelFactory {
     emit ChannelCreated(clone, msg.sender, _recipient);
   }
 
+  /**
+   * Creates a cChannel that only handels Compound supported ERC20 tokens
+   *
+   * @param _contract2Clone       Contract address to the ERC20 Channel Template
+   * @param _recipient            Address that will recieve the funds when channel is closed
+   * @param _endTime              Time in unix when the channel can be forced closed if recip doesn't close
+   * @param _cEthAddress          cToken address
+   */
   function createERC20Channel(
     address payable _contract2Clone,
     address payable _recipient,
@@ -85,7 +105,7 @@ contract CompoundChannelFactory {
       address(this)
     ), 'init failed');
 
-    // Record new channel information
+    // Records new channel information
     senderRegistery[msg.sender].push(clone);
     recipientRegistery[_recipient].push(clone);
     senderCount[msg.sender] += 1;
@@ -93,6 +113,12 @@ contract CompoundChannelFactory {
     emit ChannelCreated(clone, msg.sender, _recipient);
   }
 
+  /**
+   * Hashes data for sig verification for the contract
+   *
+   * @param payment               Formatted Payment struct for sig data
+   * @param _channelAddress       Channel address that the sig is for
+   */
   function hashPayment(
     Payment memory payment,
     address _channelAddress
@@ -103,7 +129,7 @@ contract CompoundChannelFactory {
     keccak256("Compound Channels"),
     keccak256("1"),
     chainId,
-    _channelAddress, // address of the channel that the message is for
+    _channelAddress,
     salt
     ));
 
@@ -118,6 +144,14 @@ contract CompoundChannelFactory {
     ));
   }
 
+  /**
+   * Called by channel contracts to verfiy signatures
+   *
+   * @param _sender               The sender address for a channel
+   * @param _channelAddress       Channel address that the sig is for
+   * @param _channelNonce         Current nonce of the channel
+   * @param _amount               Amount that was signed over
+   */
   function checkSignature(
     address _sender,
     address _channelAddress,

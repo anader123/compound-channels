@@ -15,7 +15,6 @@ import {
   calculateMaxBorrow 
 } from '../Ethereum/EthHelper';
 import { borrowAsset } from '../Ethereum/ChannelContractFunctions';
-
 import { assetData } from '../Ethereum/AssetData';
 
 import {
@@ -48,7 +47,7 @@ export default function Borrow(props) {
   }
 
   const compareAndNextStep = () => {
-    if(safeMaxBorrow >= borrowAmount) {
+    if(+safeMaxBorrow >= +borrowAmount) {
       const newStep = step + 1;
       setStep(newStep);
     }
@@ -191,7 +190,7 @@ export default function Borrow(props) {
     case 3:
       return (
         <ConfirmationBox 
-        image={{bool:false}}
+        image={{bool:true, src:channelDetails.image}}
         confirmButton={true}
         confirmHeading={'Confirm your Transaction'} 
         confirmDetails={confirmDetails} 

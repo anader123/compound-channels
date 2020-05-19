@@ -55,7 +55,6 @@ export default function Inspect(props) {
     `End Time: ${channelDetails.formattedEndTime}`
   ]
 
-
   const confirmDetails = [
     `Signature: ${signatureShortener(signature)}`,
     `Channel Address: ${addressShortener(channelDetails.channelAddress)}`,

@@ -319,7 +319,7 @@ export const withdrawLoaned = async (
   let channelContract;
   if(channelSymbol === 'ETH') {
     channelContract = await initalizeEthChannel(channelAddress);
-    channelContract.methods.withdrawLoanedERC20(cTokenAddress, tokenAddress).send({from:sender})
+    channelContract.methods.withdrawLoanedERC20(tokenAddress, cTokenAddress).send({from:sender})
     .once('transactionHash', (transactionHash) => {
       setTxHash(transactionHash);
       setStep(step + 1);
