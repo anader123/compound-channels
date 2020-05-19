@@ -253,8 +253,8 @@ export const borrowAsset = async (
         comptrollerAddress
       ).send({from: sender})
       .once('transactionHash', (transactionHash) => {
-        setStep(step + 1);
         setTxHash(transactionHash);
+        setStep(step + 1);
       })
       .once('receipt', (receipt) => {
         setStep(step + 2);
@@ -280,6 +280,7 @@ export const repayAsset = async (
     channelContract = await initalizeEthChannel(channelAddress);
     channelContract.methods.repayEthBorrowed().send({from:sender, value:decimalRepayAmount})
     .once('transactionHash', (transactionHash) => {
+      setTxHash(transactionHash);
       setStep(step + 1);
     })
     .once('receipt', (receipt) => {
@@ -303,7 +304,6 @@ export const repayAsset = async (
     .on('error', console.error); 
   }
 }
-
 
 export const withdrawLoaned = async (
   channelAddress,
@@ -345,6 +345,7 @@ export const withdrawLoaned = async (
     else {
       channelContract.methods.withdrawLoanedERC20(tokenAddress, cTokenAddress).send({from:sender})
       .once('transactionHash', (transactionHash) => {
+        setTxHash(transactionHash);
         setStep(step + 1);
       })
       .once('receipt', (receipt) => {

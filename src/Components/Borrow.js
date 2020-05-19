@@ -34,7 +34,7 @@ export default function Borrow(props) {
   const [ borrowAmount, setBorrowAmount ] = useState('');
   const [ giveAmount, setGiveAmount ] = useState('');
   const [ channelLoaded, setChannelLoaded ] = useState(false);
-  const [ maxBorrow, setMaxBorrow ] = useState(0);
+  const [ safeMaxBorrow, setSafeMaxBorrow ] = useState(0);
 
   useEffect(() => {
     if(channels.length === 0) {
@@ -48,8 +48,7 @@ export default function Borrow(props) {
   }
 
   const compareAndNextStep = () => {
-   
-    if(maxBorrow > (borrowAmount * 1.25)) {
+    if(safeMaxBorrow >= borrowAmount) {
       const newStep = step + 1;
       setStep(newStep);
     }
@@ -126,7 +125,8 @@ export default function Borrow(props) {
       supplySymbol,
       borrowSymbol
       );
-    setMaxBorrow(maxBorrow);
+    const safeMaxBorrow = (+maxBorrow * 0.75).toFixed(3)
+    setSafeMaxBorrow(safeMaxBorrow);
     setGiveAmount(value)
   }
 
@@ -155,7 +155,7 @@ export default function Borrow(props) {
   const textInfo = [
     `Channel: ${addressShortener(channelDetails.channelAddress)}`,
     `Channel Balance: ${channelDetails.formattedBalance} ${channelDetails.symbol}`,
-    `Max Borrow: ${maxBorrow} ${channelDetails.symbol}`
+    `Safe Max Borrow: ${safeMaxBorrow} ${channelDetails.symbol}`
   ]
   
   switch(step) {

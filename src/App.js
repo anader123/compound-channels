@@ -16,6 +16,7 @@ function App() {
   const [ walletConnected, setWalletConnected ] = useState(false);
   const [ userAddress, setUserAddress ] = useState('');
   const [ shortUserAddress, setShortUserAddress ] = useState('');
+  const [ step, setStep ] = useState(0); 
   return (
     <div className="App">
       <ThemeProvider theme={theme}>
@@ -26,6 +27,8 @@ function App() {
         userAddress={userAddress} 
         walletConnected={walletConnected} 
         setShortUserAddress={setShortUserAddress}
+        setStep={setStep} 
+        step={step}
         />
         {!walletConnected
         ?
@@ -35,7 +38,7 @@ function App() {
         setWalletConnected={setWalletConnected} 
         />
         :
-        <Dashboard />
+        <Dashboard setStep={setStep} step={step} />
         }
       </ThemeProvider>
     </div>

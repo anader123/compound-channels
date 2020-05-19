@@ -21,7 +21,8 @@ export default function Header(props) {
     shortUserAddress, 
     setShortUserAddress, 
     setUserAddress, 
-    setWalletConnected 
+    setWalletConnected,
+    setStep
   } = props;
 
   useEffect(() => {
@@ -56,7 +57,14 @@ export default function Header(props) {
     <Flex
       px={2}
       alignItems='center'>
-        <Heading p={3} fontSize={[ 2, 4 ]}>
+      <Flex 
+        alignItems='center'
+        onClick={()=>{setStep(0)}} 
+        sx={{cursor:'pointer'}} 
+        >
+        <Heading 
+          p={3} fontSize={[ 2, 4 ]}
+        >
         cChannels
         </Heading >
         <Image 
@@ -64,6 +72,7 @@ export default function Header(props) {
           src={piggyBank}
           height='40px'
         />
+      </Flex>
       <Box mx='auto' />
       <div>
       {!walletConnected 

@@ -75,15 +75,20 @@ export default function Repay(props) {
   const nextStepCalc = async (channel) => {
     let formattedBalance;
     const {channelAddress, cTokenAddress, decimals, tokenAddress, symbol} = channel;
+    console.log(symbol)
     const userAddress = window.ethereum.selectedAddress;
     const {repayAmountDecimals, formattedRepayAmount} = await calculateRepayAmount(channelAddress, cTokenAddress, decimals);
     if(symbol === 'ETH'){
       formattedBalance = await getETHBalance(userAddress);
-      formattedBalance = parseFloat(formattedBalance).toFixed(3);
+      console.log(formattedBalance)
+      formattedBalance = parseFloat(formattedBalance).toFixed(5);
+      console.log(formattedBalance)
     }
     else {
       formattedBalance = await getERC20Balance(userAddress, tokenAddress, decimals);
+      console.log(formattedBalance)
       formattedBalance = parseFloat(formattedBalance).toFixed(3);
+      console.log(formattedBalance)
     }
     await setFormattedUserBalance(formattedBalance);
     await setRepayAmountDecimals(repayAmountDecimals);

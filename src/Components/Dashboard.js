@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 // Components
 import Add from './Add';
@@ -30,8 +30,8 @@ const optionArray = [
   {name: "Repay Loan", step: 6, image: iRepay},
 ];
 
-export default function Dashboard() {
-  const [ step, setStep ] = useState(0); 
+export default function Dashboard(props) {
+  const { step, setStep } = props;
 
   switch(step) {
     case 0:

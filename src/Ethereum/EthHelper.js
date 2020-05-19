@@ -117,7 +117,7 @@ export const calculateMaxBorrow = async (
     const maxEthValue = (maxSupplyValue * +formattedSupplyAssetPrice);
     const maxBorrowValue = (maxEthValue / +formattedBorrowAssetPrice);
 
-    return maxBorrowValue.toFixed(2);
+    return maxBorrowValue.toFixed(4);
   }
   else{
     console.error('Not a cToken address');

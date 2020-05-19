@@ -30,7 +30,7 @@ export default function CardBox(props) {
 
   // Transaction Info 
   const [ txHash, setTxHash ] = useState('');
-  const [ channelAddress, setChannelAddress ] = useState('');
+  const [ channelAddress, setChannelAddress ] = useState('0x2dA3F937eA2195e48ff3DDb0013faeb6C383FE81');
 
   const nextStep = async () => {
     const userAddress = window.ethereum.selectedAddress;
@@ -158,7 +158,10 @@ export default function CardBox(props) {
       return (
        <TransactionBox 
        setStepDash={setStepDash} 
-       txText={`The channel was created at address: ${addressShortener(channelAddress)}`} txHash={txHash} assetDetails={assetDetails}/>
+       txText={`The channel was created at address: ${addressShortener(channelAddress)}`} 
+       txHash={txHash} 
+       assetDetails={assetDetails}
+       />
       )
     default:
       return step;
