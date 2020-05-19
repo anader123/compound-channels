@@ -85,7 +85,8 @@ contract CompoundChannelFactory {
    * @param _contract2Clone       Contract address to the ERC20 Channel Template
    * @param _recipient            Address that will recieve the funds when channel is closed
    * @param _endTime              Time in unix when the channel can be forced closed if recip doesn't close
-   * @param _cEthAddress          cToken address
+   * @param _tokenAddress         token address of the underlying asset
+   * @param _cTokenAddress        cToken address
    */
   function createERC20Channel(
     address payable _contract2Clone,

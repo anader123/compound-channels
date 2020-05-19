@@ -94,7 +94,6 @@ contract EthChannel {
   /**
    * Used to deposit the Ether into the channel and converts it into cEth
    *
-   * @param _amount             The amount of underlying token to be added to the channel
    */
   function depositEth() public payable returns(bool) {
     cEther.mint{gas: 250000, value: msg.value}(); //0.6.0 syntax
