@@ -1,4 +1,4 @@
-pragma solidity ^0.6.0;
+pragma solidity 0.6.6;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/cryptography/ECDSA.sol";
@@ -181,15 +181,13 @@ contract Erc20Channel {
    * @param _cTokenGive           cToken address of the token that is provided to borrow against
    * @param _giveAmount           The amount of the provided to token that they are willing to supply
    * @param _getAmount            How much of the underlying token they would like to receive
-   * @param _compTrollAddress     Compound Comptroller Address
    */
 
   function borrowERC20AgainstERC20(
     address _tokenGive, 
     address _cTokenGive, 
     uint256 _giveAmount,
-    uint256 _getAmount,
-    address _compTrollAddress
+    uint256 _getAmount
     ) public {
     // Prevents from entering the market of the channel asset
     require(address(cToken) != _cTokenGive);
@@ -197,7 +195,7 @@ contract Erc20Channel {
     // Contract Instances
     IERC20 tokenGive = IERC20(_tokenGive);
     CERC20 cTokenGive = CERC20(_cTokenGive);
-    Comptroller comptroller = Comptroller(_compTrollAddress);
+    Comptroller comptroller = Comptroller(0xe03718b458a2E912141CF3fC8daB648362ee7463); //Ropsten comptroller address
 
     // Move allowance to channel
     tokenGive.transferFrom(msg.sender, address(this), _giveAmount);
@@ -223,22 +221,20 @@ contract Erc20Channel {
   }
 
   /**
-   * Allows someone to borrow the underlying ERC20 token of the channel from Compound against a Ether
+   * Allows someone to borrow the underlying ERC20 token of the channel from Compound against Ether
    *
    * @param _cEth                 cEther address
    * @param _getAmount            How much of the underlying token they would like to receive
-   * @param _compTrollAddress     Compound Comptroller Address
    */
   function borrowERC20AgainstETH(
     address _cEth, 
-    uint256 _getAmount,
-    address _compTrollAddress
+    uint256 _getAmount
     ) public payable {
     require(address(cToken) != _cEth);
 
     // Contract Instances
     CETH cEthGive = CETH(_cEth);
-    Comptroller comptroller = Comptroller(_compTrollAddress);
+    Comptroller comptroller = Comptroller(0xe03718b458a2E912141CF3fC8daB648362ee7463); //Ropsten comptroller address 
     
     // Supply Colateral for borrow
     cEthGive.mint{gas: 250000, value: msg.value}(); //0.6.0 syntax

@@ -82,7 +82,7 @@ export default function Header(props) {
       <Link 
         target="_blank" 
         rel="noopener noreferrer"
-        href={`https://kovan.etherscan.io/address/${userAddress}`}
+        href={`https://ropsten.etherscan.io/address/${userAddress}`}
       >
         <Text mr={4}>Address: {shortUserAddress}</Text>
       </Link>

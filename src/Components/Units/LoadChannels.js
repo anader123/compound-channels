@@ -71,7 +71,7 @@ function ChannelBox(props) {
         <Image width={'auto'} m={'10px'} height={'30%'} src={channel.image} />
         <Text>End Time: {channel.formattedEndTime}</Text>
         <Text>Recipient: {addressShortener(channel.recipient)}</Text>
-        <Text>Balance: {channel.formattedBalance} {channel.symbol}</Text>
+        <Text>Underlying Balance: {channel.formattedBalance} {channel.symbol}</Text>
       </Card>
     </Box>
   )

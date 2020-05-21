@@ -39,7 +39,7 @@ export default function Supply(props) {
   const textInfo = [
     `Channel Address: ${addressShortener(channelDetails.channelAddress)}`,
     `Recipient Address: ${addressShortener(channelDetails.recipient)}`,
-    `Channel Balance: ${channelDetails.formattedBalance} ${channelDetails.symbol}`
+    `Underlying Balance: ${channelDetails.formattedBalance} ${channelDetails.symbol}`
   ]
 
   const confirmDetails = [

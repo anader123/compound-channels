@@ -1,4 +1,4 @@
-pragma solidity ^0.6.0;
+pragma solidity 0.6.6;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/cryptography/ECDSA.sol";
@@ -16,7 +16,7 @@ contract CompoundChannelFactory {
   mapping(address => uint8) public recipientCount;
 
   /* ============ EIP712 Signature Information  ============ */
-  uint256 constant chainId = 42; //Kovan
+  uint256 constant chainId = 3; //Ropsten
   bytes32 constant salt = 0xf2e421f4a3edcb9b1111d503bfe733db1e3f6cdc2b7971ee739626c97e86a558;
   string private constant EIP712_DOMAIN = "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract,bytes32 salt)";
   string private constant PAYMENT_TYPE = "Payment(uint256 amount,uint8 nonce)";
@@ -50,19 +50,17 @@ contract CompoundChannelFactory {
   /**
    * Creates a cChannel that only handels Ether
    *
-   * @param _contract2Clone       Contract address to Eth Channel Template
    * @param _recipient            Address that will recieve the funds when channel is closed
    * @param _endTime              Time in unix when the channel can be forced closed
    * @param _cEthAddress          cEther address
    */
   function createEthChannel(
-    address payable _contract2Clone,
     address payable _recipient,
     uint256 _endTime,
     address _cEthAddress
   ) public {
 
-    address payable clone = createClone(_contract2Clone);
+    address payable clone = createClone(0xC87a2Bc93dbFa4Fa0E0C34Bacfab09dF48F58403); // EthCompChannel on Ropsten
     require(EthChannel(clone).init(
       msg.sender,
       _recipient,
@@ -82,21 +80,19 @@ contract CompoundChannelFactory {
   /**
    * Creates a cChannel that only handels Compound supported ERC20 tokens
    *
-   * @param _contract2Clone       Contract address to the ERC20 Channel Template
    * @param _recipient            Address that will recieve the funds when channel is closed
    * @param _endTime              Time in unix when the channel can be forced closed if recip doesn't close
    * @param _tokenAddress         token address of the underlying asset
    * @param _cTokenAddress        cToken address
    */
   function createERC20Channel(
-    address payable _contract2Clone,
     address payable _recipient,
     uint256 _endTime,
     address _tokenAddress,
     address _cTokenAddress
   ) public {
 
-    address payable clone = createClone(_contract2Clone);
+    address payable clone = createClone(0xD35e97d9AFfaf66c4B6d5A5C6C5d0B09643DAE0d); // ERC20CompChannel on Ropsten
     require(Erc20Channel(clone).init(
       msg.sender,
       _recipient,

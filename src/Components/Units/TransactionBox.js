@@ -25,7 +25,7 @@ export default function TransactionBox(props) {
             sx={{textDecoration:'underline'}}
             target="_blank" 
             rel="noopener noreferrer"
-            href={`https://kovan.etherscan.io/tx/${txHash}`}>View on Etherscan</Link>
+            href={`https://ropsten.etherscan.io/tx/${txHash}`}>View on Etherscan</Link>
         </Flex>
       </Card>
         <Button onClick={()=>setStepDash(0)}>Home</Button>

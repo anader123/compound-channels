@@ -2,10 +2,7 @@ import {
   factoryContract, 
   initalizeERC20,
   initalizeERC20Channel, 
-  initalizeEthChannel, 
-  ethChanModel,
-  erc20ChanModel,
-  comptrollerAddress
+  initalizeEthChannel 
 } from './ContractInstances';
 
 export const createChannel = async (
@@ -23,7 +20,6 @@ export const createChannel = async (
   if(symbol === 'ETH') {
     // Ether channel
     await factoryContract.methods.createEthChannel(
-      ethChanModel,
       recipientAddress, 
       endTime, 
       cTokenAddress
@@ -42,7 +38,6 @@ export const createChannel = async (
   else {
     // ERC20 token channel
     await factoryContract.methods.createERC20Channel(
-      erc20ChanModel,
       recipientAddress, 
       endTime, 
       tokenAddress, 
@@ -210,8 +205,7 @@ export const borrowAsset = async (
       giveTokenAddress,
       giveTokenCTokenAddress,
       decimalGiveAmount,
-      decimalBorrowAmount,
-      comptrollerAddress
+      decimalBorrowAmount
     ).send({from: sender})
     .once('transactionHash', (transactionHash) => {
       setStep(step + 1);
@@ -229,8 +223,7 @@ export const borrowAsset = async (
 
       await channelContract.methods.borrowERC20AgainstETH(
         giveTokenCTokenAddress,
-        decimalBorrowAmount,
-        comptrollerAddress
+        decimalBorrowAmount
       ).send({from: sender, value: decimalGiveAmount})
       .once('transactionHash', (transactionHash) => {
         setStep(step + 1);
@@ -249,8 +242,7 @@ export const borrowAsset = async (
         giveTokenAddress,
         giveTokenCTokenAddress,
         decimalGiveAmount,
-        decimalBorrowAmount,
-        comptrollerAddress
+        decimalBorrowAmount
       ).send({from: sender})
       .once('transactionHash', (transactionHash) => {
         setTxHash(transactionHash);

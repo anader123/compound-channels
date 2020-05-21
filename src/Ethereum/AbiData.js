@@ -6077,58 +6077,143 @@ export const cTokenAbi = [
 
 export const PriceOracleAbi = [
 	{
-			"anonymous": false,
 			"inputs": [
 					{
-							"indexed": false,
 							"internalType": "address",
-							"name": "asset",
+							"name": "guardian_",
 							"type": "address"
 					},
 					{
-							"indexed": false,
-							"internalType": "uint256",
-							"name": "previousPriceMantissa",
-							"type": "uint256"
+							"internalType": "address",
+							"name": "v1PriceOracle_",
+							"type": "address"
 					},
 					{
-							"indexed": false,
-							"internalType": "uint256",
-							"name": "requestedPriceMantissa",
-							"type": "uint256"
+							"internalType": "address",
+							"name": "cEthAddress_",
+							"type": "address"
 					},
 					{
-							"indexed": false,
-							"internalType": "uint256",
-							"name": "newPriceMantissa",
-							"type": "uint256"
+							"internalType": "address",
+							"name": "cUsdcAddress_",
+							"type": "address"
+					},
+					{
+							"internalType": "address",
+							"name": "cSaiAddress_",
+							"type": "address"
+					},
+					{
+							"internalType": "address",
+							"name": "cDaiAddress_",
+							"type": "address"
+					},
+					{
+							"internalType": "address",
+							"name": "cUsdtAddress_",
+							"type": "address"
 					}
 			],
-			"name": "PricePosted",
-			"type": "event",
-			"signature": "0xdd71a1d19fcba687442a1d5c58578f1e409af71a79d10fd95a4d66efd8fa9ae7"
+			"payable": false,
+			"stateMutability": "nonpayable",
+			"type": "constructor",
+			"signature": "constructor"
 	},
 	{
 			"constant": true,
-			"inputs": [
-					{
-							"internalType": "address",
-							"name": "asset",
-							"type": "address"
-					}
-			],
-			"name": "assetPrices",
+			"inputs": [],
+			"name": "cDaiAddress",
 			"outputs": [
 					{
-							"internalType": "uint256",
+							"internalType": "address",
 							"name": "",
-							"type": "uint256"
+							"type": "address"
 					}
 			],
 			"payable": false,
 			"stateMutability": "view",
 			"type": "function",
-			"signature": "0x5e9a523c"
+			"signature": "0xf2c65bf9"
+	},
+	{
+			"constant": true,
+			"inputs": [],
+			"name": "cEthAddress",
+			"outputs": [
+					{
+							"internalType": "address",
+							"name": "",
+							"type": "address"
+					}
+			],
+			"payable": false,
+			"stateMutability": "view",
+			"type": "function",
+			"signature": "0x2ed58e15"
+	},
+	{
+			"constant": true,
+			"inputs": [],
+			"name": "cSaiAddress",
+			"outputs": [
+					{
+							"internalType": "address",
+							"name": "",
+							"type": "address"
+					}
+			],
+			"payable": false,
+			"stateMutability": "view",
+			"type": "function",
+			"signature": "0x21b49128"
+	},
+	{
+			"constant": true,
+			"inputs": [],
+			"name": "cUsdcAddress",
+			"outputs": [
+					{
+							"internalType": "address",
+							"name": "",
+							"type": "address"
+					}
+			],
+			"payable": false,
+			"stateMutability": "view",
+			"type": "function",
+			"signature": "0xff11439b"
+	},
+	{
+			"constant": true,
+			"inputs": [],
+			"name": "cUsdtAddress",
+			"outputs": [
+					{
+							"internalType": "address",
+							"name": "",
+							"type": "address"
+					}
+			],
+			"payable": false,
+			"stateMutability": "view",
+			"type": "function",
+			"signature": "0x1a3cb2e8"
+	},
+	{
+			"constant": true,
+			"inputs": [],
+			"name": "daiOracleKey",
+			"outputs": [
+					{
+							"internalType": "address",
+							"name": "",
+							"type": "address"
+					}
+			],
+			"payable": false,
+			"stateMutability": "view",
+			"type": "function",
+			"signature": "0xe5ee0f6e"
 	},
 	{
 			"constant": true,
@@ -6155,6 +6240,22 @@ export const PriceOracleAbi = [
 	{
 			"constant": true,
 			"inputs": [],
+			"name": "guardian",
+			"outputs": [
+					{
+							"internalType": "address",
+							"name": "",
+							"type": "address"
+					}
+			],
+			"payable": false,
+			"stateMutability": "view",
+			"type": "function",
+			"signature": "0x452a9320"
+	},
+	{
+			"constant": true,
+			"inputs": [],
 			"name": "isPriceOracle",
 			"outputs": [
 					{
@@ -6169,45 +6270,67 @@ export const PriceOracleAbi = [
 			"signature": "0x66331bba"
 	},
 	{
+			"constant": true,
+			"inputs": [],
+			"name": "saiPrice",
+			"outputs": [
+					{
+							"internalType": "uint256",
+							"name": "",
+							"type": "uint256"
+					}
+			],
+			"payable": false,
+			"stateMutability": "view",
+			"type": "function",
+			"signature": "0xa86b1944"
+	},
+	{
 			"constant": false,
 			"inputs": [
-					{
-							"internalType": "address",
-							"name": "asset",
-							"type": "address"
-					},
 					{
 							"internalType": "uint256",
 							"name": "price",
 							"type": "uint256"
 					}
 			],
-			"name": "setDirectPrice",
+			"name": "setSaiPrice",
 			"outputs": [],
 			"payable": false,
 			"stateMutability": "nonpayable",
 			"type": "function",
-			"signature": "0x09a8acb0"
+			"signature": "0xf9c99e9c"
 	},
 	{
-			"constant": false,
-			"inputs": [
+			"constant": true,
+			"inputs": [],
+			"name": "usdcOracleKey",
+			"outputs": [
 					{
-							"internalType": "contract CToken",
-							"name": "cToken",
+							"internalType": "address",
+							"name": "",
 							"type": "address"
-					},
-					{
-							"internalType": "uint256",
-							"name": "underlyingPriceMantissa",
-							"type": "uint256"
 					}
 			],
-			"name": "setUnderlyingPrice",
-			"outputs": [],
 			"payable": false,
-			"stateMutability": "nonpayable",
+			"stateMutability": "view",
 			"type": "function",
-			"signature": "0x127ffda0"
+			"signature": "0x3e76f255"
+	},
+	{
+			"constant": true,
+			"inputs": [],
+			"name": "v1PriceOracle",
+			"outputs": [
+					{
+							"internalType": "contract V1PriceOracleInterface",
+							"name": "",
+							"type": "address"
+					}
+			],
+			"payable": false,
+			"stateMutability": "view",
+			"type": "function",
+			"signature": "0xfe10c98d"
 	}
-];
+]

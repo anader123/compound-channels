@@ -75,14 +75,14 @@ export const formatUnixTime = async (endTime) => {
   return formattedTime;
 }
 
-// Formats data from the blockchain
+// Formats balances from the blockchain
 export const formatDisplayAmount = async (value, decimals) => {
   const bn = new BigNumber(value);
   const number = bn.shiftedBy(-decimals).toString(10);
   return number
 };
 
-// Formats data for transactions that are about to be sent
+// Formats balances for transactions that are about to be sent
 export const formatBeforeSend = async (value, decimals) => {
   const bn = new BigNumber(value);
   return bn.shiftedBy(decimals).toString(10);
@@ -103,14 +103,21 @@ export const calculateMaxBorrow = async (
   const {0: isListed, 1: collateralFactorMantissa} = result;
 
   if(isListed && +supplyAmount > 0) {
+    let decimalsSupplyAssetPrice;
+    let decimalsBorrowAssetPrice;
+
     const priceOricalContract = await initalizePriceOracle();
 
     const formattedColatFactor = await web3.utils.fromWei(collateralFactorMantissa);
     const maxSupplyValue = (+supplyAmount * +formattedColatFactor);
 
-    const decimalsSupplyAssetPrice = await priceOricalContract.methods.getUnderlyingPrice(supplyCTokenAddress).call();
-    const decimalsBorrowAssetPrice = await priceOricalContract.methods.getUnderlyingPrice(borrowCTokenAddress).call();
-
+    try{
+      decimalsSupplyAssetPrice = await priceOricalContract.methods.getUnderlyingPrice(supplyCTokenAddress).call();
+      decimalsBorrowAssetPrice = await priceOricalContract.methods.getUnderlyingPrice(borrowCTokenAddress).call();
+    }
+    catch (error) {
+      console.log(error)
+    }
     const formattedSupplyAssetPrice = web3.utils.fromWei(decimalsSupplyAssetPrice);
     const formattedBorrowAssetPrice = web3.utils.fromWei(decimalsBorrowAssetPrice);
 
@@ -125,6 +132,7 @@ export const calculateMaxBorrow = async (
   }
 }
 
+// Loads all the channels associated with an address depending if they are the sender or recipient
 export const loadChannels = async (userAddress, registeryName) => {
   let channels = [];
   let loopNum;
@@ -155,13 +163,13 @@ export const loadChannels = async (userAddress, registeryName) => {
 
     try{
       channelContract = await initalizeERC20Channel(channelAddress);
-      const cTokenAddress = await channelContract.methods.token().call();
+      const tokenAddress = await channelContract.methods.token().call();
       recipient = await channelContract.methods.recipient().call();
       sender = await channelContract.methods.sender().call();
       balance = await channelContract.methods.underlyingBalance().call();
       channelNonce = await channelContract.methods.channelNonce().call();
       endTime = await channelContract.methods.endTime().call();
-      assetDetails = await assetData.find(token => token.tokenAddress === cTokenAddress);
+      assetDetails = await assetData.find(token => token.tokenAddress === tokenAddress);
     }
     catch {
       channelContract = await initalizeEthChannel(channelAddress);
@@ -212,7 +220,7 @@ export const signData = async (
   const domainData = {
     name: "Compound Channels",
     version: "1",
-    chainId: 42,
+    chainId: window.ethereum.networkVersion, //Should be 3 for ropsten
     verifyingContract: channelAddress,
     salt: "0xf2e421f4a3edcb9b1111d503bfe733db1e3f6cdc2b7971ee739626c97e86a558"
   };
@@ -260,7 +268,7 @@ export const verifySignature = async (
   const domainData = {
     name: "Compound Channels",
     version: "1",
-    chainId: 42,
+    chainId: window.ethereum.networkVersion, //Should be 3 for ropsten
     verifyingContract: channelAddress,
     salt: "0xf2e421f4a3edcb9b1111d503bfe733db1e3f6cdc2b7971ee739626c97e86a558"
   };

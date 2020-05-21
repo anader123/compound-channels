@@ -46,7 +46,7 @@ export default function Sign(props) {
 
   const textInfo = [
     `Channel: ${addressShortener(channelDetails.channelAddress)}`,
-    `Balance: ${channelDetails.formattedBalance} ${channelDetails.symbol}`
+    `Underlying Balance: ${channelDetails.formattedBalance} ${channelDetails.symbol}`
   ]
 
   const sigDetails = [
