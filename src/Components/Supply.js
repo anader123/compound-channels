@@ -145,7 +145,7 @@ export default function Supply(props) {
         <TransactionBox 
         setStepDash={setStepDash} 
         txHash={txHash}
-        txText={`Funds were successfully added: ${amount} ${channelDetails.symbol}`} 
+        txText={`${amount} ${channelDetails.symbol} as successfully despoited`} 
         />
         
       )

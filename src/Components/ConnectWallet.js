@@ -10,8 +10,8 @@ export default function ConnectWallet(props) {
 
   const connectWallet = async () => {
     if(window.ethereum) {
-      // Make sure that the user is connected to Ropsten
-      if(window.ethereum.networkVersion === "3") {
+      // Make sure that the user is connected to Kovan
+      if(window.ethereum.networkVersion === "42") {
         const accounts = await window.ethereum.enable();
         const address = accounts[0];
         // Sets up web3 connection and web3
@@ -24,7 +24,7 @@ export default function ConnectWallet(props) {
         setShortUserAddress(shortAddress);
       }
       else{
-        window.alert('Please switch to the Ropsten Network.')
+        window.alert('Please switch to the Kovan Network.')
       }
     }
     else {

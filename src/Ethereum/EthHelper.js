@@ -220,7 +220,7 @@ export const signData = async (
   const domainData = {
     name: "Compound Channels",
     version: "1",
-    chainId: window.ethereum.networkVersion, //Should be 3 for ropsten
+    chainId: window.ethereum.networkVersion, 
     verifyingContract: channelAddress,
     salt: "0xf2e421f4a3edcb9b1111d503bfe733db1e3f6cdc2b7971ee739626c97e86a558"
   };
@@ -268,7 +268,7 @@ export const verifySignature = async (
   const domainData = {
     name: "Compound Channels",
     version: "1",
-    chainId: window.ethereum.networkVersion, //Should be 3 for ropsten
+    chainId: window.ethereum.networkVersion, 
     verifyingContract: channelAddress,
     salt: "0xf2e421f4a3edcb9b1111d503bfe733db1e3f6cdc2b7971ee739626c97e86a558"
   };

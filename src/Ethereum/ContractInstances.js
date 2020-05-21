@@ -13,11 +13,12 @@ export let channelContract;
 export let borrowContract;
 export let comptrollerContract;
 
-// export const priceOracleAddress = '0x6998ed7daf969ea0950e01071aceeee54cccbab5' //Kovan
-// export const comptrollerAddress = '0x1f5d7f3caac149fe41b8bd62a3673fe6ec0ab73b'; // Kovan
-export const priceOracleAddress = '0x6600A2079f724F9dA3eCe619aE400E1ef16fC284' //Ropsten
-export const comptrollerAddress = '0xe03718b458a2e912141cf3fc8dab648362ee7463'; // Ropsten 
-const factoryAddress = '0x3FD88e3A0Db2d7BB00636f2cBE44cbc035F6d214'; // Ropsten
+export const priceOracleAddress = '0x6998ed7daf969ea0950e01071aceeee54cccbab5' //Kovan
+export const comptrollerAddress = '0x1f5d7f3caac149fe41b8bd62a3673fe6ec0ab73b'; // Kovan
+const factoryAddress = '0xC87a2Bc93dbFa4Fa0E0C34Bacfab09dF48F58403'; // Kovan
+// export const priceOracleAddress = '0x6600A2079f724F9dA3eCe619aE400E1ef16fC284' //Ropsten
+// export const comptrollerAddress = '0xe03718b458a2e912141cf3fc8dab648362ee7463'; // Ropsten 
+// const factoryAddress = '0x3FD88e3A0Db2d7BB00636f2cBE44cbc035F6d214'; // Ropsten
 
 // Creates Core contract instance
 export const initializeWeb3 = () => {

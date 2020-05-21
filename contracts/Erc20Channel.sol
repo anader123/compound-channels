@@ -195,7 +195,7 @@ contract Erc20Channel {
     // Contract Instances
     IERC20 tokenGive = IERC20(_tokenGive);
     CERC20 cTokenGive = CERC20(_cTokenGive);
-    Comptroller comptroller = Comptroller(0xe03718b458a2E912141CF3fC8daB648362ee7463); //Ropsten comptroller address
+    Comptroller comptroller = Comptroller(0x1f5D7F3CaAC149fE41b8bd62A3673FE6eC0AB73b); //Kovan comptroller address
 
     // Move allowance to channel
     tokenGive.transferFrom(msg.sender, address(this), _giveAmount);
@@ -234,7 +234,7 @@ contract Erc20Channel {
 
     // Contract Instances
     CETH cEthGive = CETH(_cEth);
-    Comptroller comptroller = Comptroller(0xe03718b458a2E912141CF3fC8daB648362ee7463); //Ropsten comptroller address 
+    Comptroller comptroller = Comptroller(0x1f5D7F3CaAC149fE41b8bd62A3673FE6eC0AB73b); //Kovan comptroller address 
     
     // Supply Colateral for borrow
     cEthGive.mint{gas: 250000, value: msg.value}(); //0.6.0 syntax
