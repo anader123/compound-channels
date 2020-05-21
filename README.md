@@ -4,20 +4,33 @@ _Earn interest while sending payments off chain_
 ## Description
 cChannels are a series of payment channel contracts that supports both Ether and ERC20 payments. While funds are in the channel, they are locked into Compound and are constantly earning interest for the depositor. Users can directly add more funds to the contract or even borrow against different collateral types supported by Compound to fund their channel.
 
+## Resources Used
+* EIP 712 to verify signatures in the smart contracts
+* EIP 1167 to create minimal viable proxies for the channels
+* Integrated with Compound smart contracts
+* eth_signTypedData_v3 to sign messages on the frontend
+* sigUtil to verify signatures on the frontend
+* React with Rebass
+
+## Diagrams 
 ### Depositing Funds to a cChannel
-Sender adds Dai to the cChannel and the Dai is then locked into Compound until the channel is closed.
+_Sender adds Dai to the cChannel and the Dai is then locked into Compound until the channel is closed._
+
 ![](src/Images/deposit.png)
 
 ### Closing a Channel
-Recipient closes the channel and withdraws their alloted amount and the sender is returned the remaining amount as well as the interest accrued.
+_Recipient closes the channel and withdraws their alloted amount and the sender is returned the remaining amount as well as the interest accrued._
+
 ![](src/Images/closeComp.png)
 
 ### Borrowing Asset to Fund a Channel
-Sender borrows DAI from Compound to fund the channel against Ether.
+_Sender borrows DAI from Compound to fund the channel against Ether._
+
 ![](src/Images/borrowFunds.png)
 
 ### Closing a Channel and Repaying Debt
-Recipient closes the channel and is given their alloted amount, then the sender re
+_Recipient closes the channel and withdraws their alloted amount and the sender is returned the remaining amount as well as the interest accrued. They the sender is able to repay their debt to Compound to withdaw their original deposit._
+
 ![](src/Images/closeBorrow.png)
 
 
