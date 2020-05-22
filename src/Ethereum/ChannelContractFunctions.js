@@ -159,16 +159,18 @@ export const supplyAssets = async (
     channelContract = await initalizeERC20Channel(channelAddress);
 
     // Approves token and then deposits funds into the channel
-    await ERC20Contract.methods.approve(channelAddress, decimalAmount).send({from: sender});
-    channelContract.methods.depositERC20(decimalAmount).send({from: sender})
-    .once('transactionHash', (transactionHash) => {
-      setStep(step + 1);
-      setTxHash(transactionHash);
-    })
-    .once('receipt', (receipt) => {
-      setStep(step + 2);
-    })
-    .on('error', console.error); 
+    ERC20Contract.methods.approve(channelAddress, decimalAmount).send({from: sender})
+    .once('transactionHash', (hash) => {
+      channelContract.methods.depositERC20(decimalAmount).send({from: sender})
+      .once('transactionHash', (transactionHash) => {
+        setStep(step + 1);
+        setTxHash(transactionHash);
+      })
+      .once('receipt', (receipt) => {
+        setStep(step + 2);
+      })
+      .on('error', console.error); 
+    });
   }
 }
 
@@ -195,26 +197,24 @@ export const borrowAsset = async (
 
   if(borrowAssetSymbol === 'ETH') {
     const ERC20Contract = await initalizeERC20(tokenAddress);
-    await ERC20Contract.methods.approve(
-      channelAddress, 
-      decimalGiveAmount
-    ).send({from: sender});
-
     channelContract = await initalizeEthChannel(channelAddress);
-    channelContract.methods.borrowEthAgainstERC20(
-      giveTokenAddress,
-      giveTokenCTokenAddress,
-      decimalGiveAmount,
-      decimalBorrowAmount
-    ).send({from: sender})
-    .once('transactionHash', (transactionHash) => {
-      setStep(step + 1);
-      setTxHash(transactionHash);
+    ERC20Contract.methods.approve(channelAddress, decimalGiveAmount).send({from: sender})
+    .once('transactionHash', (hash) => {
+      channelContract.methods.borrowEthAgainstERC20(
+        giveTokenAddress,
+        giveTokenCTokenAddress,
+        decimalGiveAmount,
+        decimalBorrowAmount
+      ).send({from: sender})
+      .once('transactionHash', (transactionHash) => {
+        setStep(step + 1);
+        setTxHash(transactionHash);
+      })
+      .once('receipt', (receipt) => {
+        setStep(step + 2);
+      })
+      .on('error', console.error); 
     })
-    .once('receipt', (receipt) => {
-      setStep(step + 2);
-    })
-    .on('error', console.error); 
   }
 
   else {
@@ -237,21 +237,23 @@ export const borrowAsset = async (
 
     else {
       const ERC20Contract = await initalizeERC20(tokenAddress);
-      await ERC20Contract.methods.approve(channelAddress, decimalGiveAmount).send({from: sender});
-      await channelContract.methods.borrowERC20AgainstERC20(
-        giveTokenAddress,
-        giveTokenCTokenAddress,
-        decimalGiveAmount,
-        decimalBorrowAmount
-      ).send({from: sender})
-      .once('transactionHash', (transactionHash) => {
-        setTxHash(transactionHash);
-        setStep(step + 1);
-      })
-      .once('receipt', (receipt) => {
-        setStep(step + 2);
-      })
-      .on('error', console.error); 
+      ERC20Contract.methods.approve(channelAddress, decimalGiveAmount).send({from: sender})
+      .once('transactionHash', (hash) => {
+        channelContract.methods.borrowERC20AgainstERC20(
+          giveTokenAddress,
+          giveTokenCTokenAddress,
+          decimalGiveAmount,
+          decimalBorrowAmount
+        ).send({from: sender})
+        .once('transactionHash', (transactionHash) => {
+          setTxHash(transactionHash);
+          setStep(step + 1);
+        })
+        .once('receipt', (receipt) => {
+          setStep(step + 2);
+        })
+        .on('error', console.error);
+      });
     }
   }
 }
@@ -284,16 +286,18 @@ export const repayAsset = async (
     // ERC20Channel that needs to repay token 
     channelContract = await initalizeERC20Channel(channelAddress);
     const ERC20Contract = await initalizeERC20(tokenAddress);
-    ERC20Contract.methods.approve(channelAddress, decimalRepayAmount).send({from:sender});
-    channelContract.methods.repayERC20Borrowed().send({from:sender})
-    .once('transactionHash', (transactionHash) => {
-      setTxHash(transactionHash);
-      setStep(step + 1);
-    })
-    .once('receipt', (receipt) => {
-      setStep(step + 2);
-    })
-    .on('error', console.error); 
+    ERC20Contract.methods.approve(channelAddress, decimalRepayAmount).send({from:sender})
+    .once('transactionHash', (hash) => {
+      channelContract.methods.repayERC20Borrowed().send({from:sender})
+      .once('transactionHash', (transactionHash) => {
+        setTxHash(transactionHash);
+        setStep(step + 1);
+      })
+      .once('receipt', (receipt) => {
+        setStep(step + 2);
+      })
+      .on('error', console.error); 
+    });
   }
 }
 
