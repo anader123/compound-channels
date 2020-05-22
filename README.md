@@ -2,7 +2,7 @@
 _Earn interest while sending payments off chain_
 
 ## Description
-cChannels are a series of payment channel contracts that supports both Ether and ERC20 payments. While funds are in the channel, they are locked into Compound and are constantly earning interest for the depositor. Users can directly add more funds to the contract or even borrow against different collateral types supported by Compound to fund their channel.
+cChannels are a series of payment channel contracts that support both Ether and ERC20 payments. When the funds are deposited into a cChannel, they are then locked into Compound and are constantly earning interest for the depositor. Users can directly add more funds to the contract or even borrow against different collateral types supported by Compound to fund their channel (Borrow DAI to fund a DAI channel against ETH).
 
 ## Resources Used
 * EIP 712 to verify signatures in the smart contracts
@@ -14,7 +14,7 @@ cChannels are a series of payment channel contracts that supports both Ether and
 
 ## Diagrams 
 ### Depositing Funds to a cChannel
-_Sender adds Dai to the cChannel and the Dai is then locked into Compound until the channel is closed._
+_Sender deposits Dai to the cChannel and the Dai is then locked into Compound until the channel is closed._
 
 ![](src/Images/deposit.png)
 
@@ -24,12 +24,12 @@ _Recipient closes the channel and withdraws their alloted amount and the sender 
 ![](src/Images/closeComp.png)
 
 ### Borrowing Asset to Fund a Channel
-_Sender borrows DAI from Compound to fund the channel against Ether._
+_Sender borrows DAI from Compound to fund the channel against their Ether._
 
 ![](src/Images/borrowFunds.png)
 
 ### Closing a Channel and Repaying Debt
-_Recipient closes the channel and withdraws their alloted amount and the sender is returned the remaining amount as well as the interest accrued. They the sender is able to repay their debt to Compound to withdaw their original deposit._
+_Recipient closes the channel and withdraws their alloted amount and the sender is returned the remaining amount plus the interest accrued. The sender is able to repay their debt to Compound at anytime and withdaw the asset they borrow against. Note that the sender is better off because they borrowed the Eth to fund the DAI channel since the market price for Eth went from 1ETH = 100DAI to 1ETH = 200DAI._
 
 ![](src/Images/closeBorrow.png)
 
