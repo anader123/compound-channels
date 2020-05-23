@@ -36,12 +36,12 @@ _Recipient closes the channel and withdraws their alloted amount and the sender 
 
 ## Contract Addresses (Ropsten)
 * Channel Factory: 0x3FD88e3A0Db2d7BB00636f2cBE44cbc035F6d214
-* ETH Channel: 0xC87a2Bc93dbFa4Fa0E0C34Bacfab09dF48F58403
-* ERC20 Channel: 0xD35e97d9AFfaf66c4B6d5A5C6C5d0B09643DAE0d
+* ETH Channel Template: 0xC87a2Bc93dbFa4Fa0E0C34Bacfab09dF48F58403
+* ERC20 Channel Template: 0xD35e97d9AFfaf66c4B6d5A5C6C5d0B09643DAE0d
 
 ## Contract Addresses (Kovan)
 * Channel Factory: 0xC87a2Bc93dbFa4Fa0E0C34Bacfab09dF48F58403
-* ETH Channel: 0xD35e97d9AFfaf66c4B6d5A5C6C5d0B09643DAE0d
-* ERC20 Channel: 0xC12ddC6979cc2000C93CE7295D3cDe4A2da44395
+* ETH Channel Template: 0xD35e97d9AFfaf66c4B6d5A5C6C5d0B09643DAE0d
+* ERC20 Channel Template: 0xC12ddC6979cc2000C93CE7295D3cDe4A2da44395
 
 _Solidity 0.6.6_

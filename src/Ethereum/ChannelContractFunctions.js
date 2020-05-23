@@ -29,7 +29,6 @@ export const createChannel = async (
       setTxHash(transactionHash);
     })
     .once('receipt', (receipt) => {
-      console.log(receipt)
       setStep(step + 2);
       setChannelAddress(receipt.events.ChannelCreated.returnValues.channelAddress);
     })
@@ -48,7 +47,6 @@ export const createChannel = async (
       setTxHash(transactionHash);
     })
     .once('receipt', (receipt) => {
-      console.log(receipt)
       setStep(step + 2);
       setChannelAddress(receipt.events.ChannelCreated.returnValues.channelAddress);
     })

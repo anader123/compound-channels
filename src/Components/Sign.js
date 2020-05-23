@@ -65,7 +65,7 @@ export default function Sign(props) {
   const copySignature = () => {
     navigator.clipboard.writeText(signature);
     setCopied(true);
-    setTimeout(() => {setCopied(false)}, 1200);
+    setTimeout(() => {setCopied(false)}, 800);
   }
   
   const nextStep = () => {
