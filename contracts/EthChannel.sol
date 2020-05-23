@@ -255,6 +255,5 @@ contract EthChannel {
   
   
   fallback() external payable { }
-//   fallback() external payable { revert("Function not found"); } 
 //   receive() external payable { }
 }

@@ -335,6 +335,5 @@ contract Erc20Channel {
   }
   
   fallback() external payable { }
-//   fallback() external { revert("Function not found"); } 
 //   receive() external payable { }
 }
