@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "685b512226072cb0770fac04eaf5d84c",
+    "revision": "935b2a353add04a31f1dc1fdedf2d361",
     "url": "/compound-channels/index.html"
   },
   {
