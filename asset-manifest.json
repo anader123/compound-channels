@@ -1,0 +1,37 @@
+{
+  "files": {
+    "main.css": "/compound-channels/static/css/main.b77eeacf.chunk.css",
+    "main.js": "/compound-channels/static/js/main.5354f4fb.chunk.js",
+    "main.js.map": "/compound-channels/static/js/main.5354f4fb.chunk.js.map",
+    "runtime-main.js": "/compound-channels/static/js/runtime-main.c4da4961.js",
+    "runtime-main.js.map": "/compound-channels/static/js/runtime-main.c4da4961.js.map",
+    "static/js/2.eddebabf.chunk.js": "/compound-channels/static/js/2.eddebabf.chunk.js",
+    "static/js/2.eddebabf.chunk.js.map": "/compound-channels/static/js/2.eddebabf.chunk.js.map",
+    "index.html": "/compound-channels/index.html",
+    "precache-manifest.fb42863a815c6e721405d1d9a167c881.js": "/compound-channels/precache-manifest.fb42863a815c6e721405d1d9a167c881.js",
+    "service-worker.js": "/compound-channels/service-worker.js",
+    "static/css/main.b77eeacf.chunk.css.map": "/compound-channels/static/css/main.b77eeacf.chunk.css.map",
+    "static/js/2.eddebabf.chunk.js.LICENSE.txt": "/compound-channels/static/js/2.eddebabf.chunk.js.LICENSE.txt",
+    "static/media/add.svg": "/compound-channels/static/media/add.be191918.svg",
+    "static/media/borrow.svg": "/compound-channels/static/media/borrow.e71bce4d.svg",
+    "static/media/checkmark.svg": "/compound-channels/static/media/checkmark.ef457836.svg",
+    "static/media/close-money.svg": "/compound-channels/static/media/close-money.15a51403.svg",
+    "static/media/close.svg": "/compound-channels/static/media/close.4ff4deba.svg",
+    "static/media/create.svg": "/compound-channels/static/media/create.23f0a4e3.svg",
+    "static/media/dai.png": "/compound-channels/static/media/dai.66a0ceb4.png",
+    "static/media/forceClose.svg": "/compound-channels/static/media/forceClose.8710a0a3.svg",
+    "static/media/inspect.svg": "/compound-channels/static/media/inspect.d2afd93a.svg",
+    "static/media/piggy-bank.svg": "/compound-channels/static/media/piggy-bank.c652593c.svg",
+    "static/media/repay.svg": "/compound-channels/static/media/repay.51793d5d.svg",
+    "static/media/sign.svg": "/compound-channels/static/media/sign.3092c182.svg",
+    "static/media/supply.svg": "/compound-channels/static/media/supply.8d7fd3c0.svg",
+    "static/media/usdc.png": "/compound-channels/static/media/usdc.89aeed5b.png",
+    "static/media/xmark.svg": "/compound-channels/static/media/xmark.fb0bde45.svg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.c4da4961.js",
+    "static/js/2.eddebabf.chunk.js",
+    "static/css/main.b77eeacf.chunk.css",
+    "static/js/main.5354f4fb.chunk.js"
+  ]
+}
