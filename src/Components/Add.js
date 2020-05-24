@@ -15,8 +15,8 @@ import iBorrow from '../Images/borrow.svg';
 import iSupply from '../Images/supply.svg';
 
 const optionArray = [
-  {name: "Supply Assets", step: 1, image: iSupply},
-  {name: "Borrow Assets", step: 2, image: iBorrow}
+  {name: "Supply Assets", step: 1, image: iSupply, text:"Add an amount to the cChannel"},
+  {name: "Borrow Assets", step: 2, image: iBorrow, text:"Borrow an amount to the cChannel"}
 ];
 
 export default function Dashboard(props) {
@@ -33,7 +33,9 @@ export default function Dashboard(props) {
                         image={option.image}
                         key={index} 
                         setStep={setStep} 
-                        step={option.step}/>
+                        step={option.step}
+                        text={option.text}
+                        />
             })}
           </Flex>
           <Button width={'5em'} onClick={() => setStepDash(0)}>Back</Button>

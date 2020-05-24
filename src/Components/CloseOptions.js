@@ -15,8 +15,8 @@ import iClose from '../Images/close-money.svg';
 import iForceClose from '../Images/forceClose.svg';
 
 const optionArray = [
-  {name: "Close", step: 1, image: iClose},
-  {name: "Force Close", step: 2, image: iForceClose}
+  {name: "Close", step: 1, image: iClose, text:"Recipients can close the cChannel with a valid sig"},
+  {name: "Force Close", step: 2, image: iForceClose, text:"Senders close the cChannel if the endTime has passed"}
 ];
 
 export default function Dashboard(props) {
@@ -33,7 +33,9 @@ export default function Dashboard(props) {
                         image={option.image}
                         key={index} 
                         setStep={setStep} 
-                        step={option.step}/>
+                        step={option.step}
+                        text={option.text}
+                        />
             })}
           </Flex>
           <Button width={'5em'} onClick={() => setStepDash(0)}>Back</Button>

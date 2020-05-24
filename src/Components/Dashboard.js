@@ -22,12 +22,12 @@ import iRepay from '../Images/repay.svg';
 import iSign from '../Images/sign.svg';
 
 const optionArray = [
-  {name: "Create Channel", step: 1, image: iCreate},
-  {name: "Sign Transaction", step: 2, image: iSign},
-  {name: "Close Channel", step: 3, image: iClose},
-  {name: "Add Assets", step: 4, image: iAdd},
-  {name: "Inspect Signature", step: 5, image: iInspect},
-  {name: "Repay Loan", step: 6, image: iRepay},
+  {name: "Create Channel", step: 1, image: iCreate, text: "Create a new cChannel"},
+  {name: "Sign Transaction", step: 2, image: iSign, text:"Senders can sign an amount"},
+  {name: "Close Channel", step: 3, image: iClose, text:"Claim the funds in the channel"},
+  {name: "Add Assets", step: 4, image: iAdd, text:"Add assets to the channel"},
+  {name: "Inspect Signature", step: 5, image: iInspect, text:"Recipients can check if a sig is valid"},
+  {name: "Repay Loan", step: 6, image: iRepay, text:"Repay any outstanding debt and withdaw collateral"},
 ];
 
 export default function Dashboard(props) {
@@ -43,7 +43,8 @@ export default function Dashboard(props) {
                         image={option.image}
                         key={option.step+'key'} 
                         setStep={setStep} 
-                        step={option.step}/>
+                        step={option.step}
+                        text={option.text}/>
             })}
           </Flex>
         </Flex >

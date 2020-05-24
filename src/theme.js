@@ -111,7 +111,8 @@ export const cardBoxFormatting = {
   flexDirection: 'column',
   cursor: 'pointer',
   backgroundColor:'rgb(22, 23, 24)',
-  border:'solid 2px rgb(71, 211, 149, 0.20)'
+  border:'solid 2px rgb(71, 211, 149, 0.20)',
+  textAlign: 'center'
 }
 
 export const tallCardBoxFormatting = {
