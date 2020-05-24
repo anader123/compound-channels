@@ -21,7 +21,7 @@ export const createChannel = async (
     // Ether channel
     await factoryContract.methods.createEthChannel(
       recipientAddress, 
-      endTime, 
+      +endTime, 
       cTokenAddress
       ).send({from:userAddress, gas:'2000000'})
     .once('transactionHash', (transactionHash) => {
@@ -38,7 +38,7 @@ export const createChannel = async (
     // ERC20 token channel
     await factoryContract.methods.createERC20Channel(
       recipientAddress, 
-      endTime, 
+      +endTime, 
       tokenAddress, 
       cTokenAddress
       ).send({from:userAddress, gas:'2000000'})
