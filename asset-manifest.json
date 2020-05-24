@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/compound-channels/static/css/main.b77eeacf.chunk.css",
-    "main.js": "/compound-channels/static/js/main.5354f4fb.chunk.js",
-    "main.js.map": "/compound-channels/static/js/main.5354f4fb.chunk.js.map",
+    "main.js": "/compound-channels/static/js/main.e114458d.chunk.js",
+    "main.js.map": "/compound-channels/static/js/main.e114458d.chunk.js.map",
     "runtime-main.js": "/compound-channels/static/js/runtime-main.c4da4961.js",
     "runtime-main.js.map": "/compound-channels/static/js/runtime-main.c4da4961.js.map",
     "static/js/2.eddebabf.chunk.js": "/compound-channels/static/js/2.eddebabf.chunk.js",
     "static/js/2.eddebabf.chunk.js.map": "/compound-channels/static/js/2.eddebabf.chunk.js.map",
     "index.html": "/compound-channels/index.html",
-    "precache-manifest.fb42863a815c6e721405d1d9a167c881.js": "/compound-channels/precache-manifest.fb42863a815c6e721405d1d9a167c881.js",
+    "precache-manifest.5a471f9c55730d117889b584641c8d08.js": "/compound-channels/precache-manifest.5a471f9c55730d117889b584641c8d08.js",
     "service-worker.js": "/compound-channels/service-worker.js",
     "static/css/main.b77eeacf.chunk.css.map": "/compound-channels/static/css/main.b77eeacf.chunk.css.map",
     "static/js/2.eddebabf.chunk.js.LICENSE.txt": "/compound-channels/static/js/2.eddebabf.chunk.js.LICENSE.txt",
@@ -32,6 +32,6 @@
     "static/js/runtime-main.c4da4961.js",
     "static/js/2.eddebabf.chunk.js",
     "static/css/main.b77eeacf.chunk.css",
-    "static/js/main.5354f4fb.chunk.js"
+    "static/js/main.e114458d.chunk.js"
   ]
 }
