@@ -2,7 +2,7 @@
 _Earn interest while sending payments off chain_
 
 ## Description
-cChannels are a series of payment channel contracts that support both Ether and ERC20 payments. When the funds are deposited into a cChannel, they are then locked into Compound and are constantly earning interest for the depositor, while they are spending the funds off chain. Users can directly add more funds to the contract or even borrow against different collateral types supported by Compound to fund their channel (Borrow DAI against ETH to fund a DAI cChannel).
+cChannels are a series of payment channel contracts that support both Ether and ERC20 payments. When the funds are deposited into a cChannel, they are then locked into Compound and are constantly earning interest for the depositor, while being spent off chain. Users can directly add more funds to the contract or even borrow against different collateral types supported by Compound to fund their channel (Borrow DAI against ETH to fund a DAI cChannel).
 
 ## Contract Addresses (Kovan)
 * Channel Factory: 0xC87a2Bc93dbFa4Fa0E0C34Bacfab09dF48F58403
